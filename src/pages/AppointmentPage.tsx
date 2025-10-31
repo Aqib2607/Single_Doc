@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
-import { Calendar, Clock, User, Phone, Mail, FileText, Stethoscope, Heart, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, User, Phone, Mail, FileText, Stethoscope, Heart, AlertTriangle, Loader2 } from 'lucide-react';
 import { Checkbox } from '../components/ui/checkbox';
+import DoctorSelect from '../components/ui/DoctorSelect';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
 const AppointmentPage = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,26 +21,54 @@ const AppointmentPage = () => {
     gender: '',
     date: '',
     time: '',
-    doctor: '',
+    doctor_id: undefined as number | undefined,
     consultationType: '',
     reason: '',
     termsAccepted: false
   });
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    setErrors({});
+    setSuccessMessage('');
+    
+    // Client-side validation
+    const clientErrors: Record<string, string[]> = {};
+    
+    if (!formData.name.trim()) clientErrors.name = ['Name is required'];
+    if (!formData.email.trim()) clientErrors.email = ['Email is required'];
+    if (!formData.phone.trim()) clientErrors.phone = ['Phone is required'];
+    if (!formData.date) clientErrors.date = ['Date is required'];
+    if (!formData.time) clientErrors.time = ['Time is required'];
+    if (!formData.doctor_id) clientErrors.doctor_id = ['Please select a doctor'];
+    if (!formData.termsAccepted) clientErrors.termsAccepted = ['You must accept the terms'];
+    
+    if (Object.keys(clientErrors).length > 0) {
+      setErrors(clientErrors);
+      setIsSubmitting(false);
+      return;
+    }
+    
     try {
       const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
+          'X-Requested-With': 'XMLHttpRequest',
+          'Accept': 'application/json'
         },
         body: JSON.stringify(formData)
       });
       
-      if (response.ok) {
-        alert('Appointment booked successfully!');
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setSuccessMessage(data.message);
         setFormData({
           name: '',
           email: '',
@@ -45,21 +76,37 @@ const AppointmentPage = () => {
           gender: '',
           date: '',
           time: '',
-          doctor: '',
+          doctor_id: undefined,
           consultationType: '',
           reason: '',
           termsAccepted: false
         });
+        
+        // Redirect to dashboard after 2 seconds
+        setTimeout(() => {
+          navigate('/patient-dashboard');
+        }, 2000);
       } else {
-        alert('Failed to book appointment. Please try again.');
+        if (data.errors) {
+          setErrors(data.errors);
+        } else {
+          setErrors({ general: [data.message || 'Failed to book appointment. Please try again.'] });
+        }
       }
     } catch (error) {
-      alert('Error booking appointment. Please try again.');
+      console.error('Appointment booking error:', error);
+      setErrors({ general: ['Network error. Please check your connection and try again.'] });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleChange = (field: string, value: string) => {
+  const handleChange = (field: string, value: string | number | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleDoctorChange = (doctorId: number) => {
+    setFormData(prev => ({ ...prev, doctor_id: doctorId }));
   };
 
   return (
@@ -86,6 +133,30 @@ const AppointmentPage = () => {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {/* Success Message */}
+                  {successMessage && (
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-5 w-5 text-green-600">✓</div>
+                        <p className="text-green-800 font-medium">{successMessage}</p>
+                      </div>
+                    </div>
+                  )}
+                  
+                  {/* General Error Message */}
+                  {errors.general && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-semibold text-red-800 mb-1">Booking Failed</h4>
+                          {errors.general.map((error, index) => (
+                            <p key={index} className="text-sm text-red-700">{error}</p>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="flex items-center gap-2">
@@ -98,7 +169,11 @@ const AppointmentPage = () => {
                         onChange={(e) => handleChange('name', e.target.value)}
                         placeholder="Enter your full name"
                         required
+                        className={errors.name ? 'border-red-500' : ''}
                       />
+                      {errors.name && (
+                        <p className="text-sm text-red-600 mt-1">{errors.name[0]}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email" className="flex items-center gap-2">
@@ -112,7 +187,11 @@ const AppointmentPage = () => {
                         onChange={(e) => handleChange('email', e.target.value)}
                         placeholder="Enter your email"
                         required
+                        className={errors.email ? 'border-red-500' : ''}
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-600 mt-1">{errors.email[0]}</p>
+                      )}
                     </div>
                   </div>
 
@@ -181,17 +260,14 @@ const AppointmentPage = () => {
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="doctor">Select Doctor</Label>
-                      <Select onValueChange={(value) => handleChange('doctor', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose a doctor" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="dr-smith">Dr. Sarah Smith - General Medicine</SelectItem>
-                          <SelectItem value="dr-johnson">Dr. Michael Johnson - Cardiology</SelectItem>
-                          <SelectItem value="dr-williams">Dr. Emily Williams - Dermatology</SelectItem>
-                          <SelectItem value="dr-brown">Dr. David Brown - Orthopedics</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      <DoctorSelect
+                        value={formData.doctor_id}
+                        onValueChange={handleDoctorChange}
+                        placeholder="Choose a doctor"
+                      />
+                      {errors.doctor_id && (
+                        <p className="text-sm text-red-600 mt-1">{errors.doctor_id[0]}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="consultationType">Consultation Type</Label>
@@ -256,10 +332,21 @@ const AppointmentPage = () => {
                   <Button 
                     type="submit" 
                     className="w-full gradient-primary shadow-elegant hover:shadow-glow"
-                    disabled={!formData.termsAccepted}
+                    disabled={!formData.termsAccepted || isSubmitting}
                   >
-                    Book Appointment
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Booking Appointment...
+                      </>
+                    ) : (
+                      'Book Appointment'
+                    )}
                   </Button>
+                  
+                  {errors.termsAccepted && (
+                    <p className="text-sm text-red-600 text-center">{errors.termsAccepted[0]}</p>
+                  )}
                 </form>
               </CardContent>
             </Card>

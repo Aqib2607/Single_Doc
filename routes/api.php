@@ -16,6 +16,7 @@ use App\Http\Controllers\MedicineController;
 use App\Http\Controllers\TestController;
 use App\Http\Controllers\DoctorReviewController;
 use App\Http\Controllers\Api\DoctorDashboardController;
+use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\GalleryController;
 
@@ -27,6 +28,7 @@ Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
 Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -43,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/doctor-dashboard', [DoctorDashboardController::class, 'index']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/patient-appointments', [AppointmentController::class, 'getPatientAppointments']);
+    Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
     Route::get('/patient-prescriptions', [PrescriptionController::class, 'getPatientPrescriptions']);
     Route::get('/patient-medical-records', [MedicalRecordController::class, 'getPatientMedicalRecords']);
     Route::get('/doctor-schedules', [MedicalRecordController::class, 'getDoctorSchedules']);

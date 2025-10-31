@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import { Calendar, FileText, Pill, Heart, Clock, User, Activity, Plus } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import RecentAppointments from '@/components/RecentAppointments';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
@@ -125,52 +126,9 @@ const PatientDashboard = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card className="shadow-card border-border bg-card animate-fade-in-up" style={{animationDelay: '0.5s'}}>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="text-foreground flex items-center gap-2">
-                      <Calendar className="h-5 w-5 text-primary" />
-                      Recent Appointments
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground">Your upcoming medical appointments</CardDescription>
-                  </div>
-                  <Link to="/appointment">
-                    <Button size="sm" className="gradient-primary shadow-elegant hover:shadow-glow">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Book New
-                    </Button>
-                  </Link>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {loading ? (
-                      <div className="text-center py-4 text-muted-foreground">Loading appointments...</div>
-                    ) : upcomingAppointments.length > 0 ? (
-                      upcomingAppointments.slice(0, 2).map((appointment, index) => (
-                        <div key={appointment.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-primary rounded-full mt-2 animate-pulse"></div>
-                            <div>
-                              <p className="font-semibold text-foreground">{appointment.reason || 'General Consultation'}</p>
-                              <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <User className="h-3 w-3" />
-                                {appointment.doctor}
-                              </p>
-                              <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {new Date(appointment.appointment_date).toLocaleDateString()} at {appointment.appointment_time}
-                              </p>
-                              <p className="text-xs text-primary mt-1 capitalize">{appointment.status}</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-4 text-muted-foreground">No upcoming appointments</div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+                <RecentAppointments />
+              </div>
 
               <Card className="shadow-card border-border bg-card animate-fade-in-up" style={{animationDelay: '0.6s'}}>
                 <CardHeader className="flex flex-row items-center justify-between">
