@@ -17,13 +17,13 @@ use App\Http\Controllers\TestController;
 use App\Http\Controllers\DoctorReviewController;
 use App\Http\Controllers\Api\DoctorDashboardController;
 use App\Http\Controllers\Api\DoctorController;
+use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\GalleryController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-Route::post('/appointments', [AppointmentController::class, 'store']);
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 Route::get('/cart', [CartController::class, 'index']);
 Route::post('/cart', [CartController::class, 'store']);
@@ -41,11 +41,14 @@ Route::middleware('auth:sanctum')->group(function () {
         }
         return $user;
     });
+    Route::get('/patient/profile', [PatientController::class, 'profile']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/doctor-dashboard', [DoctorDashboardController::class, 'index']);
+    Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/patient-appointments', [AppointmentController::class, 'getPatientAppointments']);
     Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
+    Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
     Route::get('/patient-prescriptions', [PrescriptionController::class, 'getPatientPrescriptions']);
     Route::get('/patient-medical-records', [MedicalRecordController::class, 'getPatientMedicalRecords']);
     Route::get('/doctor-schedules', [MedicalRecordController::class, 'getDoctorSchedules']);

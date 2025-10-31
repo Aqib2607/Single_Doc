@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { Calendar, Clock, User, Phone, AlertCircle, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import ConfirmDialog from './ui/ConfirmDialog';
+import { Calendar, Clock, User, Phone, AlertCircle, CheckCircle, XCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Appointment {
   id: number;
@@ -22,6 +23,9 @@ const RecentAppointments: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [updatingId, setUpdatingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteDialog, setDeleteDialog] = useState<{ isOpen: boolean; appointmentId: number | null }>({ isOpen: false, appointmentId: null });
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
     fetchAppointments();
@@ -74,6 +78,46 @@ const RecentAppointments: React.FC = () => {
     } finally {
       setUpdatingId(null);
     }
+  };
+
+  const handleDeleteClick = (appointmentId: number) => {
+    setDeleteDialog({ isOpen: true, appointmentId });
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteDialog.appointmentId) return;
+    
+    setDeletingId(deleteDialog.appointmentId);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/appointments/${deleteDialog.appointmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete appointment');
+      }
+
+      setSuccessMessage('Appointment deleted successfully');
+      await fetchAppointments(); // Refresh the list
+      
+      // Clear success message after 3 seconds
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to delete appointment');
+    } finally {
+      setDeletingId(null);
+      setDeleteDialog({ isOpen: false, appointmentId: null });
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialog({ isOpen: false, appointmentId: null });
   };
 
   const getStatusIcon = (status: string) => {
@@ -165,6 +209,16 @@ const RecentAppointments: React.FC = () => {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-4 bg-green-50 border border-green-200 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+              <p className="text-green-800 text-sm">{successMessage}</p>
+            </div>
+          </div>
+        )}
+        
         {appointments.length === 0 ? (
           <div className="text-center py-8">
             <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
@@ -229,6 +283,27 @@ const RecentAppointments: React.FC = () => {
                       )}
                     </Button>
                   )}
+                  
+                  {appointment.status === 'cancelled' && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => handleDeleteClick(appointment.id)}
+                      disabled={deletingId === appointment.id}
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      aria-label={`Delete appointment with ${appointment.doctor}`}
+                    >
+                      {deletingId === appointment.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <>
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          Delete
+                        </>
+                      )}
+                    </Button>
+                  )}
+                  
                   <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
                     <Phone className="h-3 w-3" />
                     <span>{appointment.phone}</span>
@@ -239,6 +314,17 @@ const RecentAppointments: React.FC = () => {
           </div>
         )}
       </CardContent>
+      
+      <ConfirmDialog
+        isOpen={deleteDialog.isOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Appointment"
+        message="Are you sure you want to permanently delete this appointment? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        isLoading={deletingId !== null}
+      />
     </Card>
   );
 };

@@ -7,6 +7,10 @@ return [
     ],
 
     'guards' => [
+        'web' => [
+            'driver' => 'session',
+            'provider' => 'patients',
+        ],
         'patient' => [
             'driver' => 'session',
             'provider' => 'patients',

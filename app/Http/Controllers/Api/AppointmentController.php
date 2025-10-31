@@ -17,12 +17,17 @@ class AppointmentController extends Controller
         try {
             Log::info('Appointment booking attempt', ['request_data' => $request->all()]);
             
-            // Validate input data
+            // Get authenticated patient
+            $user = $request->user();
+            if (!$user || !isset($user->patient_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Authentication required. Please log in to book an appointment.'
+                ], 401);
+            }
+            
+            // Validate input data (only appointment-specific fields)
             $validated = $request->validate([
-                'name' => 'required|string|max:255',
-                'email' => 'required|email|max:255',
-                'phone' => 'required|string|max:20',
-                'gender' => 'nullable|in:male,female,other,prefer-not-to-say',
                 'date' => 'required|date_format:Y-m-d|after_or_equal:' . now()->format('Y-m-d'),
                 'time' => 'required|string',
                 'doctor_id' => 'required|integer|exists:doctors,doctor_id',
@@ -47,7 +52,7 @@ class AppointmentController extends Controller
             Log::info('Doctor found', ['doctor' => $doctor->name]);
 
             // Check for duplicate appointments
-            $existingAppointment = Appointment::where('email', $validated['email'])
+            $existingAppointment = Appointment::where('patient_id', $user->patient_id)
                 ->where('appointment_date', $validated['date'])
                 ->where('appointment_time', $validated['time'])
                 ->where('doctor', $doctor->name)
@@ -55,7 +60,7 @@ class AppointmentController extends Controller
 
             if ($existingAppointment) {
                 Log::warning('Duplicate appointment attempt', [
-                    'email' => $validated['email'],
+                    'patient_id' => $user->patient_id,
                     'date' => $validated['date'],
                     'time' => $validated['time'],
                     'doctor' => $doctor->name
@@ -67,19 +72,18 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
-            // Get patient ID if authenticated
-            $patientId = null;
-            if ($request->user() && method_exists($request->user(), 'patient_id')) {
-                $patientId = $request->user()->patient_id;
-            }
+            Log::info('Patient authentication check', [
+                'patient_id' => $user->patient_id,
+                'patient_name' => $user->name
+            ]);
 
-            // Create appointment
+            // Create appointment with patient data
             $appointment = Appointment::create([
-                'patient_id' => $patientId,
-                'name' => $validated['name'],
-                'email' => $validated['email'],
-                'phone' => $validated['phone'],
-                'gender' => $validated['gender'] ?? null,
+                'patient_id' => $user->patient_id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'gender' => $user->gender,
                 'appointment_date' => $validated['date'],
                 'appointment_time' => $validated['time'],
                 'doctor' => $doctor->name,
@@ -193,6 +197,58 @@ class AppointmentController extends Controller
             'success' => true,
             'message' => 'Appointment updated successfully',
             'appointment' => $appointment
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+        
+        if (!$user) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        
+        $appointment = Appointment::find($id);
+        
+        if (!$appointment) {
+            return response()->json(['error' => 'Appointment not found'], 404);
+        }
+        
+        // Verify ownership
+        $isOwner = false;
+        if (isset($user->patient_id)) {
+            $isOwner = $appointment->patient_id == $user->patient_id;
+        } else {
+            $isOwner = $appointment->email == $user->email;
+        }
+        
+        if (!$isOwner) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        // Only allow deletion of cancelled appointments
+        if ($appointment->status !== 'cancelled') {
+            return response()->json([
+                'error' => 'Only cancelled appointments can be deleted'
+            ], 422);
+        }
+        
+        // Audit logging
+        Log::info('Appointment deletion', [
+            'appointment_id' => $appointment->id,
+            'patient_id' => $user->patient_id,
+            'patient_name' => $user->name,
+            'doctor' => $appointment->doctor,
+            'appointment_date' => $appointment->appointment_date,
+            'deleted_at' => now(),
+            'ip_address' => $request->ip()
+        ]);
+        
+        $appointment->delete();
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Appointment deleted successfully'
         ]);
     }
 }

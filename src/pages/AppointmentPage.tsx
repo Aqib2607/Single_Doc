@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -14,11 +14,14 @@ import Footer from '../components/Footer';
 
 const AppointmentPage = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
+  const [patientProfile, setPatientProfile] = useState({
     name: '',
     email: '',
     phone: '',
-    gender: '',
+    gender: ''
+  });
+  
+  const [formData, setFormData] = useState({
     date: '',
     time: '',
     doctor_id: undefined as number | undefined,
@@ -28,6 +31,7 @@ const AppointmentPage = () => {
   });
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [successMessage, setSuccessMessage] = useState('');
 
@@ -40,9 +44,6 @@ const AppointmentPage = () => {
     // Client-side validation
     const clientErrors: Record<string, string[]> = {};
     
-    if (!formData.name.trim()) clientErrors.name = ['Name is required'];
-    if (!formData.email.trim()) clientErrors.email = ['Email is required'];
-    if (!formData.phone.trim()) clientErrors.phone = ['Phone is required'];
     if (!formData.date) clientErrors.date = ['Date is required'];
     if (!formData.time) clientErrors.time = ['Time is required'];
     if (!formData.doctor_id) clientErrors.doctor_id = ['Please select a doctor'];
@@ -55,12 +56,14 @@ const AppointmentPage = () => {
     }
     
     try {
+      const token = localStorage.getItem('token');
       const response = await fetch('/api/appointments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'X-Requested-With': 'XMLHttpRequest',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
         },
         body: JSON.stringify(formData)
       });
@@ -70,10 +73,6 @@ const AppointmentPage = () => {
       if (response.ok && data.success) {
         setSuccessMessage(data.message);
         setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          gender: '',
           date: '',
           time: '',
           doctor_id: undefined,
@@ -108,6 +107,39 @@ const AppointmentPage = () => {
   const handleDoctorChange = (doctorId: number) => {
     setFormData(prev => ({ ...prev, doctor_id: doctorId }));
   };
+
+  useEffect(() => {
+    const fetchPatientProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setErrors({ general: ['Please log in to book an appointment'] });
+          setProfileLoading(false);
+          return;
+        }
+
+        const response = await fetch('/api/patient/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          const profile = await response.json();
+          setPatientProfile(profile);
+        } else {
+          setErrors({ general: ['Unable to load patient profile. Please log in again.'] });
+        }
+      } catch (error) {
+        setErrors({ general: ['Network error. Please check your connection.'] });
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchPatientProfile();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background">
@@ -157,72 +189,53 @@ const AppointmentPage = () => {
                       </div>
                     </div>
                   )}
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name" className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        Full Name
-                      </Label>
-                      <Input
-                        id="name"
-                        value={formData.name}
-                        onChange={(e) => handleChange('name', e.target.value)}
-                        placeholder="Enter your full name"
-                        required
-                        className={errors.name ? 'border-red-500' : ''}
-                      />
-                      {errors.name && (
-                        <p className="text-sm text-red-600 mt-1">{errors.name[0]}</p>
-                      )}
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email" className="flex items-center gap-2">
-                        <Mail className="h-4 w-4" />
-                        Email
-                      </Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => handleChange('email', e.target.value)}
-                        placeholder="Enter your email"
-                        required
-                        className={errors.email ? 'border-red-500' : ''}
-                      />
-                      {errors.email && (
-                        <p className="text-sm text-red-600 mt-1">{errors.email[0]}</p>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="flex items-center gap-2">
-                        <Phone className="h-4 w-4" />
-                        Phone Number
-                      </Label>
-                      <Input
-                        id="phone"
-                        value={formData.phone}
-                        onChange={(e) => handleChange('phone', e.target.value)}
-                        placeholder="Enter your phone number"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="gender">Gender</Label>
-                      <Select onValueChange={(value) => handleChange('gender', value)}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select gender" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="male">Male</SelectItem>
-                          <SelectItem value="female">Female</SelectItem>
-                          <SelectItem value="other">Other</SelectItem>
-                          <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  {/* Patient Information (Read-only) */}
+                  <div className="bg-gray-50 rounded-lg p-4 border">
+                    <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                      <User className="h-4 w-4" />
+                      Patient Information
+                    </h3>
+                    {profileLoading ? (
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Loading patient details...
+                      </div>
+                    ) : (
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-600">Full Name</Label>
+                          <Input
+                            value={patientProfile.name}
+                            readOnly
+                            className="bg-gray-100 cursor-not-allowed"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-600">Email</Label>
+                          <Input
+                            value={patientProfile.email}
+                            readOnly
+                            className="bg-gray-100 cursor-not-allowed"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-600">Phone</Label>
+                          <Input
+                            value={patientProfile.phone}
+                            readOnly
+                            className="bg-gray-100 cursor-not-allowed"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-sm text-gray-600">Gender</Label>
+                          <Input
+                            value={patientProfile.gender ? patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1) : ''}
+                            readOnly
+                            className="bg-gray-100 cursor-not-allowed"
+                          />
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
