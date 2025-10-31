@@ -1,0 +1,317 @@
+import { Helmet } from 'react-helmet';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Navbar from '@/components/Navbar';
+import Footer from '@/components/Footer';
+import DoctorSidebar from '@/components/DoctorSidebar';
+import { Stethoscope, Plus, Edit, Trash2, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+
+const DoctorConsultations = () => {
+  const [consultations, setConsultations] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [showForm, setShowForm] = useState(false);
+  const [editingConsultation, setEditingConsultation] = useState(null);
+  const [formData, setFormData] = useState({
+    patient_id: '',
+    consultation_date: '',
+    diagnosis: '',
+    treatment: '',
+    notes: '',
+    follow_up_date: '',
+    doctor_id: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchConsultations();
+    fetchPatients();
+    // Set doctor_id from localStorage or auth context
+    const doctorId = localStorage.getItem('doctor_id') || '1'; // Default to 1 for now
+    setFormData(prev => ({ ...prev, doctor_id: doctorId }));
+  }, []);
+
+  const fetchConsultations = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/consultations', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setConsultations(data);
+      }
+    } catch (error) {
+      console.error('Error fetching consultations:', error);
+    }
+  };
+
+  const fetchPatients = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/patients', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPatients(data);
+      }
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    
+    if (!formData.patient_id || !formData.consultation_date || !formData.diagnosis) {
+      setError('Please fill in all required fields (Patient, Date, and Diagnosis)');
+      return;
+    }
+    
+    setLoading(true);
+    
+    try {
+      const token = localStorage.getItem('token');
+      const url = editingConsultation ? `/api/consultations/${editingConsultation.id}` : '/api/consultations';
+      const method = editingConsultation ? 'PUT' : 'POST';
+      
+      // Ensure doctor_id is included
+      const submitData = {
+        ...formData,
+        doctor_id: formData.doctor_id || localStorage.getItem('doctor_id') || '1'
+      };
+      
+      console.log('Submitting consultation:', { url, method, submitData });
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(submitData)
+      });
+      
+      if (response.ok) {
+        await fetchConsultations();
+        resetForm();
+        setError('');
+        alert(editingConsultation ? 'Consultation updated successfully!' : 'Consultation added successfully!');
+      } else {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
+        console.error('Error response:', errorData);
+        setError(errorData.message || 'Failed to save consultation. Please try again.');
+      }
+    } catch (error) {
+      console.error('Network error details:', error);
+      setError('Network error: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEdit = (consultation) => {
+    setEditingConsultation(consultation);
+    setFormData({
+      patient_id: consultation.patient_id?.toString() || '',
+      consultation_date: consultation.consultation_date || '',
+      diagnosis: consultation.diagnosis || '',
+      treatment: consultation.treatment || '',
+      notes: consultation.notes || '',
+      follow_up_date: consultation.follow_up_date || '',
+      doctor_id: consultation.doctor_id?.toString() || localStorage.getItem('doctor_id') || '1'
+    });
+    setShowForm(true);
+    setError('');
+  };
+
+  const handleDelete = async (id) => {
+    if (confirm('Are you sure you want to delete this consultation?')) {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch(`/api/consultations/${id}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
+        });
+        
+        if (response.ok) {
+          fetchConsultations();
+          alert('Consultation deleted successfully!');
+        }
+      } catch (error) {
+        console.error('Error deleting consultation:', error);
+      }
+    }
+  };
+
+  const resetForm = () => {
+    const doctorId = localStorage.getItem('doctor_id') || '1';
+    setFormData({ 
+      patient_id: '', 
+      consultation_date: '', 
+      diagnosis: '', 
+      treatment: '', 
+      notes: '', 
+      follow_up_date: '',
+      doctor_id: doctorId
+    });
+    setEditingConsultation(null);
+    setShowForm(false);
+    setError('');
+  };
+
+  return (
+    <>
+      <Helmet>
+        <title>Consultations - Doctor Dashboard</title>
+      </Helmet>
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex pt-20">
+          <DoctorSidebar />
+          <main className="flex-1 px-6 py-8">
+            <div className="container mx-auto max-w-6xl">
+              <div className="mb-8 animate-fade-in-up">
+                <h1 className="text-4xl font-display font-bold text-gradient mb-4">Consultations</h1>
+                <p className="text-xl text-muted-foreground">Manage patient consultations and diagnoses</p>
+              </div>
+
+              <Card className="shadow-card border-border bg-card">
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Stethoscope className="h-5 w-5 text-primary" />
+                      Consultation Records
+                    </CardTitle>
+                    <CardDescription>View and manage consultation history</CardDescription>
+                  </div>
+                  <Button onClick={() => setShowForm(true)} className="gradient-primary shadow-elegant">
+                    <Plus className="h-4 w-4 mr-2" />
+                    New Consultation
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {showForm && (
+                    <form onSubmit={handleSubmit} className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-semibold">{editingConsultation ? 'Edit Consultation' : 'New Consultation'}</h3>
+                        <Button type="button" onClick={resetForm} variant="ghost" size="sm">
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      {error && (
+                        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
+                          {error}
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label>Patient *</Label>
+                          <Select value={formData.patient_id} onValueChange={(value) => setFormData({...formData, patient_id: value})}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select patient" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {patients.map((patient) => (
+                                <SelectItem key={patient.id} value={patient.id.toString()}>{patient.name}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div>
+                          <Label>Consultation Date *</Label>
+                          <Input type="date" value={formData.consultation_date} onChange={(e) => setFormData({...formData, consultation_date: e.target.value})} required />
+                        </div>
+                        <div>
+                          <Label>Diagnosis *</Label>
+                          <Input value={formData.diagnosis} onChange={(e) => setFormData({...formData, diagnosis: e.target.value})} required />
+                        </div>
+                        <div>
+                          <Label>Treatment</Label>
+                          <Input value={formData.treatment} onChange={(e) => setFormData({...formData, treatment: e.target.value})} />
+                        </div>
+                        <div>
+                          <Label>Follow-up Date</Label>
+                          <Input type="date" value={formData.follow_up_date} onChange={(e) => setFormData({...formData, follow_up_date: e.target.value})} />
+                        </div>
+                        <div className="col-span-2">
+                          <Label>Notes</Label>
+                          <Textarea value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+                        </div>
+                        <div className="col-span-2">
+                          <Button type="submit" className="w-full" disabled={loading}>
+                            {loading ? 'Saving...' : (editingConsultation ? 'Update Consultation' : 'Add Consultation')}
+                          </Button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+                  <div className="space-y-4">
+                    {consultations.map((consultation) => {
+                      const patient = patients.find(p => p.id === consultation.patient_id);
+                      const consultationDate = new Date(consultation.consultation_date).toLocaleDateString();
+                      const followUpDate = consultation.follow_up_date ? new Date(consultation.follow_up_date).toLocaleDateString() : null;
+                      
+                      return (
+                      <div key={consultation.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-foreground">
+                            {patient ? patient.name : `Patient ID: ${consultation.patient_id}`}
+                          </h3>
+                          <p className="text-sm text-muted-foreground">Date: {consultationDate}</p>
+                          <p className="text-sm text-primary font-medium">Diagnosis: {consultation.diagnosis}</p>
+                          {consultation.treatment && (
+                            <p className="text-sm text-muted-foreground">Treatment: {consultation.treatment}</p>
+                          )}
+                          {followUpDate && (
+                            <p className="text-sm text-blue-600">Follow-up: {followUpDate}</p>
+                          )}
+                          {consultation.notes && (
+                            <p className="text-sm text-muted-foreground mt-1 italic">{consultation.notes}</p>
+                          )}
+                        </div>
+                        <div className="flex gap-2">
+                          <Button onClick={() => handleEdit(consultation)} size="sm" variant="outline">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button onClick={() => handleDelete(consultation.id)} size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                      );
+                    })}
+                    {consultations.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No consultations found. Click "New Consultation" to create your first consultation record.
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </main>
+        </div>
+        <Footer />
+      </div>
+    </>
+  );
+};
+
+export default DoctorConsultations;

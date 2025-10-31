@@ -1,0 +1,38 @@
+{
+  "resources/css/app.css": {
+    "file": "assets/app-DAAzwqCL.css",
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-CPm_Eg0Q.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "css": [
+      "assets/app-BzSLCIgD.css"
+    ],
+    "assets": [
+      "assets/hero-healthcare-CEXk7ij3.jpg",
+      "assets/consultation-scene-CrV9xLSO.jpg",
+      "assets/clinic-modern-DonjXKDO.jpg",
+      "assets/medical-tech-u0MB9D_I.jpg"
+    ]
+  },
+  "src/assets/clinic-modern.jpg": {
+    "file": "assets/clinic-modern-DonjXKDO.jpg",
+    "src": "src/assets/clinic-modern.jpg"
+  },
+  "src/assets/consultation-scene.jpg": {
+    "file": "assets/consultation-scene-CrV9xLSO.jpg",
+    "src": "src/assets/consultation-scene.jpg"
+  },
+  "src/assets/hero-healthcare.jpg": {
+    "file": "assets/hero-healthcare-CEXk7ij3.jpg",
+    "src": "src/assets/hero-healthcare.jpg"
+  },
+  "src/assets/medical-tech.jpg": {
+    "file": "assets/medical-tech-u0MB9D_I.jpg",
+    "src": "src/assets/medical-tech.jpg"
+  }
+}
