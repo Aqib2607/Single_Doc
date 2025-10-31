@@ -22,7 +22,7 @@ class MedicalRecordController extends Controller
     {
         try {
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,id',
+                'patient_id' => 'required|exists:patients,patient_id',
                 'record_type' => 'required|string|max:255',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
@@ -32,7 +32,7 @@ class MedicalRecordController extends Controller
 
             $record = MedicalRecord::create([
                 ...$validated,
-                'doctor_id' => 1,
+                'doctor_id' => auth()->user()->doctor_id ?? 1,
             ]);
 
             return response()->json($record->load(['patient', 'doctor']), 201);
@@ -53,7 +53,7 @@ class MedicalRecordController extends Controller
     {
         try {
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,id',
+                'patient_id' => 'required|exists:patients,patient_id',
                 'record_type' => 'required|string|max:255',
                 'title' => 'required|string|max:255',
                 'description' => 'nullable|string',
@@ -93,7 +93,7 @@ class MedicalRecordController extends Controller
     {
         $user = $request->user();
         
-        $schedules = Schedule::where('doctor_email', $user->email)
+        $schedules = Schedule::where('doctor_id', $user->doctor_id)
             ->orderBy('day_of_week')
             ->orderBy('start_time')
             ->get();
@@ -114,8 +114,7 @@ class MedicalRecordController extends Controller
         
         $schedule = Schedule::create([
             ...$validated,
-            'doctor_id' => $user->id,
-            'doctor_email' => $user->email,
+            'doctor_id' => $user->doctor_id,
         ]);
 
         return response()->json($schedule, 201);

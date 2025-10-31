@@ -10,8 +10,10 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sender_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('receiver_id')->constrained('users')->onDelete('cascade');
+            $table->unsignedBigInteger('sender_id');
+            $table->string('sender_type'); // 'doctor' or 'patient'
+            $table->unsignedBigInteger('receiver_id');
+            $table->string('receiver_type'); // 'doctor' or 'patient'
             $table->string('subject');
             $table->text('message');
             $table->boolean('is_read')->default(false);

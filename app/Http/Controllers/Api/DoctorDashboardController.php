@@ -5,14 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\DoctorReview;
 use App\Models\Appointment;
-use App\Models\User;
+use App\Models\Doctor;
 use Illuminate\Http\JsonResponse;
 
 class DoctorDashboardController extends Controller
 {
     public function index(): JsonResponse
     {
-        $doctorId = auth()->id();
+        $doctorId = auth()->user()->doctor_id;
         
         // Get review statistics
         $reviews = DoctorReview::where('doctor_id', $doctorId)->where('is_approved', true);

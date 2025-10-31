@@ -2,27 +2,41 @@
 
 return [
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
+        'guard' => 'patient',
+        'passwords' => 'patients',
     ],
 
     'guards' => [
-        'web' => [
+        'patient' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'patients',
+        ],
+        'doctor' => [
+            'driver' => 'session',
+            'provider' => 'doctors',
         ],
     ],
 
     'providers' => [
-        'users' => [
+        'patients' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\Patient::class,
+        ],
+        'doctors' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Doctor::class,
         ],
     ],
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'patients' => [
+            'provider' => 'patients',
+            'table' => 'password_reset_tokens',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'doctors' => [
+            'provider' => 'doctors',
             'table' => 'password_reset_tokens',
             'expire' => 60,
             'throttle' => 60,

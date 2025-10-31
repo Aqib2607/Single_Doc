@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('blogs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id')->constrained()->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('doctors', 'doctor_id')->onDelete('cascade');
             $table->string('title');
             $table->text('excerpt');
             $table->longText('content');

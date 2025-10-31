@@ -20,8 +20,8 @@ class ConsultationController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'nullable|exists:doctors,id',
+            'patient_id' => 'required|exists:patients,patient_id',
+            'doctor_id' => 'nullable|exists:doctors,doctor_id',
             'consultation_date' => 'required|date',
             'diagnosis' => 'required|string|max:255',
             'treatment' => 'nullable|string',
@@ -48,8 +48,8 @@ class ConsultationController extends Controller
     public function update(Request $request, Consultation $consultation): JsonResponse
     {
         $validated = $request->validate([
-            'patient_id' => 'required|exists:patients,id',
-            'doctor_id' => 'nullable|exists:doctors,id',
+            'patient_id' => 'required|exists:patients,patient_id',
+            'doctor_id' => 'nullable|exists:doctors,doctor_id',
             'consultation_date' => 'required|date',
             'diagnosis' => 'required|string|max:255',
             'treatment' => 'nullable|string',

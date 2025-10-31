@@ -61,7 +61,15 @@ const RegisterPage = () => {
           title: "Registration successful",
           description: "Your account has been created!",
         });
-        navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+        // Get the actual user role from localStorage after successful registration
+        const storedUser = localStorage.getItem('user');
+        if (storedUser) {
+          const userData = JSON.parse(storedUser);
+          navigate(userData.role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+        } else {
+          // Fallback to form role if user data is not available
+          navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+        }
       } else {
         const errorMessage = result.errors?.email?.[0] || result.errors || "Registration failed. Please try again.";
         toast({

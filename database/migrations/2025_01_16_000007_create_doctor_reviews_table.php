@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('doctor_reviews', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('doctors', 'doctor_id')->onDelete('cascade');
+            $table->foreignId('patient_id')->constrained('patients', 'patient_id')->onDelete('cascade');
             $table->integer('rating')->unsigned()->comment('1-5 star rating');
             $table->text('comment')->nullable();
             $table->boolean('is_approved')->default(false);

@@ -9,8 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('patients', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->id('patient_id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->date('date_of_birth');
             $table->enum('gender', ['male', 'female', 'other']);
             $table->string('phone');

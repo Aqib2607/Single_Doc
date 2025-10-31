@@ -11,7 +11,6 @@ class Schedule extends Model
 
     protected $fillable = [
         'doctor_id',
-        'doctor_email',
         'day_of_week',
         'start_time',
         'end_time',
@@ -21,4 +20,9 @@ class Schedule extends Model
     protected $casts = [
         'is_available' => 'boolean',
     ];
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
+    }
 }

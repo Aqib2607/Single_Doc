@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('doctor_email');
+            $table->foreignId('doctor_id')->constrained('doctors', 'doctor_id')->onDelete('cascade');
             $table->enum('day_of_week', ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']);
             $table->time('start_time');
             $table->time('end_time');

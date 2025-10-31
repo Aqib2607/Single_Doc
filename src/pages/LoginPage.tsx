@@ -26,7 +26,15 @@ const LoginPage = () => {
         title: "Login successful",
         description: "Welcome back!",
       });
-      navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+      // Get the actual user role from localStorage after successful login
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        navigate(userData.role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+      } else {
+        // Fallback to form role if user data is not available
+        navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+      }
     } else {
       toast({
         title: "Login failed",

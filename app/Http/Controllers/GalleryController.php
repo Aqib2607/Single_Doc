@@ -17,7 +17,7 @@ class GalleryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'doctor_id' => 'required|exists:doctors,id',
+            'doctor_id' => 'required|exists:doctors,doctor_id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'url' => 'required|string',

@@ -228,6 +228,14 @@ const Navbar = () => {
               {!isLoading && user ? (
                 <>
                   <Link 
+                    to={user?.role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard'}
+                    onClick={() => setIsOpen(false)}
+                    className="text-left px-4 py-2 rounded-lg transition-smooth text-foreground hover:text-primary hover:bg-muted flex items-center gap-2"
+                  >
+                    <User size={16} />
+                    Dashboard
+                  </Link>
+                  <Link 
                     to="/profile" 
                     onClick={() => setIsOpen(false)}
                     className="text-left px-4 py-2 rounded-lg transition-smooth text-foreground hover:text-primary hover:bg-muted flex items-center gap-2"

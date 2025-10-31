@@ -12,7 +12,9 @@ class Message extends Model
 
     protected $fillable = [
         'sender_id',
+        'sender_type',
         'receiver_id',
+        'receiver_type',
         'subject',
         'message',
         'is_read',
@@ -24,23 +26,19 @@ class Message extends Model
         'read_at' => 'datetime',
     ];
 
-    public function sender(): BelongsTo
+    public function sender()
     {
-        return $this->belongsTo(User::class, 'sender_id');
+        if ($this->sender_type === 'doctor') {
+            return $this->belongsTo(Doctor::class, 'sender_id', 'doctor_id');
+        }
+        return $this->belongsTo(Patient::class, 'sender_id', 'patient_id');
     }
 
-    public function receiver(): BelongsTo
+    public function receiver()
     {
-        return $this->belongsTo(User::class, 'receiver_id');
-    }
-
-    public function patient(): BelongsTo
-    {
-        return $this->belongsTo(Patient::class, 'sender_id');
-    }
-
-    public function doctor(): BelongsTo
-    {
-        return $this->belongsTo(Doctor::class, 'receiver_id');
+        if ($this->receiver_type === 'doctor') {
+            return $this->belongsTo(Doctor::class, 'receiver_id', 'doctor_id');
+        }
+        return $this->belongsTo(Patient::class, 'receiver_id', 'patient_id');
     }
 }

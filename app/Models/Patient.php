@@ -11,6 +11,8 @@ class Patient extends Authenticatable
 {
     use HasFactory, HasApiTokens;
 
+    protected $primaryKey = 'patient_id';
+    
     protected $fillable = [
         'name',
         'email',
@@ -35,6 +37,21 @@ class Patient extends Authenticatable
 
     public function consultations(): HasMany
     {
-        return $this->hasMany(Consultation::class, 'patient_id');
+        return $this->hasMany(Consultation::class, 'patient_id', 'patient_id');
+    }
+
+    public function medicalRecords(): HasMany
+    {
+        return $this->hasMany(MedicalRecord::class, 'patient_id', 'patient_id');
+    }
+
+    public function prescriptions(): HasMany
+    {
+        return $this->hasMany(Prescription::class, 'patient_id', 'patient_id');
+    }
+
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(DoctorReview::class, 'patient_id', 'patient_id');
     }
 }

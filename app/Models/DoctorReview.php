@@ -24,11 +24,11 @@ class DoctorReview extends Model
 
     public function doctor(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'doctor_id');
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
     }
 
     public function patient(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'patient_id');
+        return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
     }
 }

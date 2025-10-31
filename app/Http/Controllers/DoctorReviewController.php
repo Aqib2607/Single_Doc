@@ -23,7 +23,7 @@ class DoctorReviewController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'doctor_id' => 'required|exists:users,id',
+            'doctor_id' => 'required|exists:doctors,doctor_id',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string|max:1000',
         ]);
@@ -31,7 +31,7 @@ class DoctorReviewController extends Controller
         $review = DoctorReview::updateOrCreate(
             [
                 'doctor_id' => $validated['doctor_id'],
-                'patient_id' => auth()->id(),
+                'patient_id' => auth()->user()->patient_id ?? auth()->user()->doctor_id,
             ],
             [
                 'rating' => $validated['rating'],

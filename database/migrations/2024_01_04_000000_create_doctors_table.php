@@ -9,8 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('doctors', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->id('doctor_id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->string('specialization');
             $table->string('license_number');
             $table->text('bio')->nullable();

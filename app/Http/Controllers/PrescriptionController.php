@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Prescription;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class PrescriptionController extends Controller
 {
@@ -21,7 +22,7 @@ class PrescriptionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,id',
+                'patient_id' => 'required|exists:patients,patient_id',
                 'medication_name' => 'required|string|max:255',
                 'dosage' => 'required|string|max:255',
                 'frequency' => 'required|string|max:255',
@@ -32,7 +33,7 @@ class PrescriptionController extends Controller
             ]);
 
             // Get patient email
-            $patient = \App\Models\Patient::find($validated['patient_id']);
+            $patient = \App\Models\Patient::where('patient_id', $validated['patient_id'])->first();
             
             $prescription = Prescription::create([
                 ...$validated,
@@ -44,7 +45,7 @@ class PrescriptionController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            \Log::error('Prescription creation failed: ' . $e->getMessage());
+            Log::error('Prescription creation failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to create prescription: ' . $e->getMessage()], 500);
         }
     }
@@ -58,7 +59,7 @@ class PrescriptionController extends Controller
     {
         try {
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,id',
+                'patient_id' => 'required|exists:patients,patient_id',
                 'medication_name' => 'required|string|max:255',
                 'dosage' => 'required|string|max:255',
                 'frequency' => 'required|string|max:255',
@@ -74,7 +75,7 @@ class PrescriptionController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            \Log::error('Prescription update failed: ' . $e->getMessage());
+            Log::error('Prescription update failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to update prescription: ' . $e->getMessage()], 500);
         }
     }

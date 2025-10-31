@@ -31,7 +31,13 @@ Route::get('/blogs', [BlogController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        $user = $request->user();
+        if ($user instanceof \App\Models\Doctor) {
+            return response()->json(array_merge($user->toArray(), ['role' => 'doctor', 'id' => $user->doctor_id]));
+        } elseif ($user instanceof \App\Models\Patient) {
+            return response()->json(array_merge($user->toArray(), ['role' => 'patient', 'id' => $user->patient_id]));
+        }
+        return $user;
     });
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/doctor-dashboard', [DoctorDashboardController::class, 'index']);

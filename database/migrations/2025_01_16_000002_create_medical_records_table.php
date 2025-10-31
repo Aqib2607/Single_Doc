@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('medical_records', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('patient_id')->constrained('patients', 'patient_id')->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('doctors', 'doctor_id')->onDelete('cascade');
             $table->string('record_type');
             $table->string('title');
             $table->text('description')->nullable();

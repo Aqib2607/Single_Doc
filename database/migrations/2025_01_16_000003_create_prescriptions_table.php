@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('prescriptions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('doctor_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('patient_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('doctor_id')->constrained('doctors', 'doctor_id')->onDelete('cascade');
+            $table->foreignId('patient_id')->constrained('patients', 'patient_id')->onDelete('cascade');
             $table->string('medication_name');
             $table->string('dosage');
             $table->string('frequency');

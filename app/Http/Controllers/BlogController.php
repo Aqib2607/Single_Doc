@@ -17,7 +17,7 @@ class BlogController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'doctor_id' => 'required|exists:doctors,id',
+            'doctor_id' => 'required|exists:doctors,doctor_id',
             'title' => 'required|string|max:255',
             'excerpt' => 'required|string',
             'content' => 'required|string',
@@ -60,7 +60,7 @@ class BlogController extends Controller
 
     public function doctorBlogs(Request $request): JsonResponse
     {
-        $doctorId = $request->user()->id;
+        $doctorId = $request->user()->doctor_id;
         $blogs = Blog::where('doctor_id', $doctorId)->latest()->get();
         return response()->json($blogs);
     }
