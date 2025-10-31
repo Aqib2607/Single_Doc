@@ -54,4 +54,9 @@ class Patient extends Authenticatable
     {
         return $this->hasMany(DoctorReview::class, 'patient_id', 'patient_id');
     }
+
+    public function vitals(): HasMany
+    {
+        return $this->hasMany(Vital::class, 'patient_id', 'patient_id');
+    }
 }

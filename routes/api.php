@@ -18,8 +18,10 @@ use App\Http\Controllers\DoctorReviewController;
 use App\Http\Controllers\Api\DoctorDashboardController;
 use App\Http\Controllers\Api\DoctorController;
 use App\Http\Controllers\Api\PatientController;
+use App\Http\Controllers\Api\PrescriptionController as ApiPrescriptionController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\GalleryController;
+use App\Http\Controllers\Api\VitalsController;
 
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
@@ -42,6 +44,8 @@ Route::middleware('auth:sanctum')->group(function () {
         return $user;
     });
     Route::get('/patient/profile', [PatientController::class, 'profile']);
+    Route::get('/patient/prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']);
+    Route::get('/patient-prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']); // Backward compatibility
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/doctor-dashboard', [DoctorDashboardController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
@@ -49,7 +53,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient-appointments', [AppointmentController::class, 'getPatientAppointments']);
     Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
-    Route::get('/patient-prescriptions', [PrescriptionController::class, 'getPatientPrescriptions']);
     Route::get('/patient-medical-records', [MedicalRecordController::class, 'getPatientMedicalRecords']);
     Route::get('/doctor-schedules', [MedicalRecordController::class, 'getDoctorSchedules']);
     Route::post('/doctor-schedules', [MedicalRecordController::class, 'storeSchedule']);
@@ -65,4 +68,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('blogs', BlogController::class);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);
     Route::apiResource('galleries', GalleryController::class);
+    Route::get('/patients/{patientId}/vitals', [VitalsController::class, 'index']);
 });

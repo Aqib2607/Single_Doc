@@ -1,16 +1,16 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-BQbDTWy8.css",
+    "file": "assets/app-Q5WpJc1F.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-BEnHSSNr.js",
+    "file": "assets/app-DTSf_pr1.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-Dmgz0HNR.css"
+      "assets/app-Jx346hs9.css"
     ],
     "assets": [
       "assets/hero-healthcare-CEXk7ij3.jpg",

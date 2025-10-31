@@ -80,13 +80,42 @@ class MedicalRecordController extends Controller
 
     public function getPatientMedicalRecords(Request $request): JsonResponse
     {
-        $email = $request->user()->email ?? $request->input('email');
+        $user = $request->user();
         
-        $records = MedicalRecord::where('patient_email', $email)
-            ->orderBy('record_date', 'desc')
-            ->get();
+        if (!$user) {
+            return response()->json(['error' => 'Authentication required'], 401);
+        }
         
-        return response()->json($records);
+        if (!isset($user->patient_id)) {
+            return response()->json(['error' => 'Patient profile not found'], 403);
+        }
+        
+        try {
+            $records = MedicalRecord::where('patient_id', $user->patient_id)
+                ->orderBy('record_date', 'desc')
+                ->get([
+                    'id',
+                    'record_type',
+                    'title', 
+                    'description',
+                    'status',
+                    'record_date',
+                    'file_path',
+                    'created_at'
+                ]);
+            
+            return response()->json($records);
+        } catch (\Exception $e) {
+            \Log::error('Failed to retrieve medical records for patient ' . $user->patient_id, [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'error' => 'Failed to retrieve medical records',
+                'message' => 'Please try again later or contact support if the issue persists'
+            ], 500);
+        }
     }
 
     public function getDoctorSchedules(Request $request): JsonResponse

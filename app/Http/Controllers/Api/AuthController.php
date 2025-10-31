@@ -24,7 +24,7 @@ class AuthController extends Controller
         if ($patient && Hash::check($credentials['password'], $patient->password)) {
             $token = $patient->createToken('auth_token')->plainTextToken;
             return response()->json([
-                'user' => array_merge($patient->toArray(), ['role' => 'patient']),
+                'user' => array_merge($patient->toArray(), ['role' => 'patient', 'id' => $patient->patient_id]),
                 'token' => $token
             ]);
         }
@@ -78,7 +78,7 @@ class AuthController extends Controller
             $token = $patient->createToken('auth_token')->plainTextToken;
 
             return response()->json([
-                'user' => array_merge($patient->toArray(), ['role' => 'patient']),
+                'user' => array_merge($patient->toArray(), ['role' => 'patient', 'id' => $patient->patient_id]),
                 'token' => $token
             ]);
         } else {

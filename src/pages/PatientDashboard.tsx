@@ -8,12 +8,16 @@ import { Calendar, FileText, Pill, Heart, Clock, User, Activity, Plus } from 'lu
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RecentAppointments from '@/components/RecentAppointments';
+import PatientPrescriptions from '@/components/PatientPrescriptions';
+import VitalsOverview from '@/components/VitalsOverview';
+import HealthScore from '@/components/HealthScore';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [medicalRecords, setMedicalRecords] = useState([]);
+  const [healthScore, setHealthScore] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,22 +44,30 @@ const PatientDashboard = () => {
     const fetchPrescriptions = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/patient-prescriptions', {
+        if (!token) {
+          console.error('No authentication token found');
+          setPrescriptions([]);
+          return;
+        }
+        
+        const response = await fetch('/api/patient/prescriptions', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
+        
         if (response.ok) {
           const data = await response.json();
           setPrescriptions(data);
         } else {
+          console.error('Failed to fetch prescriptions:', response.status, response.statusText);
           setPrescriptions([]);
         }
       } catch (error) {
         console.error('Error fetching prescriptions:', error);
+        setPrescriptions([]);
       } finally {
-        // amazonq-ignore-next-line
         setLoading(false);
       }
     };
@@ -63,20 +75,29 @@ const PatientDashboard = () => {
     const fetchMedicalRecords = async () => {
       try {
         const token = localStorage.getItem('token');
+        if (!token) {
+          console.error('No authentication token found');
+          setMedicalRecords([]);
+          return;
+        }
+        
         const response = await fetch('/api/patient-medical-records', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
+        
         if (response.ok) {
           const data = await response.json();
           setMedicalRecords(data);
         } else {
+          console.error('Failed to fetch medical records:', response.status, response.statusText);
           setMedicalRecords([]);
         }
       } catch (error) {
         console.error('Error fetching medical records:', error);
+        setMedicalRecords([]);
       }
     };
 
@@ -89,11 +110,17 @@ const PatientDashboard = () => {
 
   const upcomingAppointments = appointments.filter(apt => new Date(apt.appointment_date) >= new Date());
   
+  // Filter active prescriptions (not expired and marked as active)
+  const activePrescriptions = prescriptions.filter(prescription => {
+    const isNotExpired = !prescription.end_date || new Date(prescription.end_date) >= new Date();
+    return prescription.is_active && isNotExpired;
+  });
+  
   const stats = [
     { icon: Calendar, label: 'Upcoming Appointments', value: upcomingAppointments.length.toString(), color: 'text-primary' },
-    { icon: Pill, label: 'Active Prescriptions', value: prescriptions.length.toString(), color: 'text-primary' },
+    { icon: Pill, label: 'Active Prescriptions', value: activePrescriptions.length.toString(), color: 'text-primary' },
     { icon: FileText, label: 'Medical Records', value: medicalRecords.length.toString(), color: 'text-primary' },
-    { icon: Heart, label: 'Health Score', value: '85%', color: 'text-primary' },
+    { icon: Heart, label: 'Health Score', value: healthScore ? `${healthScore}%` : 'Calculating...', color: 'text-primary' },
   ];
 
   return (
@@ -129,80 +156,24 @@ const PatientDashboard = () => {
               <div className="animate-fade-in-up" style={{animationDelay: '0.5s'}}>
                 <RecentAppointments />
               </div>
-
-              <Card className="shadow-card border-border bg-card animate-fade-in-up" style={{animationDelay: '0.6s'}}>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <div>
-                    <CardTitle className="text-foreground flex items-center gap-2">
-                      <Pill className="h-5 w-5 text-primary" />
-                      Active Prescriptions
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground">Your current medications</CardDescription>
-                  </div>
-                  <Link to="/prescriptions">
-                    <Button size="sm" variant="outline" className="border-border">
-                      <Activity className="h-4 w-4 mr-2" />
-                      View All
-                    </Button>
-                  </Link>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {loading ? (
-                      <div className="text-center py-4 text-muted-foreground">Loading prescriptions...</div>
-                    ) : prescriptions.length > 0 ? (
-                      prescriptions.slice(0, 2).map((prescription) => (
-                        <div key={prescription.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
-                            <div>
-                              <p className="font-semibold text-foreground">{prescription.medication_name} {prescription.dosage}</p>
-                              <p className="text-sm text-muted-foreground">{prescription.frequency}</p>
-                              {prescription.instructions && (
-                                <p className="text-sm text-muted-foreground">{prescription.instructions}</p>
-                              )}
-                              <p className="text-sm text-primary mt-1">Refills: {prescription.refills_remaining} remaining</p>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-4 text-muted-foreground">No active prescriptions</div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+              
+              <div className="animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+                <PatientPrescriptions />
+              </div>
             </div>
+            
+            <div className="mt-12">
+              <div className="animate-fade-in-up" style={{animationDelay: '0.65s'}}>
+                <HealthScore onScoreUpdate={setHealthScore} />
+              </div>
+            </div>
+            
+
 
             <div className="mt-12">
-              <Card className="shadow-card border-border bg-card animate-fade-in-up" style={{animationDelay: '0.7s'}}>
-                <CardHeader>
-                  <CardTitle className="text-foreground flex items-center gap-2">
-                    <Heart className="h-5 w-5 text-primary" />
-                    Health Overview
-                  </CardTitle>
-                  <CardDescription className="text-muted-foreground">Your recent health metrics and recommendations</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary mb-2">120/80</div>
-                      <div className="text-sm text-muted-foreground">Blood Pressure</div>
-                      <div className="text-xs text-green-600 mt-1">Normal</div>
-                    </div>
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary mb-2">72</div>
-                      <div className="text-sm text-muted-foreground">Heart Rate</div>
-                      <div className="text-xs text-green-600 mt-1">Good</div>
-                    </div>
-                    <div className="text-center p-4 bg-muted/50 rounded-lg">
-                      <div className="text-2xl font-bold text-primary mb-2">98.6°F</div>
-                      <div className="text-sm text-muted-foreground">Temperature</div>
-                      <div className="text-xs text-green-600 mt-1">Normal</div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <div className="animate-fade-in-up" style={{animationDelay: '0.7s'}}>
+                <VitalsOverview />
+              </div>
             </div>
 
             <div className="mt-12">
