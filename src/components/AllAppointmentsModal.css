@@ -1,0 +1,117 @@
+/* Additional styles for AllAppointmentsModal component */
+
+/* Smooth animations for modal */
+.modal-overlay {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -48%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Responsive table improvements */
+@media (max-width: 768px) {
+  .appointments-table {
+    font-size: 0.875rem;
+  }
+  
+  .appointments-table th,
+  .appointments-table td {
+    padding: 0.5rem;
+  }
+  
+  .modal-content {
+    margin: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* Enhanced hover states */
+.view-all-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* Loading state improvements */
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Search input focus enhancement */
+.search-input:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  border-color: rgb(59, 130, 246);
+}
+
+/* Table row hover enhancement */
+.table-row:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+  transition: background-color 0.15s ease;
+}
+
+/* Status badge improvements */
+.status-badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+/* Sortable column header improvements */
+.sortable-header {
+  -webkit-user-select: none;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.sortable-header:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+  .modal-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+  
+  .search-filter-container {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .appointments-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+}

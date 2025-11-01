@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import ConfirmDialog from './ui/ConfirmDialog';
+import AllAppointmentsModal from './AllAppointmentsModal';
 import { Calendar, Clock, User, Phone, AlertCircle, CheckCircle, XCircle, Loader2, Trash2 } from 'lucide-react';
 
 interface Appointment {
@@ -163,10 +164,13 @@ const RecentAppointments: React.FC = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Recent Appointments
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Recent Appointments
+            </CardTitle>
+            <AllAppointmentsModal />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="flex items-center justify-center py-8">
@@ -182,10 +186,13 @@ const RecentAppointments: React.FC = () => {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Calendar className="h-5 w-5" />
-            Recent Appointments
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Recent Appointments
+            </CardTitle>
+            <AllAppointmentsModal />
+          </div>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
@@ -203,10 +210,13 @@ const RecentAppointments: React.FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Recent Appointments
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Calendar className="h-5 w-5" />
+            Recent Appointments
+          </CardTitle>
+          <AllAppointmentsModal />
+        </div>
       </CardHeader>
       <CardContent>
         {/* Success Message */}

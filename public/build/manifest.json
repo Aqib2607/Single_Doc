@@ -1,96 +1,96 @@
 {
-  "_Combination-BghPHJq8.js": {
-    "file": "assets/Combination-BghPHJq8.js",
+  "_Combination-CjoguCJq.js": {
+    "file": "assets/Combination-CjoguCJq.js",
     "name": "Combination",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_DoctorSidebar-ugTys2RU.js": {
-    "file": "assets/DoctorSidebar-ugTys2RU.js",
+  "_DoctorSidebar-B20k-3e_.js": {
+    "file": "assets/DoctorSidebar-B20k-3e_.js",
     "name": "DoctorSidebar",
     "imports": [
       "resources/js/app.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js",
-      "_Footer-qMXzDiRv.js"
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js",
+      "_Footer-Dg67bZa1.js"
     ]
   },
-  "_Footer-qMXzDiRv.js": {
-    "file": "assets/Footer-qMXzDiRv.js",
+  "_Footer-Dg67bZa1.js": {
+    "file": "assets/Footer-Dg67bZa1.js",
     "name": "Footer",
     "imports": [
       "resources/js/app.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
-  "_Helmet-BTcaEctK.js": {
-    "file": "assets/Helmet-BTcaEctK.js",
+  "_Helmet-Co23iFK2.js": {
+    "file": "assets/Helmet-Co23iFK2.js",
     "name": "Helmet",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_Services-DBBs9VoF.js": {
-    "file": "assets/Services-DBBs9VoF.js",
+  "_Services-lSfIEDbw.js": {
+    "file": "assets/Services-lSfIEDbw.js",
     "name": "Services",
     "imports": [
       "resources/js/app.js",
-      "_card-Db-WEhk7.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_Footer-qMXzDiRv.js",
-      "_activity-CLCgeKf9.js",
-      "_pill-C3JZLNnZ.js"
+      "_card-DZzBpZMV.js",
+      "_stethoscope-B07MkWAq.js",
+      "_Footer-Dg67bZa1.js",
+      "_activity-DDyeDGfq.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
-  "_activity-CLCgeKf9.js": {
-    "file": "assets/activity-CLCgeKf9.js",
+  "_activity-DDyeDGfq.js": {
+    "file": "assets/activity-DDyeDGfq.js",
     "name": "activity",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_arrow-left-PeEPe7YK.js": {
-    "file": "assets/arrow-left-PeEPe7YK.js",
+  "_arrow-left-BtDr2VHN.js": {
+    "file": "assets/arrow-left-BtDr2VHN.js",
     "name": "arrow-left",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_arrow-right-BLyf_2x_.js": {
-    "file": "assets/arrow-right-BLyf_2x_.js",
+  "_arrow-right-D6Vlmnjc.js": {
+    "file": "assets/arrow-right-D6Vlmnjc.js",
     "name": "arrow-right",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_award-Cu_CpDPN.js": {
-    "file": "assets/award-Cu_CpDPN.js",
+  "_award-bHR5_7kd.js": {
+    "file": "assets/award-bHR5_7kd.js",
     "name": "award",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_card-Db-WEhk7.js": {
-    "file": "assets/card-Db-WEhk7.js",
+  "_card-DZzBpZMV.js": {
+    "file": "assets/card-DZzBpZMV.js",
     "name": "card",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_chevron-down-BNkW1fCs.js": {
-    "file": "assets/chevron-down-BNkW1fCs.js",
+  "_chevron-down-CDPvgecV.js": {
+    "file": "assets/chevron-down-CDPvgecV.js",
     "name": "chevron-down",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_clock-Co820-Oy.js": {
-    "file": "assets/clock-Co820-Oy.js",
+  "_clock-Dha9eYj5.js": {
+    "file": "assets/clock-Dha9eYj5.js",
     "name": "clock",
     "imports": [
       "resources/js/app.js"
@@ -103,24 +103,24 @@
       "assets/consultation-scene-CrV9xLSO.jpg"
     ]
   },
-  "_dialog-BZ70i1aA.js": {
-    "file": "assets/dialog-BZ70i1aA.js",
+  "_dialog-DBVS5aRG.js": {
+    "file": "assets/dialog-DBVS5aRG.js",
     "name": "dialog",
     "imports": [
       "resources/js/app.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
-  "_eye-3p-js2Mu.js": {
-    "file": "assets/eye-3p-js2Mu.js",
+  "_eye-D6qbDncn.js": {
+    "file": "assets/eye-D6qbDncn.js",
     "name": "eye",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_file-text-CHhrgst4.js": {
-    "file": "assets/file-text-CHhrgst4.js",
+  "_file-text-DXNCTGNo.js": {
+    "file": "assets/file-text-DXNCTGNo.js",
     "name": "file-text",
     "imports": [
       "resources/js/app.js"
@@ -133,149 +133,149 @@
       "assets/hero-healthcare-CEXk7ij3.jpg"
     ]
   },
-  "_index-Bcg0Mu0T.js": {
-    "file": "assets/index-Bcg0Mu0T.js",
-    "name": "index",
-    "imports": [
-      "resources/js/app.js"
-    ]
-  },
   "_index-BdQq_4o_.js": {
     "file": "assets/index-BdQq_4o_.js",
     "name": "index"
   },
-  "_index-Ckc2JoLc.js": {
-    "file": "assets/index-Ckc2JoLc.js",
+  "_index-BuAs8_WM.js": {
+    "file": "assets/index-BuAs8_WM.js",
     "name": "index",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_input-DZCcOFjF.js": {
-    "file": "assets/input-DZCcOFjF.js",
+  "_index-n9-Tr9Se.js": {
+    "file": "assets/index-n9-Tr9Se.js",
+    "name": "index",
+    "imports": [
+      "resources/js/app.js"
+    ]
+  },
+  "_input-Ljzp5E3d.js": {
+    "file": "assets/input-Ljzp5E3d.js",
     "name": "input",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_label-CarGSy8y.js": {
-    "file": "assets/label-CarGSy8y.js",
+  "_label-DkcLJd5U.js": {
+    "file": "assets/label-DkcLJd5U.js",
     "name": "label",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_message-square-DXyYJdc3.js": {
-    "file": "assets/message-square-DXyYJdc3.js",
+  "_message-square-C8sKfbal.js": {
+    "file": "assets/message-square-C8sKfbal.js",
     "name": "message-square",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_pill-C3JZLNnZ.js": {
-    "file": "assets/pill-C3JZLNnZ.js",
+  "_pill-B2wRk4OR.js": {
+    "file": "assets/pill-B2wRk4OR.js",
     "name": "pill",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_plus-DPZgs52g.js": {
-    "file": "assets/plus-DPZgs52g.js",
+  "_plus-ChQ4m0mi.js": {
+    "file": "assets/plus-ChQ4m0mi.js",
     "name": "plus",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_search-DvzfYo15.js": {
-    "file": "assets/search-DvzfYo15.js",
+  "_search-Cwc4OOby.js": {
+    "file": "assets/search-Cwc4OOby.js",
     "name": "search",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_select-CsICuhsU.js": {
-    "file": "assets/select-CsICuhsU.js",
+  "_select-kcfAJY73.js": {
+    "file": "assets/select-kcfAJY73.js",
     "name": "select",
     "imports": [
       "resources/js/app.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js"
     ]
   },
-  "_shield-Cl4kZViL.js": {
-    "file": "assets/shield-Cl4kZViL.js",
+  "_shield-09fTNF0a.js": {
+    "file": "assets/shield-09fTNF0a.js",
     "name": "shield",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_square-pen-De6r2DRm.js": {
-    "file": "assets/square-pen-De6r2DRm.js",
+  "_square-pen-C2wLsbA_.js": {
+    "file": "assets/square-pen-C2wLsbA_.js",
     "name": "square-pen",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_stethoscope-BzYB2mbc.js": {
-    "file": "assets/stethoscope-BzYB2mbc.js",
+  "_stethoscope-B07MkWAq.js": {
+    "file": "assets/stethoscope-B07MkWAq.js",
     "name": "stethoscope",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_tabs-cf5neld8.js": {
-    "file": "assets/tabs-cf5neld8.js",
+  "_tabs-BudLcmQn.js": {
+    "file": "assets/tabs-BudLcmQn.js",
     "name": "tabs",
     "imports": [
       "resources/js/app.js",
-      "_index-Bcg0Mu0T.js"
+      "_index-BuAs8_WM.js"
     ]
   },
-  "_test-tube-60Oy5Dng.js": {
-    "file": "assets/test-tube-60Oy5Dng.js",
+  "_test-tube-BuC_PqHC.js": {
+    "file": "assets/test-tube-BuC_PqHC.js",
     "name": "test-tube",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_textarea-BBwsMnbp.js": {
-    "file": "assets/textarea-BBwsMnbp.js",
+  "_textarea-CyBfWePp.js": {
+    "file": "assets/textarea-CyBfWePp.js",
     "name": "textarea",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_trash-2-BXHwlNFd.js": {
-    "file": "assets/trash-2-BXHwlNFd.js",
+  "_trash-2-D3X408Vn.js": {
+    "file": "assets/trash-2-D3X408Vn.js",
     "name": "trash-2",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_triangle-alert-MLD6dFF1.js": {
-    "file": "assets/triangle-alert-MLD6dFF1.js",
+  "_triangle-alert-DPzBkwEj.js": {
+    "file": "assets/triangle-alert-DPzBkwEj.js",
     "name": "triangle-alert",
     "imports": [
       "resources/js/app.js"
     ]
   },
-  "_users-BUxCXu4p.js": {
-    "file": "assets/users-BUxCXu4p.js",
+  "_users-DMPgEr1v.js": {
+    "file": "assets/users-DMPgEr1v.js",
     "name": "users",
     "imports": [
       "resources/js/app.js"
     ]
   },
   "resources/css/app.css": {
-    "file": "assets/app-6V73jkIw.css",
+    "file": "assets/app-D2sB4HDW.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-CEoN3nb7.js",
+    "file": "assets/app-Ctcvl0L3.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
@@ -309,7 +309,7 @@
       "src/pages/NotFound.tsx"
     ],
     "css": [
-      "assets/app-Cgefz2fQ.css"
+      "assets/app-m0hbqbGt.css"
     ]
   },
   "src/assets/clinic-modern.jpg": {
@@ -329,133 +329,133 @@
     "src": "src/assets/medical-tech.jpg"
   },
   "src/pages/AboutPage.tsx": {
-    "file": "assets/AboutPage-CAFQ43C_.js",
+    "file": "assets/AboutPage-BHD1wj6W.js",
     "name": "AboutPage",
     "src": "src/pages/AboutPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
       "_consultation-scene-1VqDxxDt.js",
-      "_award-Cu_CpDPN.js",
-      "_users-BUxCXu4p.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_award-bHR5_7kd.js",
+      "_users-DMPgEr1v.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/AppointmentPage.tsx": {
-    "file": "assets/AppointmentPage-DjDrnDRe.js",
+    "file": "assets/AppointmentPage-DMG0JuT9.js",
     "name": "AppointmentPage",
     "src": "src/pages/AppointmentPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_card-Db-WEhk7.js",
-      "_index-Ckc2JoLc.js",
-      "_Combination-BghPHJq8.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_search-DvzfYo15.js",
-      "_triangle-alert-MLD6dFF1.js",
-      "_Footer-qMXzDiRv.js",
-      "_clock-Co820-Oy.js",
-      "_file-text-CHhrgst4.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_card-DZzBpZMV.js",
+      "_index-n9-Tr9Se.js",
+      "_Combination-CjoguCJq.js",
+      "_stethoscope-B07MkWAq.js",
+      "_chevron-down-CDPvgecV.js",
+      "_search-Cwc4OOby.js",
+      "_triangle-alert-DPzBkwEj.js",
+      "_Footer-Dg67bZa1.js",
+      "_clock-Dha9eYj5.js",
+      "_file-text-DXNCTGNo.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js"
+      "_index-BuAs8_WM.js"
     ]
   },
   "src/pages/BlogPage.tsx": {
-    "file": "assets/BlogPage-D0p-fVsI.js",
+    "file": "assets/BlogPage-DwidpgA7.js",
     "name": "BlogPage",
     "src": "src/pages/BlogPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
-      "_clock-Co820-Oy.js",
-      "_arrow-right-BLyf_2x_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
+      "_clock-Dha9eYj5.js",
+      "_arrow-right-D6Vlmnjc.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/CartPage.tsx": {
-    "file": "assets/CartPage-DODTScC4.js",
+    "file": "assets/CartPage-CwAuPNFI.js",
     "name": "CartPage",
     "src": "src/pages/CartPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
-      "_trash-2-BXHwlNFd.js",
-      "_plus-DPZgs52g.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
+      "_trash-2-D3X408Vn.js",
+      "_plus-ChQ4m0mi.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/ContactPage.tsx": {
-    "file": "assets/ContactPage-D_C7FdT1.js",
+    "file": "assets/ContactPage-DaJoulyF.js",
     "name": "ContactPage",
     "src": "src/pages/ContactPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
-      "_index-Bcg0Mu0T.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_clock-Co820-Oy.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
+      "_index-BuAs8_WM.js",
+      "_chevron-down-CDPvgecV.js",
+      "_clock-Dha9eYj5.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/DoctorDashboard.tsx": {
-    "file": "assets/DoctorDashboard-DuuY7Em4.js",
+    "file": "assets/DoctorDashboard-Dcim3qvC.js",
     "name": "DoctorDashboard",
     "src": "src/pages/DoctorDashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_users-BUxCXu4p.js",
-      "_file-text-CHhrgst4.js",
-      "_activity-CLCgeKf9.js",
-      "_plus-DPZgs52g.js",
-      "_clock-Co820-Oy.js",
-      "_eye-3p-js2Mu.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_users-DMPgEr1v.js",
+      "_file-text-DXNCTGNo.js",
+      "_activity-DDyeDGfq.js",
+      "_plus-ChQ4m0mi.js",
+      "_clock-Dha9eYj5.js",
+      "_eye-D6qbDncn.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_stethoscope-B07MkWAq.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/GalleryPage.tsx": {
-    "file": "assets/GalleryPage-CdzFu9if.js",
+    "file": "assets/GalleryPage-CCpukgjT.js",
     "name": "GalleryPage",
     "src": "src/pages/GalleryPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_dialog-BZ70i1aA.js",
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_dialog-DBVS5aRG.js",
       "_consultation-scene-1VqDxxDt.js",
       "_hero-healthcare-CXdRCOXk.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ],
     "assets": [
       "assets/clinic-modern-DonjXKDO.jpg",
@@ -463,84 +463,84 @@
     ]
   },
   "src/pages/Index.tsx": {
-    "file": "assets/Index-B986ri7B.js",
+    "file": "assets/Index-DT0gBf4I.js",
     "name": "Index",
     "src": "src/pages/Index.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
       "_hero-healthcare-CXdRCOXk.js",
-      "_arrow-right-BLyf_2x_.js",
-      "_award-Cu_CpDPN.js",
-      "_Services-DBBs9VoF.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_users-BUxCXu4p.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_activity-CLCgeKf9.js",
-      "_pill-C3JZLNnZ.js"
+      "_arrow-right-D6Vlmnjc.js",
+      "_award-bHR5_7kd.js",
+      "_Services-lSfIEDbw.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_users-DMPgEr1v.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_stethoscope-B07MkWAq.js",
+      "_activity-DDyeDGfq.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/LoginPage.tsx": {
-    "file": "assets/LoginPage-BZjd8x5n.js",
+    "file": "assets/LoginPage-Dwe3s83t.js",
     "name": "LoginPage",
     "src": "src/pages/LoginPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_tabs-cf5neld8.js",
-      "_card-Db-WEhk7.js",
-      "_index-Bcg0Mu0T.js"
+      "_Helmet-Co23iFK2.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_tabs-BudLcmQn.js",
+      "_card-DZzBpZMV.js",
+      "_index-BuAs8_WM.js"
     ]
   },
   "src/pages/MedicalRecords.tsx": {
-    "file": "assets/MedicalRecords-OJdrxhvi.js",
+    "file": "assets/MedicalRecords-B432g-Cf.js",
     "name": "MedicalRecords",
     "src": "src/pages/MedicalRecords.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_Footer-qMXzDiRv.js",
-      "_arrow-left-PeEPe7YK.js",
-      "_file-text-CHhrgst4.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_Footer-Dg67bZa1.js",
+      "_arrow-left-BtDr2VHN.js",
+      "_file-text-DXNCTGNo.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/MedicineTestsPage.tsx": {
-    "file": "assets/MedicineTestsPage-DvNxUcf0.js",
+    "file": "assets/MedicineTestsPage-CRJ_7lX7.js",
     "name": "MedicineTestsPage",
     "src": "src/pages/MedicineTestsPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_tabs-cf5neld8.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_select-CsICuhsU.js",
-      "_pill-C3JZLNnZ.js",
-      "_test-tube-60Oy5Dng.js",
-      "_search-DvzfYo15.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_tabs-BudLcmQn.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_select-kcfAJY73.js",
+      "_pill-B2wRk4OR.js",
+      "_test-tube-BuC_PqHC.js",
+      "_search-Cwc4OOby.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
       "_index-BdQq_4o_.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js"
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js"
     ]
   },
   "src/pages/NotFound.tsx": {
-    "file": "assets/NotFound-sSKg_t0Z.js",
+    "file": "assets/NotFound-BEpyHsqN.js",
     "name": "NotFound",
     "src": "src/pages/NotFound.tsx",
     "isDynamicEntry": true,
@@ -549,376 +549,381 @@
     ]
   },
   "src/pages/PatientDashboard.tsx": {
-    "file": "assets/PatientDashboard-C9tUGRuq.js",
+    "file": "assets/PatientDashboard-DMj8fQhk.js",
     "name": "PatientDashboard",
     "src": "src/pages/PatientDashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_Footer-qMXzDiRv.js",
-      "_triangle-alert-MLD6dFF1.js",
-      "_clock-Co820-Oy.js",
-      "_trash-2-BXHwlNFd.js",
-      "_dialog-BZ70i1aA.js",
-      "_index-Bcg0Mu0T.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_Footer-Dg67bZa1.js",
+      "_triangle-alert-DPzBkwEj.js",
+      "_dialog-DBVS5aRG.js",
+      "_input-Ljzp5E3d.js",
+      "_eye-D6qbDncn.js",
+      "_search-Cwc4OOby.js",
+      "_clock-Dha9eYj5.js",
+      "_trash-2-D3X408Vn.js",
+      "_index-BuAs8_WM.js",
       "_index-BdQq_4o_.js",
-      "_pill-C3JZLNnZ.js",
-      "_file-text-CHhrgst4.js",
-      "_eye-3p-js2Mu.js",
-      "_Combination-BghPHJq8.js"
+      "_pill-B2wRk4OR.js",
+      "_file-text-DXNCTGNo.js",
+      "_Combination-CjoguCJq.js"
+    ],
+    "css": [
+      "assets/PatientDashboard-rHen9haF.css"
     ]
   },
   "src/pages/Prescriptions.tsx": {
-    "file": "assets/Prescriptions-MyGiovJ4.js",
+    "file": "assets/Prescriptions-DOeey6BG.js",
     "name": "Prescriptions",
     "src": "src/pages/Prescriptions.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_Footer-qMXzDiRv.js",
-      "_arrow-left-PeEPe7YK.js",
-      "_pill-C3JZLNnZ.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_Footer-Dg67bZa1.js",
+      "_arrow-left-BtDr2VHN.js",
+      "_pill-B2wRk4OR.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/ProfilePage.tsx": {
-    "file": "assets/ProfilePage-3KQX9quT.js",
+    "file": "assets/ProfilePage-CSqs_1is.js",
     "name": "ProfilePage",
     "src": "src/pages/ProfilePage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_card-Db-WEhk7.js",
-      "_Footer-qMXzDiRv.js",
-      "_shield-Cl4kZViL.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_card-DZzBpZMV.js",
+      "_Footer-Dg67bZa1.js",
+      "_shield-09fTNF0a.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/RegisterPage.tsx": {
-    "file": "assets/RegisterPage-C8pDCvRT.js",
+    "file": "assets/RegisterPage-937_l4Ur.js",
     "name": "RegisterPage",
     "src": "src/pages/RegisterPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_tabs-cf5neld8.js",
-      "_card-Db-WEhk7.js",
+      "_Helmet-Co23iFK2.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_tabs-BudLcmQn.js",
+      "_card-DZzBpZMV.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js"
     ]
   },
   "src/pages/ServicesPage.tsx": {
-    "file": "assets/ServicesPage-CZ6T7gF8.js",
+    "file": "assets/ServicesPage-C5xBZaUO.js",
     "name": "ServicesPage",
     "src": "src/pages/ServicesPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_Footer-qMXzDiRv.js",
-      "_Services-DBBs9VoF.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_card-Db-WEhk7.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_activity-CLCgeKf9.js",
-      "_pill-C3JZLNnZ.js"
+      "_Helmet-Co23iFK2.js",
+      "_Footer-Dg67bZa1.js",
+      "_Services-lSfIEDbw.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_card-DZzBpZMV.js",
+      "_stethoscope-B07MkWAq.js",
+      "_activity-DDyeDGfq.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/SettingsPage.tsx": {
-    "file": "assets/SettingsPage-C8DFrNpP.js",
+    "file": "assets/SettingsPage-DTlURR2H.js",
     "name": "SettingsPage",
     "src": "src/pages/SettingsPage.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_label-CarGSy8y.js",
-      "_index-Ckc2JoLc.js",
-      "_Footer-qMXzDiRv.js",
-      "_message-square-DXyYJdc3.js",
-      "_shield-Cl4kZViL.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_label-DkcLJd5U.js",
+      "_index-n9-Tr9Se.js",
+      "_Footer-Dg67bZa1.js",
+      "_message-square-C8sKfbal.js",
+      "_shield-09fTNF0a.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/doctor/DoctorAppointments.tsx": {
-    "file": "assets/DoctorAppointments-CCkusqjf.js",
+    "file": "assets/DoctorAppointments-DgrnXTeb.js",
     "name": "DoctorAppointments",
     "src": "src/pages/doctor/DoctorAppointments.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_select-CsICuhsU.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_plus-DPZgs52g.js",
-      "_clock-Co820-Oy.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_select-kcfAJY73.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_plus-ChQ4m0mi.js",
+      "_clock-Dha9eYj5.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/doctor/DoctorBlogs.tsx": {
-    "file": "assets/DoctorBlogs-BrYACHAH.js",
+    "file": "assets/DoctorBlogs-ErX4RGf5.js",
     "name": "DoctorBlogs",
     "src": "src/pages/doctor/DoctorBlogs.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_textarea-BBwsMnbp.js",
-      "_label-CarGSy8y.js",
-      "_dialog-BZ70i1aA.js",
-      "_plus-DPZgs52g.js",
-      "_eye-3p-js2Mu.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js"
+      "_Helmet-Co23iFK2.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_textarea-CyBfWePp.js",
+      "_label-DkcLJd5U.js",
+      "_dialog-DBVS5aRG.js",
+      "_plus-ChQ4m0mi.js",
+      "_eye-D6qbDncn.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js"
     ]
   },
   "src/pages/doctor/DoctorConsultations.tsx": {
-    "file": "assets/DoctorConsultations-DG3zqYQG.js",
+    "file": "assets/DoctorConsultations-DLv8j_Gs.js",
     "name": "DoctorConsultations",
     "src": "src/pages/doctor/DoctorConsultations.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_stethoscope-B07MkWAq.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_users-BUxCXu4p.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js",
+      "_users-DMPgEr1v.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/doctor/DoctorGallery.tsx": {
-    "file": "assets/DoctorGallery-CBZJNzeT.js",
+    "file": "assets/DoctorGallery-Ccl-qnmU.js",
     "name": "DoctorGallery",
     "src": "src/pages/doctor/DoctorGallery.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_Footer-qMXzDiRv.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_textarea-BBwsMnbp.js",
-      "_label-CarGSy8y.js",
-      "_select-CsICuhsU.js",
-      "_dialog-BZ70i1aA.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
+      "_Helmet-Co23iFK2.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_Footer-Dg67bZa1.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_textarea-CyBfWePp.js",
+      "_label-DkcLJd5U.js",
+      "_select-kcfAJY73.js",
+      "_dialog-DBVS5aRG.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
       "_index-BdQq_4o_.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js"
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js"
     ]
   },
   "src/pages/doctor/DoctorMedicineTests.tsx": {
-    "file": "assets/DoctorMedicineTests-Dy3T96tZ.js",
+    "file": "assets/DoctorMedicineTests-UfnT4R-4.js",
     "name": "DoctorMedicineTests",
     "src": "src/pages/doctor/DoctorMedicineTests.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_tabs-cf5neld8.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_pill-C3JZLNnZ.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
-      "_test-tube-60Oy5Dng.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_tabs-BudLcmQn.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_pill-B2wRk4OR.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
+      "_test-tube-BuC_PqHC.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js"
     ]
   },
   "src/pages/doctor/DoctorMessages.tsx": {
-    "file": "assets/DoctorMessages-BmXwJFzW.js",
+    "file": "assets/DoctorMessages-1DUFTKmR.js",
     "name": "DoctorMessages",
     "src": "src/pages/doctor/DoctorMessages.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_message-square-DXyYJdc3.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_pill-C3JZLNnZ.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_message-square-C8sKfbal.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/doctor/DoctorPatients.tsx": {
-    "file": "assets/DoctorPatients-DWYqtG5P.js",
+    "file": "assets/DoctorPatients-C1BsnfMp.js",
     "name": "DoctorPatients",
     "src": "src/pages/doctor/DoctorPatients.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_users-BUxCXu4p.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js"
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_users-DMPgEr1v.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js"
     ]
   },
   "src/pages/doctor/DoctorPrescriptions.tsx": {
-    "file": "assets/DoctorPrescriptions-Ch4cgkh9.js",
+    "file": "assets/DoctorPrescriptions-D6ewKCq0.js",
     "name": "DoctorPrescriptions",
     "src": "src/pages/doctor/DoctorPrescriptions.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_plus-DPZgs52g.js",
-      "_pill-C3JZLNnZ.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_plus-ChQ4m0mi.js",
+      "_pill-B2wRk4OR.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_file-text-CHhrgst4.js",
-      "_message-square-DXyYJdc3.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_file-text-DXNCTGNo.js",
+      "_message-square-C8sKfbal.js"
     ]
   },
   "src/pages/doctor/DoctorRecords.tsx": {
-    "file": "assets/DoctorRecords-CzTaGOHf.js",
+    "file": "assets/DoctorRecords-DgR8tMT4.js",
     "name": "DoctorRecords",
     "src": "src/pages/doctor/DoctorRecords.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.js",
-      "_Helmet-BTcaEctK.js",
-      "_card-Db-WEhk7.js",
-      "_input-DZCcOFjF.js",
-      "_label-CarGSy8y.js",
-      "_textarea-BBwsMnbp.js",
-      "_select-CsICuhsU.js",
-      "_Footer-qMXzDiRv.js",
-      "_DoctorSidebar-ugTys2RU.js",
-      "_file-text-CHhrgst4.js",
-      "_plus-DPZgs52g.js",
-      "_square-pen-De6r2DRm.js",
-      "_trash-2-BXHwlNFd.js",
+      "_Helmet-Co23iFK2.js",
+      "_card-DZzBpZMV.js",
+      "_input-Ljzp5E3d.js",
+      "_label-DkcLJd5U.js",
+      "_textarea-CyBfWePp.js",
+      "_select-kcfAJY73.js",
+      "_Footer-Dg67bZa1.js",
+      "_DoctorSidebar-B20k-3e_.js",
+      "_file-text-DXNCTGNo.js",
+      "_plus-ChQ4m0mi.js",
+      "_square-pen-C2wLsbA_.js",
+      "_trash-2-D3X408Vn.js",
       "_index-BdQq_4o_.js",
-      "_index-Bcg0Mu0T.js",
-      "_Combination-BghPHJq8.js",
-      "_index-Ckc2JoLc.js",
-      "_chevron-down-BNkW1fCs.js",
-      "_users-BUxCXu4p.js",
-      "_stethoscope-BzYB2mbc.js",
-      "_message-square-DXyYJdc3.js",
-      "_pill-C3JZLNnZ.js"
+      "_index-BuAs8_WM.js",
+      "_Combination-CjoguCJq.js",
+      "_index-n9-Tr9Se.js",
+      "_chevron-down-CDPvgecV.js",
+      "_users-DMPgEr1v.js",
+      "_stethoscope-B07MkWAq.js",
+      "_message-square-C8sKfbal.js",
+      "_pill-B2wRk4OR.js"
     ]
   }
 }
