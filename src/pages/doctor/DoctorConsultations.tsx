@@ -27,13 +27,11 @@ const DoctorConsultations = () => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchConsultations();
     fetchPatients();
-    // Set doctor_id from localStorage or auth context
-    const doctorId = localStorage.getItem('doctor_id') || '1'; // Default to 1 for now
-    setFormData(prev => ({ ...prev, doctor_id: doctorId }));
   }, []);
 
   const fetchConsultations = async () => {
@@ -87,14 +85,34 @@ const DoctorConsultations = () => {
       return;
     }
     
+    // Validate consultation date is not too far in the future
+    const consultationDate = new Date(formData.consultation_date);
+    const today = new Date();
+    const maxFutureDate = new Date();
+    maxFutureDate.setDate(today.getDate() + 30); // Allow up to 30 days in future
+    
+    if (consultationDate > maxFutureDate) {
+      setError('Consultation date cannot be more than 30 days in the future');
+      return;
+    }
+    
+    // Validate follow-up date if provided
+    if (formData.follow_up_date) {
+      const followUpDate = new Date(formData.follow_up_date);
+      if (followUpDate <= consultationDate) {
+        setError('Follow-up date must be after the consultation date');
+        return;
+      }
+    }
+    
     setLoading(true);
     
     try {
       const token = localStorage.getItem('token');
       const submitData = {
-        ...formData,
-        doctor_id: formData.doctor_id || localStorage.getItem('doctor_id') || '1'
+        ...formData
       };
+      delete submitData.doctor_id; // Let backend handle doctor_id from auth
       
       console.log('Submitting consultation:', { submitData });
       
@@ -112,7 +130,8 @@ const DoctorConsultations = () => {
         await fetchConsultations();
         resetForm();
         setError('');
-        alert('Consultation added successfully!');
+        setSuccess('Consultation added successfully!');
+        setTimeout(() => setSuccess(''), 3000);
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
         console.error('Error response:', errorData);
@@ -161,7 +180,6 @@ const DoctorConsultations = () => {
   };
 
   const resetForm = () => {
-    const doctorId = localStorage.getItem('doctor_id') || '1';
     setFormData({ 
       patient_id: '', 
       consultation_date: '', 
@@ -169,10 +187,11 @@ const DoctorConsultations = () => {
       treatment: '', 
       notes: '', 
       follow_up_date: '',
-      doctor_id: doctorId
+      doctor_id: ''
     });
     setShowForm(false);
     setError('');
+    setSuccess('');
   };
 
   return (
@@ -219,6 +238,11 @@ const DoctorConsultations = () => {
                           {error}
                         </div>
                       )}
+                      {success && (
+                        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
+                          {success}
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Patient *</Label>
@@ -228,14 +252,20 @@ const DoctorConsultations = () => {
                             </SelectTrigger>
                             <SelectContent>
                               {patients.map((patient) => (
-                                <SelectItem key={patient.id} value={patient.id.toString()}>{patient.name}</SelectItem>
+                                <SelectItem key={patient.patient_id} value={patient.patient_id.toString()}>{patient.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
                         </div>
                         <div>
                           <Label>Consultation Date *</Label>
-                          <Input type="date" value={formData.consultation_date} onChange={(e) => setFormData({...formData, consultation_date: e.target.value})} required />
+                          <Input 
+                            type="date" 
+                            value={formData.consultation_date} 
+                            onChange={(e) => setFormData({...formData, consultation_date: e.target.value})} 
+                            max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                            required 
+                          />
                         </div>
                         <div>
                           <Label>Diagnosis *</Label>
@@ -247,7 +277,12 @@ const DoctorConsultations = () => {
                         </div>
                         <div>
                           <Label>Follow-up Date</Label>
-                          <Input type="date" value={formData.follow_up_date} onChange={(e) => setFormData({...formData, follow_up_date: e.target.value})} />
+                          <Input 
+                            type="date" 
+                            value={formData.follow_up_date} 
+                            onChange={(e) => setFormData({...formData, follow_up_date: e.target.value})} 
+                            min={formData.consultation_date || new Date().toISOString().split('T')[0]}
+                          />
                         </div>
                         <div className="col-span-2">
                           <Label>Notes</Label>
@@ -263,7 +298,7 @@ const DoctorConsultations = () => {
                   )}
                   <div className="space-y-4">
                     {consultations.map((consultation) => {
-                      const patient = patients.find(p => p.id === consultation.patient_id);
+                      const patient = patients.find(p => p.patient_id === consultation.patient_id);
                       const consultationDate = new Date(consultation.consultation_date).toLocaleDateString();
                       const followUpDate = consultation.follow_up_date ? new Date(consultation.follow_up_date).toLocaleDateString() : null;
                       

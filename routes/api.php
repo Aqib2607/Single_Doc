@@ -79,7 +79,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('consultations', \App\Http\Controllers\ConsultationController::class);
     Route::resource('consultations', ConsultationController::class);
     Route::resource('medical-records', MedicalRecordController::class);
+    Route::get('/medical-records/{medicalRecord}/download', [MedicalRecordController::class, 'downloadFile']);
     Route::resource('prescriptions', PrescriptionController::class);
+    Route::post('/prescriptions/bulk-update', [PrescriptionController::class, 'bulkUpdate']);
     Route::resource('messages', MessageController::class);
     Route::resource('medicines', MedicineController::class);
     Route::resource('tests', TestController::class);

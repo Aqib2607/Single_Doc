@@ -18,6 +18,7 @@ class Consultation extends Model
         'treatment',
         'notes',
         'follow_up_date',
+        'treatment_plan',
     ];
 
     protected $casts = [

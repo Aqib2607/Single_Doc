@@ -18,14 +18,18 @@ const DoctorRecords = () => {
   const [editingRecord, setEditingRecord] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [formData, setFormData] = useState({
     patient_id: '',
+    patient_email: '',
     record_type: '',
     title: '',
     description: '',
     status: 'pending',
     record_date: ''
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchRecords();
@@ -39,6 +43,7 @@ const DoctorRecords = () => {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
         },
       });
       if (response.ok) {
@@ -57,6 +62,7 @@ const DoctorRecords = () => {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
         },
       });
       if (response.ok) {
@@ -77,6 +83,12 @@ const DoctorRecords = () => {
       return;
     }
     
+    // Validate email format if provided
+    if (formData.patient_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.patient_email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    
     setLoading(true);
     
     try {
@@ -84,19 +96,34 @@ const DoctorRecords = () => {
       const url = editingRecord ? `/api/medical-records/${editingRecord.id}` : '/api/medical-records';
       const method = editingRecord ? 'PUT' : 'POST';
       
+      // Create FormData for file upload
+      const submitData = new FormData();
+      Object.keys(formData).forEach(key => {
+        if (formData[key]) {
+          submitData.append(key, formData[key]);
+        }
+      });
+      
+      // Add file if selected
+      if (selectedFile) {
+        submitData.append('medical_file', selectedFile);
+      }
+      
+      setUploading(true);
+      
       const response = await fetch(url, {
         method,
         headers: {
           'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: submitData
       });
       
       if (response.ok) {
         await fetchRecords();
         resetForm();
-        alert(editingRecord ? 'Record updated successfully!' : 'Record added successfully!');
+        setSuccess(editingRecord ? 'Record updated successfully!' : 'Record added successfully!');
+        setTimeout(() => setSuccess(''), 3000);
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
         setError(errorData.message || 'Failed to save record');
@@ -105,6 +132,7 @@ const DoctorRecords = () => {
       setError('Network error: ' + error.message);
     } finally {
       setLoading(false);
+      setUploading(false);
     }
   };
 
@@ -112,12 +140,14 @@ const DoctorRecords = () => {
     setEditingRecord(record);
     setFormData({
       patient_id: record.patient_id?.toString() || '',
+      patient_email: record.patient_email || '',
       record_type: record.record_type || '',
       title: record.title || '',
       description: record.description || '',
       status: record.status || 'pending',
       record_date: record.record_date || ''
     });
+    setSelectedFile(null);
     setShowForm(true);
     setError('');
   };
@@ -135,7 +165,10 @@ const DoctorRecords = () => {
         
         if (response.ok) {
           fetchRecords();
-          alert('Record deleted successfully!');
+          setSuccess('Record deleted successfully!');
+          setTimeout(() => setSuccess(''), 3000);
+        } else {
+          setError('Failed to delete record');
         }
       } catch (error) {
         console.error('Error deleting record:', error);
@@ -146,15 +179,48 @@ const DoctorRecords = () => {
   const resetForm = () => {
     setFormData({ 
       patient_id: '', 
+      patient_email: '',
       record_type: '', 
       title: '', 
       description: '', 
       status: 'pending', 
       record_date: '' 
     });
+    setSelectedFile(null);
     setEditingRecord(null);
     setShowForm(false);
     setError('');
+    setSuccess('');
+  };
+  
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        setError('File size must be less than 10MB');
+        return;
+      }
+      
+      // Validate file type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+      if (!allowedTypes.includes(file.type)) {
+        setError('Only PDF, DOC, DOCX, and image files are allowed');
+        return;
+      }
+      
+      setSelectedFile(file);
+      setError('');
+    }
+  };
+  
+  const handlePatientChange = (patientId) => {
+    const selectedPatient = patients.find(p => p.patient_id.toString() === patientId);
+    setFormData({
+      ...formData, 
+      patient_id: patientId,
+      patient_email: selectedPatient?.email || ''
+    });
   };
 
   return (
@@ -201,19 +267,33 @@ const DoctorRecords = () => {
                           {error}
                         </div>
                       )}
+                      {success && (
+                        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
+                          {success}
+                        </div>
+                      )}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Patient *</Label>
-                          <Select value={formData.patient_id} onValueChange={(value) => setFormData({...formData, patient_id: value})}>
+                          <Select value={formData.patient_id} onValueChange={handlePatientChange}>
                             <SelectTrigger>
                               <SelectValue placeholder="Select patient" />
                             </SelectTrigger>
                             <SelectContent>
                               {patients.map((patient) => (
-                                <SelectItem key={patient.id} value={patient.id.toString()}>{patient.name}</SelectItem>
+                                <SelectItem key={patient.patient_id} value={patient.patient_id.toString()}>{patient.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
+                        </div>
+                        <div>
+                          <Label>Patient Email</Label>
+                          <Input 
+                            type="email" 
+                            value={formData.patient_email} 
+                            onChange={(e) => setFormData({...formData, patient_email: e.target.value})} 
+                            placeholder="patient@example.com"
+                          />
                         </div>
                         <div>
                           <Label>Record Type *</Label>
@@ -237,7 +317,13 @@ const DoctorRecords = () => {
                         </div>
                         <div>
                           <Label>Record Date *</Label>
-                          <Input type="date" value={formData.record_date} onChange={(e) => setFormData({...formData, record_date: e.target.value})} required />
+                          <Input 
+                            type="date" 
+                            value={formData.record_date} 
+                            onChange={(e) => setFormData({...formData, record_date: e.target.value})} 
+                            max={new Date().toISOString().split('T')[0]}
+                            required 
+                          />
                         </div>
                         <div>
                           <Label>Status</Label>
@@ -252,13 +338,27 @@ const DoctorRecords = () => {
                             </SelectContent>
                           </Select>
                         </div>
+                        <div>
+                          <Label>Medical Document</Label>
+                          <Input 
+                            type="file" 
+                            onChange={handleFileChange}
+                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/80"
+                          />
+                          {selectedFile && (
+                            <p className="text-sm text-muted-foreground mt-1">
+                              Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                            </p>
+                          )}
+                        </div>
                         <div className="col-span-2">
                           <Label>Description</Label>
                           <Textarea value={formData.description} onChange={(e) => setFormData({...formData, description: e.target.value})} />
                         </div>
                         <div className="col-span-2">
-                          <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Saving...' : (editingRecord ? 'Update Record' : 'Add Record')}
+                          <Button type="submit" className="w-full" disabled={loading || uploading}>
+                            {uploading ? 'Uploading...' : loading ? 'Saving...' : (editingRecord ? 'Update Record' : 'Add Record')}
                           </Button>
                         </div>
                       </div>
@@ -266,7 +366,7 @@ const DoctorRecords = () => {
                   )}
                   <div className="space-y-4">
                     {records.map((record) => {
-                      const patient = patients.find(p => p.id === record.patient_id);
+                      const patient = patients.find(p => p.patient_id === record.patient_id);
                       const recordDate = new Date(record.record_date).toLocaleDateString();
                       
                       return (
@@ -277,17 +377,53 @@ const DoctorRecords = () => {
                           </h3>
                           <p className="text-sm text-primary font-medium">{record.title}</p>
                           <p className="text-sm text-muted-foreground">Type: {record.record_type} | Date: {recordDate}</p>
+                          {record.patient_email && (
+                            <p className="text-sm text-muted-foreground">Email: {record.patient_email}</p>
+                          )}
                           <p className={`text-sm capitalize ${
                             record.status === 'complete' ? 'text-green-600' : 
                             record.status === 'reviewed' ? 'text-blue-600' : 'text-yellow-600'
                           }`}>
                             Status: {record.status}
                           </p>
+                          {record.file_path && (
+                            <p className="text-sm text-blue-600 flex items-center gap-1">
+                              <FileText className="h-3 w-3" />
+                              Document attached
+                            </p>
+                          )}
                           {record.description && (
                             <p className="text-sm text-muted-foreground mt-1 italic">{record.description}</p>
                           )}
                         </div>
                         <div className="flex gap-2">
+                          {record.file_path && (
+                            <Button 
+                              onClick={() => {
+                                const token = localStorage.getItem('token');
+                                fetch(`/api/medical-records/${record.id}/download`, {
+                                  headers: { 'Authorization': `Bearer ${token}` }
+                                })
+                                .then(response => response.blob())
+                                .then(blob => {
+                                  const url = window.URL.createObjectURL(blob);
+                                  const a = document.createElement('a');
+                                  a.href = url;
+                                  a.download = record.title || 'medical_record';
+                                  document.body.appendChild(a);
+                                  a.click();
+                                  window.URL.revokeObjectURL(url);
+                                  document.body.removeChild(a);
+                                })
+                                .catch(error => console.error('Download failed:', error));
+                              }} 
+                              size="sm" 
+                              variant="outline"
+                              className="text-blue-600 hover:text-blue-700"
+                            >
+                              <Download className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button onClick={() => handleEdit(record)} size="sm" variant="outline">
                             <Edit className="h-4 w-4" />
                           </Button>

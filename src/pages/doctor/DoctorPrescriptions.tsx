@@ -8,16 +8,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DoctorSidebar from '@/components/DoctorSidebar';
-import { ClipboardList, Plus, Edit, Trash2, Pill, X } from 'lucide-react';
+import { ClipboardList, Pill, Plus, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { Edit, Trash2, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DoctorPrescriptions = () => {
   const [prescriptions, setPrescriptions] = useState([]);
   const [patients, setPatients] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingPrescription, setEditingPrescription] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [selectedPrescriptions, setSelectedPrescriptions] = useState([]);
   const [formData, setFormData] = useState({
     patient_id: '',
     medication_name: '',
@@ -26,29 +33,55 @@ const DoctorPrescriptions = () => {
     instructions: '',
     start_date: '',
     end_date: '',
-    is_active: true
+    is_active: true,
+    refills_remaining: ''
   });
+
 
   useEffect(() => {
     fetchPrescriptions();
     fetchPatients();
   }, []);
+  
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        handleSearch();
+      }
+    }, 500);
+    
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, statusFilter]);
 
-  const fetchPrescriptions = async () => {
+  const fetchPrescriptions = async (page = 1) => {
     try {
+      setLoading(true);
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/prescriptions', {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        per_page: '10',
+        ...(searchTerm && { search: searchTerm }),
+        ...(statusFilter !== 'all' && { status: statusFilter })
+      });
+      
+      const response = await fetch(`/api/prescriptions?${params}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
+      
       if (response.ok) {
         const data = await response.json();
-        setPrescriptions(data);
+        setPrescriptions(data.data || data);
+        setCurrentPage(data.current_page || 1);
+        setTotalPages(data.last_page || 1);
       }
     } catch (error) {
       console.error('Error fetching prescriptions:', error);
+      setError('Failed to fetch prescriptions');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,8 +116,8 @@ const DoctorPrescriptions = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const url = editingPrescription ? `/api/prescriptions/${editingPrescription.id}` : '/api/prescriptions';
-      const method = editingPrescription ? 'PUT' : 'POST';
+      const url = editingId ? `/api/prescriptions/${editingId}` : '/api/prescriptions';
+      const method = editingId ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
@@ -96,9 +129,10 @@ const DoctorPrescriptions = () => {
       });
       
       if (response.ok) {
-        await fetchPrescriptions();
+        await fetchPrescriptions(currentPage);
         resetForm();
-        alert(editingPrescription ? 'Prescription updated successfully!' : 'Prescription added successfully!');
+        setSuccess(editingId ? 'Prescription updated successfully!' : 'Prescription added successfully!');
+        setTimeout(() => setSuccess(''), 3000);
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
         setError(errorData.message || 'Failed to save prescription');
@@ -107,43 +141,6 @@ const DoctorPrescriptions = () => {
       setError('Network error: ' + error.message);
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleEdit = (prescription) => {
-    setEditingPrescription(prescription);
-    setFormData({
-      patient_id: prescription.patient_id?.toString() || '',
-      medication_name: prescription.medication_name || '',
-      dosage: prescription.dosage || '',
-      frequency: prescription.frequency || '',
-      instructions: prescription.instructions || '',
-      start_date: prescription.start_date || '',
-      end_date: prescription.end_date || '',
-      is_active: prescription.is_active ?? true
-    });
-    setShowForm(true);
-    setError('');
-  };
-
-  const handleDelete = async (id) => {
-    if (confirm('Are you sure you want to delete this prescription?')) {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`/api/prescriptions/${id}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        
-        if (response.ok) {
-          fetchPrescriptions();
-          alert('Prescription deleted successfully!');
-        }
-      } catch (error) {
-        console.error('Error deleting prescription:', error);
-      }
     }
   };
 
@@ -156,12 +153,101 @@ const DoctorPrescriptions = () => {
       instructions: '', 
       start_date: '', 
       end_date: '', 
-      is_active: true 
+      is_active: true,
+      refills_remaining: ''
     });
-    setEditingPrescription(null);
     setShowForm(false);
+    setEditingId(null);
     setError('');
+    setSuccess('');
   };
+  
+  const handleEdit = (prescription) => {
+    setFormData({
+      patient_id: prescription.patient_id.toString(),
+      medication_name: prescription.medication_name,
+      dosage: prescription.dosage,
+      frequency: prescription.frequency,
+      instructions: prescription.instructions || '',
+      start_date: prescription.start_date,
+      end_date: prescription.end_date || '',
+      is_active: prescription.is_active,
+      refills_remaining: prescription.refills_remaining || ''
+    });
+    setEditingId(prescription.id);
+    setShowForm(true);
+  };
+  
+  const handleDelete = async (id) => {
+    if (!confirm('Are you sure you want to delete this prescription?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/prescriptions/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      
+      if (response.ok) {
+        await fetchPrescriptions(currentPage);
+        setSuccess('Prescription deleted successfully!');
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError('Failed to delete prescription');
+      }
+    } catch (error) {
+      setError('Network error: ' + error.message);
+    }
+  };
+  
+  const handleBulkAction = async (action) => {
+    if (selectedPrescriptions.length === 0) {
+      setError('Please select prescriptions first');
+      return;
+    }
+    
+    if (!confirm(`Are you sure you want to ${action} selected prescriptions?`)) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/prescriptions/bulk-update', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prescription_ids: selectedPrescriptions,
+          action
+        })
+      });
+      
+      if (response.ok) {
+        await fetchPrescriptions(currentPage);
+        setSelectedPrescriptions([]);
+        setSuccess(`Prescriptions ${action}d successfully!`);
+        setTimeout(() => setSuccess(''), 3000);
+      } else {
+        setError(`Failed to ${action} prescriptions`);
+      }
+    } catch (error) {
+      setError('Network error: ' + error.message);
+    }
+  };
+  
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchPrescriptions(1);
+  };
+  
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+    fetchPrescriptions(page);
+  };
+
+
 
   return (
     <>
@@ -184,20 +270,63 @@ const DoctorPrescriptions = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <ClipboardList className="h-5 w-5 text-primary" />
-                      Active Prescriptions
+                      Prescriptions Management
                     </CardTitle>
                     <CardDescription>View and manage patient medications</CardDescription>
                   </div>
                   <Button onClick={() => setShowForm(true)} className="gradient-primary shadow-elegant">
                     <Plus className="h-4 w-4 mr-2" />
-                    New Prescription
+                    Add Prescription
                   </Button>
                 </CardHeader>
                 <CardContent>
+                  {/* Search and Filter Controls */}
+                  <div className="mb-6 flex flex-col sm:flex-row gap-4">
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search by medication or patient name..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10"
+                      />
+                    </div>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-full sm:w-48">
+                        <Filter className="h-4 w-4 mr-2" />
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Status</SelectItem>
+                        <SelectItem value="active">Active Only</SelectItem>
+                        <SelectItem value="inactive">Inactive Only</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* Bulk Actions */}
+                  {selectedPrescriptions.length > 0 && (
+                    <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg flex items-center justify-between">
+                      <span className="text-sm text-blue-700">
+                        {selectedPrescriptions.length} prescription(s) selected
+                      </span>
+                      <div className="flex gap-2">
+                        <Button size="sm" variant="outline" onClick={() => handleBulkAction('activate')}>
+                          Activate
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => handleBulkAction('deactivate')}>
+                          Deactivate
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleBulkAction('delete')}>
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                   {showForm && (
                     <form onSubmit={handleSubmit} className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">{editingPrescription ? 'Edit Prescription' : 'New Prescription'}</h3>
+                        <h3 className="text-lg font-semibold">{editingId ? 'Edit Prescription' : 'New Prescription'}</h3>
                         <Button type="button" onClick={resetForm} variant="ghost" size="sm">
                           <X className="h-4 w-4" />
                         </Button>
@@ -205,6 +334,11 @@ const DoctorPrescriptions = () => {
                       {error && (
                         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-700 text-sm">
                           {error}
+                        </div>
+                      )}
+                      {success && (
+                        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md text-green-700 text-sm">
+                          {success}
                         </div>
                       )}
                       <div className="grid grid-cols-2 gap-4">
@@ -216,7 +350,7 @@ const DoctorPrescriptions = () => {
                             </SelectTrigger>
                             <SelectContent>
                               {patients.map((patient) => (
-                                <SelectItem key={patient.id} value={patient.id.toString()}>{patient.name}</SelectItem>
+                                <SelectItem key={patient.patient_id} value={patient.patient_id.toString()}>{patient.name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -251,7 +385,23 @@ const DoctorPrescriptions = () => {
                         </div>
                         <div>
                           <Label>End Date</Label>
-                          <Input type="date" value={formData.end_date} onChange={(e) => setFormData({...formData, end_date: e.target.value})} />
+                          <Input type="date" value={formData.end_date} onChange={(e) => setFormData({...formData, end_date: e.target.value})} min={formData.start_date} />
+                        </div>
+                        <div>
+                          <Label>Refills Remaining</Label>
+                          <Input type="number" min="0" value={formData.refills_remaining} onChange={(e) => setFormData({...formData, refills_remaining: e.target.value})} placeholder="0" />
+                        </div>
+                        <div>
+                          <Label>Status</Label>
+                          <Select value={formData.is_active.toString()} onValueChange={(value) => setFormData({...formData, is_active: value === 'true'})}>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="true">Active</SelectItem>
+                              <SelectItem value="false">Inactive</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                         <div className="col-span-2">
                           <Label>Instructions</Label>
@@ -259,21 +409,37 @@ const DoctorPrescriptions = () => {
                         </div>
                         <div className="col-span-2">
                           <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Saving...' : (editingPrescription ? 'Update Prescription' : 'Add Prescription')}
+                            {loading ? 'Saving...' : (editingId ? 'Update Prescription' : 'Add Prescription')}
                           </Button>
                         </div>
                       </div>
                     </form>
                   )}
                   <div className="space-y-4">
-                    {prescriptions.map((prescription) => {
-                      const patient = patients.find(p => p.id === prescription.patient_id);
+                    {loading ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Loading prescriptions...
+                      </div>
+                    ) : prescriptions.map((prescription) => {
+                      const patient = patients.find(p => p.patient_id === prescription.patient_id);
                       const startDate = new Date(prescription.start_date).toLocaleDateString();
                       const endDate = prescription.end_date ? new Date(prescription.end_date).toLocaleDateString() : null;
                       
                       return (
                       <div key={prescription.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
                         <div className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedPrescriptions.includes(prescription.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setSelectedPrescriptions([...selectedPrescriptions, prescription.id]);
+                              } else {
+                                setSelectedPrescriptions(selectedPrescriptions.filter(id => id !== prescription.id));
+                              }
+                            }}
+                            className="mr-2"
+                          />
                           <Pill className="h-5 w-5 text-primary" />
                           <div className="flex-1">
                             <h3 className="font-semibold text-foreground">
@@ -282,6 +448,9 @@ const DoctorPrescriptions = () => {
                             <p className="text-sm text-primary font-medium">{prescription.medication_name}</p>
                             <p className="text-sm text-muted-foreground">Dosage: {prescription.dosage} | Frequency: {prescription.frequency}</p>
                             <p className="text-sm text-muted-foreground">Start: {startDate}{endDate ? ` | End: ${endDate}` : ''}</p>
+                            {prescription.refills_remaining && (
+                              <p className="text-sm text-muted-foreground">Refills: {prescription.refills_remaining}</p>
+                            )}
                             {prescription.instructions && (
                               <p className="text-sm text-muted-foreground mt-1 italic">{prescription.instructions}</p>
                             )}
@@ -291,22 +460,49 @@ const DoctorPrescriptions = () => {
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <Button onClick={() => handleEdit(prescription)} size="sm" variant="outline">
+                          <Button size="sm" variant="outline" onClick={() => handleEdit(prescription)}>
                             <Edit className="h-4 w-4" />
                           </Button>
-                          <Button onClick={() => handleDelete(prescription.id)} size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                          <Button size="sm" variant="destructive" onClick={() => handleDelete(prescription.id)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </div>
                       );
                     })}
-                    {prescriptions.length === 0 && (
+                    {!loading && prescriptions.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground">
-                        No prescriptions found. Click "New Prescription" to create your first prescription.
+                        No prescriptions found.
                       </div>
                     )}
                   </div>
+                  
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between mt-6">
+                      <div className="text-sm text-muted-foreground">
+                        Page {currentPage} of {totalPages}
+                      </div>
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handlePageChange(currentPage + 1)}
+                          disabled={currentPage === totalPages}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
