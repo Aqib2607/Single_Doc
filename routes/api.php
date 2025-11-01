@@ -21,8 +21,11 @@ use App\Http\Controllers\Api\PatientController;
 use App\Http\Controllers\Api\PrescriptionController as ApiPrescriptionController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\GalleryController;
-use App\Http\Controllers\Api\VitalsController;
 
+use App\Http\Controllers\Api\MedicalRecordActionsController;
+use App\Http\Controllers\Api\TestController as ApiTestController;
+
+Route::get('/test', [ApiTestController::class, 'test']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -68,5 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('blogs', BlogController::class);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);
     Route::apiResource('galleries', GalleryController::class);
-    Route::get('/patients/{patientId}/vitals', [VitalsController::class, 'index']);
+
+    Route::delete('/medical-records/{recordId}', [MedicalRecordActionsController::class, 'delete']);
 });

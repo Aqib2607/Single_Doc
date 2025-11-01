@@ -9,15 +9,15 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import RecentAppointments from '@/components/RecentAppointments';
 import PatientPrescriptions from '@/components/PatientPrescriptions';
-import VitalsOverview from '@/components/VitalsOverview';
-import HealthScore from '@/components/HealthScore';
+
+import MedicalRecordsModal from '@/components/MedicalRecordsModal';
 
 const PatientDashboard = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
   const [medicalRecords, setMedicalRecords] = useState([]);
-  const [healthScore, setHealthScore] = useState<number | null>(null);
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -120,7 +120,7 @@ const PatientDashboard = () => {
     { icon: Calendar, label: 'Upcoming Appointments', value: upcomingAppointments.length.toString(), color: 'text-primary' },
     { icon: Pill, label: 'Active Prescriptions', value: activePrescriptions.length.toString(), color: 'text-primary' },
     { icon: FileText, label: 'Medical Records', value: medicalRecords.length.toString(), color: 'text-primary' },
-    { icon: Heart, label: 'Health Score', value: healthScore ? `${healthScore}%` : 'Calculating...', color: 'text-primary' },
+
   ];
 
   return (
@@ -162,19 +162,7 @@ const PatientDashboard = () => {
               </div>
             </div>
             
-            <div className="mt-12">
-              <div className="animate-fade-in-up" style={{animationDelay: '0.65s'}}>
-                <HealthScore onScoreUpdate={setHealthScore} />
-              </div>
-            </div>
-            
 
-
-            <div className="mt-12">
-              <div className="animate-fade-in-up" style={{animationDelay: '0.7s'}}>
-                <VitalsOverview />
-              </div>
-            </div>
 
             <div className="mt-12">
               <Card className="shadow-card border-border bg-card animate-fade-in-up" style={{animationDelay: '0.8s'}}>
@@ -186,14 +174,7 @@ const PatientDashboard = () => {
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">Your recent medical records and test results</CardDescription>
                   </div>
-                  {medicalRecords.length > 3 && (
-                    <Link to="/medical-records">
-                      <Button size="sm" variant="outline" className="border-border">
-                        <FileText className="h-4 w-4 mr-2" />
-                        View More
-                      </Button>
-                    </Link>
-                  )}
+                  <MedicalRecordsModal />
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">

@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -5,35 +6,44 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
-import Index from "./pages/Index";
-import ServicesPage from "./pages/ServicesPage";
-import AboutPage from "./pages/AboutPage";
-import BlogPage from "./pages/BlogPage";
-import GalleryPage from "./pages/GalleryPage";
-import ContactPage from "./pages/ContactPage";
-import MedicineTestsPage from "./pages/MedicineTestsPage";
-import CartPage from "./pages/CartPage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import PatientDashboard from "./pages/PatientDashboard";
-import DoctorDashboard from "./pages/DoctorDashboard";
-import MedicalRecords from "./pages/MedicalRecords";
-import Prescriptions from "./pages/Prescriptions";
-import ProfilePage from "./pages/ProfilePage";
-import SettingsPage from "./pages/SettingsPage";
-import AppointmentPage from "./pages/AppointmentPage";
-import DoctorPatients from "./pages/doctor/DoctorPatients";
-import DoctorAppointments from "./pages/doctor/DoctorAppointments";
-import DoctorConsultations from "./pages/doctor/DoctorConsultations";
-import DoctorRecords from "./pages/doctor/DoctorRecords";
-import DoctorPrescriptions from "./pages/doctor/DoctorPrescriptions";
-import DoctorMessages from "./pages/doctor/DoctorMessages";
-import DoctorMedicineTests from "./pages/doctor/DoctorMedicineTests";
-import DoctorBlogs from "./pages/doctor/DoctorBlogs";
-import DoctorGallery from "./pages/doctor/DoctorGallery";
-import NotFound from "./pages/NotFound";
 import FloatingButtons from "@/components/FloatingButtons";
 import ScrollToTop from "@/components/ScrollToTop";
+
+// Lazy load pages for better code splitting
+const Index = lazy(() => import("./pages/Index"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const GalleryPage = lazy(() => import("./pages/GalleryPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const MedicineTestsPage = lazy(() => import("./pages/MedicineTestsPage"));
+const CartPage = lazy(() => import("./pages/CartPage"));
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const PatientDashboard = lazy(() => import("./pages/PatientDashboard"));
+const DoctorDashboard = lazy(() => import("./pages/DoctorDashboard"));
+const MedicalRecords = lazy(() => import("./pages/MedicalRecords"));
+const Prescriptions = lazy(() => import("./pages/Prescriptions"));
+const ProfilePage = lazy(() => import("./pages/ProfilePage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const AppointmentPage = lazy(() => import("./pages/AppointmentPage"));
+const DoctorPatients = lazy(() => import("./pages/doctor/DoctorPatients"));
+const DoctorAppointments = lazy(() => import("./pages/doctor/DoctorAppointments"));
+const DoctorConsultations = lazy(() => import("./pages/doctor/DoctorConsultations"));
+const DoctorRecords = lazy(() => import("./pages/doctor/DoctorRecords"));
+const DoctorPrescriptions = lazy(() => import("./pages/doctor/DoctorPrescriptions"));
+const DoctorMessages = lazy(() => import("./pages/doctor/DoctorMessages"));
+const DoctorMedicineTests = lazy(() => import("./pages/doctor/DoctorMedicineTests"));
+const DoctorBlogs = lazy(() => import("./pages/doctor/DoctorBlogs"));
+const DoctorGallery = lazy(() => import("./pages/doctor/DoctorGallery"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+
+// Loading component
+const LoadingSpinner = () => (
+  <div className="flex items-center justify-center min-h-screen">
+    <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
+  </div>
+);
 
 const queryClient = new QueryClient();
 
@@ -46,7 +56,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <Routes>
+            <Suspense fallback={<LoadingSpinner />}>
+              <Routes>
             <Route path="/" element={<Index />} />
               <Route path="/services" element={<ServicesPage />} />
               <Route path="/about" element={<AboutPage />} />
@@ -76,7 +87,8 @@ const App = () => (
               <Route path="/doctor/schedules" element={<DoctorAppointments />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
+              </Routes>
+            </Suspense>
             <FloatingButtons />
           </BrowserRouter>
         </CartProvider>

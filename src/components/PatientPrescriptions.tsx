@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { Pill, Calendar, User, Clock, AlertCircle, Loader2, FileText, ChevronDown, ChevronUp } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { ScrollArea } from './ui/scroll-area';
+import { Pill, Calendar, User, Clock, AlertCircle, Loader2, FileText, Eye } from 'lucide-react';
 
 interface Prescription {
   id: number;
@@ -22,7 +24,7 @@ const PatientPrescriptions: React.FC = () => {
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAll, setShowAll] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     fetchPrescriptions();
@@ -133,8 +135,79 @@ const PatientPrescriptions: React.FC = () => {
     );
   }
 
-  const displayedPrescriptions = showAll ? prescriptions : prescriptions.slice(0, 1);
+  const latestPrescription = prescriptions[0];
   const hasMorePrescriptions = prescriptions.length > 1;
+
+  const PrescriptionCard = ({ prescription, isLatest = false }: { prescription: Prescription; isLatest?: boolean }) => (
+    <div className={`border rounded-lg p-4 hover:shadow-md transition-all duration-200 bg-white ${
+      isLatest ? 'ring-2 ring-blue-100' : ''
+    }`}>
+      {isLatest && hasMorePrescriptions && (
+        <div className="mb-2">
+          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 font-medium">
+            Most Recent
+          </span>
+        </div>
+      )}
+      
+      <div className="flex items-start justify-between mb-3">
+        <div>
+          <h3 className="font-semibold text-lg text-gray-900">
+            {prescription.medication_name}
+          </h3>
+          <p className="text-sm text-gray-600">
+            {prescription.dosage} • {prescription.frequency}
+          </p>
+        </div>
+        {getStatusBadge(prescription)}
+      </div>
+
+      {prescription.instructions && (
+        <div className="mb-3">
+          <p className="text-sm text-gray-700 bg-blue-50 p-3 rounded border-l-4 border-blue-200">
+            <strong>Instructions:</strong> {prescription.instructions}
+          </p>
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+        <div className="flex items-center gap-2">
+          <Calendar className="h-4 w-4 text-gray-500" />
+          <div>
+            <span className="text-gray-600">Start Date:</span>
+            <p className="font-medium">{formatDate(prescription.start_date)}</p>
+          </div>
+        </div>
+
+        {prescription.end_date && (
+          <div className="flex items-center gap-2">
+            <Clock className="h-4 w-4 text-gray-500" />
+            <div>
+              <span className="text-gray-600">End Date:</span>
+              <p className="font-medium">{formatDate(prescription.end_date)}</p>
+            </div>
+          </div>
+        )}
+
+        <div className="flex items-center gap-2">
+          <Pill className="h-4 w-4 text-gray-500" />
+          <div>
+            <span className="text-gray-600">Refills:</span>
+            <p className="font-medium">
+              {prescription.refills_remaining} remaining
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-3 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <User className="h-3 w-3" />
+          <span>Prescribed on {formatDate(prescription.created_at)}</span>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <Card>
@@ -153,103 +226,44 @@ const PatientPrescriptions: React.FC = () => {
           </div>
         ) : (
           <>
-            <div className="space-y-4">
-              {displayedPrescriptions.map((prescription, index) => (
-                <div
-                  key={prescription.id}
-                  className={`border rounded-lg p-4 hover:shadow-md transition-all duration-200 bg-white ${
-                    index === 0 && hasMorePrescriptions && !showAll ? 'ring-2 ring-blue-100' : ''
-                  }`}
-                >
-                  {index === 0 && hasMorePrescriptions && !showAll && (
-                    <div className="mb-2">
-                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-blue-100 text-blue-800 font-medium">
-                        Most Recent
-                      </span>
-                    </div>
-                  )}
-                  
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-lg text-gray-900">
-                        {prescription.medication_name}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {prescription.dosage} • {prescription.frequency}
-                      </p>
-                    </div>
-                    {getStatusBadge(prescription)}
-                  </div>
-
-                  {prescription.instructions && (
-                    <div className="mb-3">
-                      <p className="text-sm text-gray-700 bg-blue-50 p-3 rounded border-l-4 border-blue-200">
-                        <strong>Instructions:</strong> {prescription.instructions}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <span className="text-gray-600">Start Date:</span>
-                        <p className="font-medium">{formatDate(prescription.start_date)}</p>
-                      </div>
-                    </div>
-
-                    {prescription.end_date && (
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gray-500" />
-                        <div>
-                          <span className="text-gray-600">End Date:</span>
-                          <p className="font-medium">{formatDate(prescription.end_date)}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-2">
-                      <Pill className="h-4 w-4 text-gray-500" />
-                      <div>
-                        <span className="text-gray-600">Refills:</span>
-                        <p className="font-medium">
-                          {prescription.refills_remaining} remaining
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <User className="h-3 w-3" />
-                      <span>Prescribed on {formatDate(prescription.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <PrescriptionCard prescription={latestPrescription} isLatest={true} />
             
             {hasMorePrescriptions && (
               <div className="mt-4 text-center">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowAll(!showAll)}
-                  className="hover:bg-blue-50 hover:border-blue-300 transition-colors duration-200"
-                  aria-expanded={showAll}
-                  aria-label={showAll ? 'Show only recent prescription' : `View all ${prescriptions.length} prescriptions`}
-                >
-                  {showAll ? (
-                    <>
-                      <ChevronUp className="h-4 w-4 mr-2" />
-                      Show Less
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown className="h-4 w-4 mr-2" />
+                <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="hover:bg-blue-50 hover:border-blue-300 transition-colors duration-300"
+                      aria-label={`View all ${prescriptions.length} prescriptions`}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
                       View All ({prescriptions.length})
-                    </>
-                  )}
-                </Button>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent 
+                    className="max-w-[90vw] md:max-w-[60vw] max-h-[90vh] transition-all duration-300 ease-in-out"
+                    aria-labelledby="prescriptions-modal-title"
+                    aria-describedby="prescriptions-modal-description"
+                  >
+                    <DialogHeader>
+                      <DialogTitle id="prescriptions-modal-title" className="flex items-center gap-2">
+                        <Pill className="h-5 w-5" />
+                        All Prescriptions ({prescriptions.length})
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div id="prescriptions-modal-description" className="sr-only">
+                      Complete list of all your prescriptions with details
+                    </div>
+                    <ScrollArea className="h-[70vh] pr-4">
+                      <div className="space-y-4">
+                        {prescriptions.map((prescription) => (
+                          <PrescriptionCard key={prescription.id} prescription={prescription} />
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </DialogContent>
+                </Dialog>
               </div>
             )}
           </>
