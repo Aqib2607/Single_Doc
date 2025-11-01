@@ -68,4 +68,9 @@ class Doctor extends Authenticatable
     {
         return $this->hasMany(Schedule::class, 'doctor_id', 'doctor_id');
     }
+
+    public function guests(): HasMany
+    {
+        return $this->hasMany(Guest::class, 'doctor_id', 'doctor_id');
+    }
 }

@@ -27,8 +27,10 @@ const Prescriptions = lazy(() => import("./pages/Prescriptions"));
 const ProfilePage = lazy(() => import("./pages/ProfilePage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AppointmentPage = lazy(() => import("./pages/AppointmentPage"));
+const BookAppointmentPage = lazy(() => import("./pages/BookAppointmentPage"));
 const DoctorPatients = lazy(() => import("./pages/doctor/DoctorPatients"));
 const DoctorAppointments = lazy(() => import("./pages/doctor/DoctorAppointments"));
+const DoctorSchedules = lazy(() => import("./pages/doctor/DoctorSchedules"));
 const DoctorConsultations = lazy(() => import("./pages/doctor/DoctorConsultations"));
 const DoctorRecords = lazy(() => import("./pages/doctor/DoctorRecords"));
 const DoctorPrescriptions = lazy(() => import("./pages/doctor/DoctorPrescriptions"));
@@ -75,6 +77,7 @@ const App = () => (
               <Route path="/profile" element={<ProfilePage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/appointment" element={<AppointmentPage />} />
+              <Route path="/book-appointment" element={<BookAppointmentPage />} />
               <Route path="/doctor/patients" element={<DoctorPatients />} />
               <Route path="/doctor/appointments" element={<DoctorAppointments />} />
               <Route path="/doctor/consultations" element={<DoctorConsultations />} />
@@ -84,7 +87,7 @@ const App = () => (
               <Route path="/doctor/medicine-tests" element={<DoctorMedicineTests />} />
               <Route path="/doctor/blogs" element={<DoctorBlogs />} />
               <Route path="/doctor/gallery" element={<DoctorGallery />} />
-              <Route path="/doctor/schedules" element={<DoctorAppointments />} />
+              <Route path="/doctor/schedules" element={<DoctorSchedules />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
               </Routes>

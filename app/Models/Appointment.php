@@ -11,6 +11,7 @@ class Appointment extends Model
 
     protected $fillable = [
         'patient_id',
+        'guest_id',
         'name',
         'email',
         'phone',
@@ -18,8 +19,10 @@ class Appointment extends Model
         'appointment_date',
         'appointment_time',
         'doctor',
+        'doctor_id',
         'consultation_type',
         'reason',
+        'medical_notes',
         'terms_accepted',
         'status'
     ];
@@ -29,6 +32,21 @@ class Appointment extends Model
         'appointment_time' => 'datetime:H:i',
         'terms_accepted' => 'boolean',
     ];
+
+    public function doctor()
+    {
+        return $this->belongsTo(Doctor::class, 'doctor_id', 'doctor_id');
+    }
+
+    public function patient()
+    {
+        return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
+    }
+
+    public function guest()
+    {
+        return $this->belongsTo(Guest::class, 'guest_id', 'id');
+    }
 }
 
 class Schedule extends Model

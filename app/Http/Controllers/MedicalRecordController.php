@@ -6,6 +6,7 @@ use App\Models\MedicalRecord;
 use App\Models\Schedule;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class MedicalRecordController extends Controller
 {
@@ -39,7 +40,7 @@ class MedicalRecordController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            \Log::error('Medical record creation failed: ' . $e->getMessage());
+            Log::error('Medical record creation failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to create medical record: ' . $e->getMessage()], 500);
         }
     }
@@ -67,7 +68,7 @@ class MedicalRecordController extends Controller
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
-            \Log::error('Medical record update failed: ' . $e->getMessage());
+            Log::error('Medical record update failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to update medical record: ' . $e->getMessage()], 500);
         }
     }
@@ -106,7 +107,7 @@ class MedicalRecordController extends Controller
             
             return response()->json($records);
         } catch (\Exception $e) {
-            \Log::error('Failed to retrieve medical records for patient ' . $user->patient_id, [
+            Log::error('Failed to retrieve medical records for patient ' . $user->patient_id, [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
@@ -134,10 +135,18 @@ class MedicalRecordController extends Controller
     {
         $validated = $request->validate([
             'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i|after:start_time',
+            'start_time' => 'required',
+            'end_time' => 'required',
             'is_available' => 'boolean',
         ]);
+
+        // Normalize time format
+        if (strlen($validated['start_time']) === 5) {
+            $validated['start_time'] .= ':00';
+        }
+        if (strlen($validated['end_time']) === 5) {
+            $validated['end_time'] .= ':00';
+        }
 
         $user = $request->user();
         
@@ -147,5 +156,46 @@ class MedicalRecordController extends Controller
         ]);
 
         return response()->json($schedule, 201);
+    }
+
+    public function updateSchedule(Request $request, $id): JsonResponse
+    {
+        $validated = $request->validate([
+            'day_of_week' => 'required|in:monday,tuesday,wednesday,thursday,friday,saturday,sunday',
+            'start_time' => 'required',
+            'end_time' => 'required',
+            'is_available' => 'boolean',
+        ]);
+
+        // Normalize time format
+        if (strlen($validated['start_time']) === 5) {
+            $validated['start_time'] .= ':00';
+        }
+        if (strlen($validated['end_time']) === 5) {
+            $validated['end_time'] .= ':00';
+        }
+
+        $user = $request->user();
+        
+        $schedule = Schedule::where('id', $id)
+            ->where('doctor_id', $user->doctor_id)
+            ->firstOrFail();
+        
+        $schedule->update($validated);
+
+        return response()->json($schedule);
+    }
+
+    public function deleteSchedule(Request $request, $id): JsonResponse
+    {
+        $user = $request->user();
+        
+        $schedule = Schedule::where('id', $id)
+            ->where('doctor_id', $user->doctor_id)
+            ->firstOrFail();
+        
+        $schedule->delete();
+
+        return response()->json(['message' => 'Schedule deleted successfully']);
     }
 }

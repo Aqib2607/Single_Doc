@@ -21,10 +21,25 @@ const AppointmentPage = () => {
     gender: ''
   });
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name?: string;
+    email?: string;
+    phone?: string;
+    gender?: string;
+    date: string;
+    time: string;
+    doctor_id: number | undefined;
+    consultationType: string;
+    reason: string;
+    termsAccepted: boolean;
+  }>({
+    name: '',
+    email: '',
+    phone: '',
+    gender: '',
     date: '',
     time: '',
-    doctor_id: undefined as number | undefined,
+    doctor_id: undefined,
     consultationType: '',
     reason: '',
     termsAccepted: false
@@ -41,27 +56,12 @@ const AppointmentPage = () => {
     setErrors({});
     setSuccessMessage('');
     
-    // Client-side validation
-    const clientErrors: Record<string, string[]> = {};
-    
-    if (!formData.date) clientErrors.date = ['Date is required'];
-    if (!formData.time) clientErrors.time = ['Time is required'];
-    if (!formData.doctor_id) clientErrors.doctor_id = ['Please select a doctor'];
-    if (!formData.termsAccepted) clientErrors.termsAccepted = ['You must accept the terms'];
-    
-    if (Object.keys(clientErrors).length > 0) {
-      setErrors(clientErrors);
-      setIsSubmitting(false);
-      return;
-    }
-    
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/appointments', {
+      const response = await fetch('/api/book-appointment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
           'Accept': 'application/json',
           'Authorization': token ? `Bearer ${token}` : ''
         },
@@ -73,6 +73,10 @@ const AppointmentPage = () => {
       if (response.ok && data.success) {
         setSuccessMessage(data.message);
         setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          gender: '',
           date: '',
           time: '',
           doctor_id: undefined,
@@ -81,20 +85,17 @@ const AppointmentPage = () => {
           termsAccepted: false
         });
         
-        // Redirect to dashboard after 2 seconds
-        setTimeout(() => {
-          navigate('/patient-dashboard');
-        }, 2000);
-      } else {
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          setErrors({ general: [data.message || 'Failed to book appointment. Please try again.'] });
+        // Only redirect authenticated patients to dashboard
+        if (patientProfile.name) {
+          setTimeout(() => {
+            navigate('/patient-dashboard');
+          }, 2000);
         }
+      } else {
+        setErrors(data.errors || { general: [data.message] });
       }
     } catch (error) {
-      console.error('Appointment booking error:', error);
-      setErrors({ general: ['Network error. Please check your connection and try again.'] });
+      setErrors({ general: ['Network error. Please try again.'] });
     } finally {
       setIsSubmitting(false);
     }
@@ -113,7 +114,6 @@ const AppointmentPage = () => {
       try {
         const token = localStorage.getItem('token');
         if (!token) {
-          setErrors({ general: ['Please log in to book an appointment'] });
           setProfileLoading(false);
           return;
         }
@@ -128,11 +128,9 @@ const AppointmentPage = () => {
         if (response.ok) {
           const profile = await response.json();
           setPatientProfile(profile);
-        } else {
-          setErrors({ general: ['Unable to load patient profile. Please log in again.'] });
         }
       } catch (error) {
-        setErrors({ general: ['Network error. Please check your connection.'] });
+        console.error('Failed to load patient profile:', error);
       } finally {
         setProfileLoading(false);
       }
@@ -181,7 +179,7 @@ const AppointmentPage = () => {
                       <div className="flex items-start gap-3">
                         <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5" />
                         <div>
-                          <h4 className="font-semibold text-red-800 mb-1">Booking Failed</h4>
+                          <h4 className="font-semibold text-red-800 mb-1">Booking Error</h4>
                           {errors.general.map((error, index) => (
                             <p key={index} className="text-sm text-red-700">{error}</p>
                           ))}
@@ -189,54 +187,128 @@ const AppointmentPage = () => {
                       </div>
                     </div>
                   )}
-                  {/* Patient Information (Read-only) */}
-                  <div className="bg-gray-50 rounded-lg p-4 border">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
-                      <User className="h-4 w-4" />
-                      Patient Information
-                    </h3>
-                    {profileLoading ? (
-                      <div className="flex items-center gap-2 text-sm text-gray-500">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Loading patient details...
-                      </div>
-                    ) : (
+                  {/* Guest Information Fields */}
+                  {!patientProfile.name && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                        <User className="h-5 w-5" />
+                        Personal Information
+                      </h3>
+                      
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label className="text-sm text-gray-600">Full Name</Label>
+                          <Label htmlFor="name">Full Name *</Label>
                           <Input
-                            value={patientProfile.name}
-                            readOnly
-                            className="bg-gray-100 cursor-not-allowed"
+                            id="name"
+                            value={formData.name || ''}
+                            onChange={(e) => handleChange('name', e.target.value)}
+                            required
                           />
+                          {errors.name && (
+                            <p className="text-sm text-red-600">{errors.name[0]}</p>
+                          )}
                         </div>
+
                         <div className="space-y-2">
-                          <Label className="text-sm text-gray-600">Email</Label>
+                          <Label htmlFor="phone">Phone Number *</Label>
                           <Input
-                            value={patientProfile.email}
-                            readOnly
-                            className="bg-gray-100 cursor-not-allowed"
+                            id="phone"
+                            type="tel"
+                            value={formData.phone || ''}
+                            onChange={(e) => handleChange('phone', e.target.value)}
+                            required
                           />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-gray-600">Phone</Label>
-                          <Input
-                            value={patientProfile.phone}
-                            readOnly
-                            className="bg-gray-100 cursor-not-allowed"
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-sm text-gray-600">Gender</Label>
-                          <Input
-                            value={patientProfile.gender ? patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1) : ''}
-                            readOnly
-                            className="bg-gray-100 cursor-not-allowed"
-                          />
+                          {errors.phone && (
+                            <p className="text-sm text-red-600">{errors.phone[0]}</p>
+                          )}
                         </div>
                       </div>
-                    )}
-                  </div>
+
+                      <div className="grid md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email (Optional)</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email || ''}
+                            onChange={(e) => handleChange('email', e.target.value)}
+                          />
+                          {errors.email && (
+                            <p className="text-sm text-red-600">{errors.email[0]}</p>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor="gender">Gender *</Label>
+                          <Select onValueChange={(value) => handleChange('gender', value)}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="male">Male</SelectItem>
+                              <SelectItem value="female">Female</SelectItem>
+                              <SelectItem value="other">Other</SelectItem>
+                              <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {errors.gender && (
+                            <p className="text-sm text-red-600">{errors.gender[0]}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Patient Information (Read-only) */}
+                  {patientProfile.name && (
+                    <div className="bg-gray-50 rounded-lg p-4 border">
+                      <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Patient Information
+                      </h3>
+                      {profileLoading ? (
+                        <div className="flex items-center gap-2 text-sm text-gray-500">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          Loading patient details...
+                        </div>
+                      ) : (
+                        <div className="grid md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label className="text-sm text-gray-600">Full Name</Label>
+                            <Input
+                              value={patientProfile.name}
+                              readOnly
+                              className="bg-gray-100 cursor-not-allowed"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm text-gray-600">Email</Label>
+                            <Input
+                              value={patientProfile.email}
+                              readOnly
+                              className="bg-gray-100 cursor-not-allowed"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm text-gray-600">Phone</Label>
+                            <Input
+                              value={patientProfile.phone}
+                              readOnly
+                              className="bg-gray-100 cursor-not-allowed"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm text-gray-600">Gender</Label>
+                            <Input
+                              value={patientProfile.gender ? patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1) : ''}
+                              readOnly
+                              className="bg-gray-100 cursor-not-allowed"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -334,18 +406,14 @@ const AppointmentPage = () => {
                       required
                     />
                     <Label htmlFor="terms" className="text-sm leading-relaxed">
-                      I agree to the{' '}
-                      <a href="#" className="text-primary hover:underline">Terms of Service</a>
-                      {' '}and{' '}
-                      <a href="#" className="text-primary hover:underline">Privacy Policy</a>
-                      . I understand that appointment confirmation is subject to availability and will be confirmed via email or phone.
+                      I agree to the Terms of Service and Privacy Policy. I understand that appointment confirmation is subject to availability and will be confirmed via email or phone.
                     </Label>
                   </div>
 
                   <Button 
                     type="submit" 
                     className="w-full gradient-primary shadow-elegant hover:shadow-glow"
-                    disabled={!formData.termsAccepted || isSubmitting}
+                    disabled={isSubmitting || !formData.termsAccepted}
                   >
                     {isSubmitting ? (
                       <>

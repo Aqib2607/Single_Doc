@@ -251,4 +251,246 @@ class AppointmentController extends Controller
             'message' => 'Appointment deleted successfully'
         ]);
     }
+
+    public function getDoctorAppointments(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            if (!$user || !isset($user->doctor_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. Doctor authentication required.'
+                ], 401);
+            }
+
+            // Get doctor name for filtering
+            $doctor = Doctor::find($user->doctor_id);
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Doctor profile not found.'
+                ], 404);
+            }
+
+            $appointments = Appointment::with(['patient', 'guest'])
+                ->where('doctor', $doctor->name)
+                ->orderBy('appointment_date', 'desc')
+                ->orderBy('appointment_time', 'desc')
+                ->get()
+                ->map(function ($appointment) {
+                    return [
+                        'appointment_id' => $appointment->id,
+                        'patient_info' => [
+                            'name' => $appointment->name,
+                            'email' => $appointment->email,
+                            'phone' => $appointment->phone,
+                            'gender' => $appointment->gender,
+                            'type' => $appointment->patient_id ? 'Patient' : 'Guest'
+                        ],
+                        'date_time' => [
+                            'date' => $appointment->appointment_date,
+                            'time' => $appointment->appointment_time,
+                            'formatted' => date('M d, Y', strtotime($appointment->appointment_date)) . ' at ' . date('g:i A', strtotime($appointment->appointment_time))
+                        ],
+                        'status' => $appointment->status,
+                        'consultation_type' => $appointment->consultation_type,
+                        'reason' => $appointment->reason,
+                        'medical_notes' => $appointment->medical_notes ?? null
+                    ];
+                });
+
+            if ($appointments->isEmpty()) {
+                return response()->json([
+                    'success' => true,
+                    'data' => [],
+                    'total' => 0,
+                    'message' => 'No appointments found for this doctor.'
+                ], 200);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $appointments,
+                'total' => $appointments->count()
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error('Error fetching doctor appointments', [
+                'error' => $e->getMessage(),
+                'doctor_id' => $user->doctor_id ?? null
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to fetch appointments. Please try again later.'
+            ], 500);
+        }
+    }
+
+    public function getTodayAppointments(Request $request)
+    {
+        try {
+            $user = $request->user();
+            
+            if (!$user || !isset($user->doctor_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. Doctor authentication required.'
+                ], 401);
+            }
+
+            // Get doctor name for filtering
+            $doctor = Doctor::find($user->doctor_id);
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Doctor profile not found.'
+                ], 404);
+            }
+
+            $today = now()->format('Y-m-d');
+            $appointments = Appointment::with(['patient', 'guest'])
+                ->where('doctor', $doctor->name)
+                ->whereDate('appointment_date', $today)
+                ->orderBy('appointment_time', 'asc')
+                ->get()
+                ->map(function ($appointment) {
+                    return [
+                        'id' => $appointment->id,
+                        'patient_name' => $appointment->name,
+                        'patient_phone' => $appointment->phone,
+                        'time' => date('H:i', strtotime($appointment->appointment_time)),
+                        'formatted_time' => date('g:i A', strtotime($appointment->appointment_time)),
+                        'purpose' => $appointment->reason ?: 'General consultation',
+                        'status' => $appointment->status,
+                        'consultation_type' => $appointment->consultation_type
+                    ];
+                });
+
+            return response()->json([
+                'success' => true,
+                'data' => $appointments,
+                'total' => $appointments->count()
+            ], 200);
+
+        } catch (Exception $e) {
+            Log::error('Error fetching today appointments', [
+                'error' => $e->getMessage(),
+                'doctor_id' => $user->doctor_id ?? null
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to fetch today\'s appointments.'
+            ], 500);
+        }
+    }
+
+    public function updateDoctorAppointment(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+            
+            if (!$user || !isset($user->doctor_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. Doctor authentication required.'
+                ], 401);
+            }
+
+            $doctor = Doctor::find($user->doctor_id);
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Doctor profile not found.'
+                ], 404);
+            }
+
+            $appointment = Appointment::where('id', $id)
+                ->where('doctor', $doctor->name)
+                ->first();
+
+            if (!$appointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Appointment not found.'
+                ], 404);
+            }
+
+            $validated = $request->validate([
+                'status' => 'required|in:pending,confirmed,cancelled',
+                'medical_notes' => 'nullable|string'
+            ]);
+
+            $appointment->update($validated);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment updated successfully.'
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error updating appointment', [
+                'error' => $e->getMessage(),
+                'appointment_id' => $id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to update appointment.'
+            ], 500);
+        }
+    }
+
+    public function deleteDoctorAppointment(Request $request, $id)
+    {
+        try {
+            $user = $request->user();
+            
+            if (!$user || !isset($user->doctor_id)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized. Doctor authentication required.'
+                ], 401);
+            }
+
+            $doctor = Doctor::find($user->doctor_id);
+            if (!$doctor) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Doctor profile not found.'
+                ], 404);
+            }
+
+            $appointment = Appointment::where('id', $id)
+                ->where('doctor', $doctor->name)
+                ->first();
+
+            if (!$appointment) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Appointment not found.'
+                ], 404);
+            }
+
+            $appointment->delete();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Appointment deleted successfully.'
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Error deleting appointment', [
+                'error' => $e->getMessage(),
+                'appointment_id' => $id
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Unable to delete appointment.'
+            ], 500);
+        }
+    }
 }

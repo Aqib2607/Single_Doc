@@ -7,74 +7,131 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DoctorSidebar from '@/components/DoctorSidebar';
-import { Calendar, Clock, Plus } from 'lucide-react';
+import { Calendar, Clock, Plus, Edit, Trash2, Save, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const DoctorAppointments = () => {
-  const [schedules, setSchedules] = useState([]);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [formData, setFormData] = useState({
-    day_of_week: '',
-    start_time: '',
-    end_time: '',
-    is_available: true
-  });
+  const [todayAppointments, setTodayAppointments] = useState([]);
+  const [allAppointments, setAllAppointments] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editForm, setEditForm] = useState({ status: '', medical_notes: '' });
 
   useEffect(() => {
-    fetchSchedules();
+    fetchTodayAppointments();
+    fetchAllAppointments();
   }, []);
 
-  const fetchSchedules = async () => {
+  const fetchTodayAppointments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/doctor-schedules', {
+      console.log('Fetching today appointments with token:', token ? 'Present' : 'Missing');
+      const response = await fetch('/api/doctor/today-appointments', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
+      console.log('Today appointments response status:', response.status);
       if (response.ok) {
-        const data = await response.json();
-        setSchedules(data);
+        const result = await response.json();
+        console.log('Today appointments result:', result);
+        setTodayAppointments(result.success ? result.data : []);
+      } else {
+        const errorText = await response.text();
+        console.error('Today appointments error:', response.status, errorText);
       }
     } catch (error) {
-      console.error('Error fetching schedules:', error);
+      console.error('Error fetching today appointments:', error);
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    // Validate form data
-    if (!formData.day_of_week || !formData.start_time || !formData.end_time) {
-      alert('Please fill in all required fields');
-      return;
-    }
-    
+  const fetchAllAppointments = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/doctor-schedules', {
-        method: 'POST',
+      console.log('Fetching all appointments with token:', token ? 'Present' : 'Missing');
+      const response = await fetch('/api/doctor/appointments', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+      });
+      console.log('All appointments response status:', response.status);
+      if (response.ok) {
+        const result = await response.json();
+        console.log('All appointments result:', result);
+        setAllAppointments(result.success ? result.data : []);
+      } else {
+        const errorText = await response.text();
+        console.error('All appointments error:', response.status, errorText);
+      }
+    } catch (error) {
+      console.error('Error fetching all appointments:', error);
+    }
+  };
+
+  const handleEdit = (appointment) => {
+    setEditingId(appointment.appointment_id);
+    setEditForm({
+      status: appointment.status,
+      medical_notes: appointment.medical_notes || ''
+    });
+  };
+
+  const handleUpdate = async (appointmentId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/doctor/appointments/${appointmentId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editForm)
       });
       
       if (response.ok) {
-        fetchSchedules();
-        setShowAddForm(false);
-        setFormData({ day_of_week: '', start_time: '', end_time: '', is_available: true });
-        alert('Schedule added successfully!');
+        setEditingId(null);
+        fetchAllAppointments();
+        fetchTodayAppointments();
+        alert('Appointment updated successfully!');
       } else {
-        const errorData = await response.json();
-        alert('Error: ' + (errorData.message || 'Failed to add schedule'));
+        alert('Failed to update appointment');
       }
     } catch (error) {
-      console.error('Error adding schedule:', error);
-      alert('Network error. Please try again.');
+      console.error('Error updating appointment:', error);
+      alert('Error updating appointment');
     }
+  };
+
+  const handleDelete = async (appointmentId) => {
+    if (!confirm('Are you sure you want to delete this appointment?')) return;
+    
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`/api/doctor/appointments/${appointmentId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+      
+      if (response.ok) {
+        fetchAllAppointments();
+        fetchTodayAppointments();
+        alert('Appointment deleted successfully!');
+      } else {
+        alert('Failed to delete appointment');
+      }
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+      alert('Error deleting appointment');
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingId(null);
+    setEditForm({ status: '', medical_notes: '' });
   };
 
   return (
@@ -89,8 +146,8 @@ const DoctorAppointments = () => {
           <main className="flex-1 px-6 py-8">
             <div className="container mx-auto max-w-6xl">
               <div className="mb-8 animate-fade-in-up">
-                <h1 className="text-4xl font-display font-bold text-gradient mb-4">Schedule Management</h1>
-                <p className="text-xl text-muted-foreground">Manage your weekly schedule and availability</p>
+                <h1 className="text-4xl font-display font-bold text-gradient mb-4">Appointments</h1>
+                <p className="text-xl text-muted-foreground">View and manage your appointments</p>
               </div>
 
               <Card className="shadow-card border-border bg-card">
@@ -98,87 +155,124 @@ const DoctorAppointments = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <Calendar className="h-5 w-5 text-primary" />
-                      Today's Schedule
+                      Today's Appointments
                     </CardTitle>
                     <CardDescription>Your appointments for today</CardDescription>
                   </div>
-                  <Button onClick={() => setShowAddForm(!showAddForm)} className="gradient-primary shadow-elegant">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Slot
-                  </Button>
                 </CardHeader>
                 <CardContent>
-                  {showAddForm && (
-                    <form onSubmit={handleSubmit} className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <Label>Day of Week *</Label>
-                          <Select value={formData.day_of_week} onValueChange={(value) => setFormData({...formData, day_of_week: value})}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select day" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="monday">Monday</SelectItem>
-                              <SelectItem value="tuesday">Tuesday</SelectItem>
-                              <SelectItem value="wednesday">Wednesday</SelectItem>
-                              <SelectItem value="thursday">Thursday</SelectItem>
-                              <SelectItem value="friday">Friday</SelectItem>
-                              <SelectItem value="saturday">Saturday</SelectItem>
-                              <SelectItem value="sunday">Sunday</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Start Time *</Label>
-                          <Input 
-                            type="time" 
-                            value={formData.start_time}
-                            onChange={(e) => setFormData({...formData, start_time: e.target.value})}
-                            required
-                          />
-                        </div>
-                        <div>
-                          <Label>End Time *</Label>
-                          <Input 
-                            type="time" 
-                            value={formData.end_time}
-                            onChange={(e) => setFormData({...formData, end_time: e.target.value})}
-                            required
-                          />
-                        </div>
-                        <div className="flex items-end">
-                          <Button type="submit" className="w-full">Add Schedule</Button>
-                        </div>
-                      </div>
-                    </form>
-                  )}
+
                   <div className="space-y-4">
-                    {schedules.map((schedule) => (
-                      <div key={schedule.id} className="flex justify-between items-center p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
+                    {todayAppointments.map((appointment) => (
+                      <div key={appointment.id} className="flex justify-between items-center p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
                         <div className="flex items-center gap-3">
-                          <div className={`w-2 h-2 rounded-full ${
-                            schedule.is_available ? 'bg-green-500' : 'bg-red-500'
-                          }`}></div>
+                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                           <div>
                             <h3 className="font-semibold text-foreground">
-                              {schedule.day_of_week.charAt(0).toUpperCase() + schedule.day_of_week.slice(1)}
+                              {appointment.patient_name}
                             </h3>
                             <p className="text-sm text-muted-foreground flex items-center gap-1">
                               <Clock className="h-3 w-3" />
-                              {schedule.start_time} - {schedule.end_time}
+                              {appointment.formatted_time}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {appointment.purpose}
                             </p>
                           </div>
                         </div>
-                        <span className={`px-2 py-1 rounded text-xs ${
-                          schedule.is_available ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                        }`}>
-                          {schedule.is_available ? 'Available' : 'Unavailable'}
-                        </span>
+                        <div className="text-right">
+                          <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
+                            {appointment.consultation_type || 'Consultation'}
+                          </span>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {appointment.status}
+                          </p>
+                        </div>
                       </div>
                     ))}
-                    {schedules.length === 0 && (
+                    {todayAppointments.length === 0 && (
                       <div className="text-center py-8 text-muted-foreground">
-                        No schedules added yet. Click "Add Slot" to create your first schedule.
+                        No appointments scheduled for today.
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="shadow-card border-border bg-card mt-8">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5 text-primary" />
+                    All Appointments
+                  </CardTitle>
+                  <CardDescription>Complete list of your appointments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {allAppointments.map((appointment) => (
+                      <div key={appointment.appointment_id} className="flex justify-between items-center p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                          <div>
+                            <h3 className="font-semibold text-foreground">
+                              {appointment.patient_info.name}
+                            </h3>
+                            <p className="text-sm text-muted-foreground flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              {appointment.date_time.formatted}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {appointment.reason || 'No reason provided'}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          {editingId === appointment.appointment_id ? (
+                            <div className="space-y-2">
+                              <Select value={editForm.status} onValueChange={(value) => setEditForm({...editForm, status: value})}>
+                                <SelectTrigger className="w-32">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="pending">Pending</SelectItem>
+                                  <SelectItem value="confirmed">Confirmed</SelectItem>
+                                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                                </SelectContent>
+                              </Select>
+                              <div className="flex gap-1">
+                                <Button size="sm" onClick={() => handleUpdate(appointment.appointment_id)}>
+                                  <Save className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={handleCancel}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-2">
+                              <span className={`px-2 py-1 rounded text-xs ${
+                                appointment.status === 'confirmed' ? 'bg-green-100 text-green-800' :
+                                appointment.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-red-100 text-red-800'
+                              }`}>
+                                {appointment.status}
+                              </span>
+                              <div className="flex gap-1">
+                                <Button size="sm" variant="outline" onClick={() => handleEdit(appointment)}>
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={() => handleDelete(appointment.appointment_id)} className="text-red-600">
+                                  <Trash2 className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {allAppointments.length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        No appointments found.
                       </div>
                     )}
                   </div>

@@ -24,8 +24,18 @@ use App\Http\Controllers\GalleryController;
 
 use App\Http\Controllers\Api\MedicalRecordActionsController;
 use App\Http\Controllers\Api\TestController as ApiTestController;
+use App\Http\Controllers\Api\GuestController;
+use App\Http\Controllers\Api\BookingController;
 
 Route::get('/test', [ApiTestController::class, 'test']);
+
+// Unified booking route (handles both guest and patient)
+Route::post('/book-appointment', [BookingController::class, 'book']);
+
+// Guest routes (no authentication required)
+Route::post('/guests', [GuestController::class, 'store']);
+Route::get('/guests/{id}', [GuestController::class, 'show']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -54,11 +64,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/appointments', [AppointmentController::class, 'store']);
     Route::get('/appointments', [AppointmentController::class, 'index']);
     Route::get('/patient-appointments', [AppointmentController::class, 'getPatientAppointments']);
+    Route::get('/doctor/appointments', [AppointmentController::class, 'getDoctorAppointments']);
+    Route::get('/doctor/today-appointments', [AppointmentController::class, 'getTodayAppointments']);
+    Route::put('/doctor/appointments/{id}', [AppointmentController::class, 'updateDoctorAppointment']);
+    Route::delete('/doctor/appointments/{id}', [AppointmentController::class, 'deleteDoctorAppointment']);
     Route::put('/appointments/{id}', [AppointmentController::class, 'update']);
     Route::delete('/appointments/{id}', [AppointmentController::class, 'destroy']);
     Route::get('/patient-medical-records', [MedicalRecordController::class, 'getPatientMedicalRecords']);
     Route::get('/doctor-schedules', [MedicalRecordController::class, 'getDoctorSchedules']);
     Route::post('/doctor-schedules', [MedicalRecordController::class, 'storeSchedule']);
+    Route::put('/doctor-schedules/{id}', [MedicalRecordController::class, 'updateSchedule']);
+    Route::delete('/doctor-schedules/{id}', [MedicalRecordController::class, 'deleteSchedule']);
     Route::apiResource('patients', \App\Http\Controllers\PatientController::class);
     Route::apiResource('consultations', \App\Http\Controllers\ConsultationController::class);
     Route::resource('consultations', ConsultationController::class);
@@ -73,4 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('galleries', GalleryController::class);
 
     Route::delete('/medical-records/{recordId}', [MedicalRecordActionsController::class, 'delete']);
+    
+    // Admin-only guest routes
+    Route::get('/guests', [GuestController::class, 'index']);
 });

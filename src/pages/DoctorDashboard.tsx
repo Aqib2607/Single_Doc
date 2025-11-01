@@ -49,26 +49,29 @@ const DoctorDashboard = () => {
     };
 
     const fetchTodaySchedule = async () => {
-      setLoading(false);
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('/api/doctor-schedules', {
+        const response = await fetch('/api/doctor/today-appointments', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
         if (response.ok) {
-          const schedules = await response.json();
-          console.log('Schedules received:', schedules);
-          setTodaySchedule(schedules);
+          const result = await response.json();
+          if (result.success) {
+            setTodaySchedule(result.data);
+          } else {
+            setTodaySchedule([]);
+          }
         } else {
-          console.log('Response not ok:', response.status);
           setTodaySchedule([]);
         }
       } catch (error) {
-        console.error('Failed to fetch schedule data:', error);
+        console.error('Failed to fetch today\'s appointments:', error);
         setTodaySchedule([]);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -128,35 +131,48 @@ const DoctorDashboard = () => {
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">Your appointments for today</CardDescription>
                   </div>
-                  <Link to="/doctor/schedules">
-                    <Button size="sm" className="gradient-primary shadow-elegant hover:shadow-glow">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Slot
-                    </Button>
-                  </Link>
+                  <div className="flex gap-2">
+                    <Link to="/doctor/schedules">
+                      <Button size="sm" className="gradient-primary shadow-elegant hover:shadow-glow">
+                        <Calendar className="h-4 w-4 mr-2" />
+                        Manage Schedules
+                      </Button>
+                    </Link>
+                    <Link to="/doctor/appointments">
+                      <Button size="sm" variant="outline" className="border-border">
+                        <Eye className="h-4 w-4 mr-2" />
+                        View All
+                      </Button>
+                    </Link>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {loading ? (
-                      <div className="text-center py-4 text-muted-foreground">Loading schedule...</div>
+                      <div className="text-center py-4 text-muted-foreground">Loading appointments...</div>
                     ) : todaySchedule.length > 0 ? (
-                      todaySchedule.map((slot, index) => (
-                        <div key={index} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
+                      todaySchedule.map((appointment, index) => (
+                        <div key={appointment.id || index} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
                           <div className="flex items-start gap-3">
                             <div className={`w-2 h-2 rounded-full mt-2 ${
-                              slot.is_available ? 'bg-green-500' : 'bg-red-500'
+                              appointment.status === 'confirmed' ? 'bg-green-500' : 
+                              appointment.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
                             }`}></div>
                             <div>
-                              <p className="font-semibold text-foreground">
-                                {slot.is_available ? 'Available Slot' : 'Unavailable'}
+                              <p className="font-semibold text-foreground flex items-center gap-2">
+                                <User className="h-4 w-4" />
+                                {appointment.patient_name}
                               </p>
                               <p className="text-sm text-muted-foreground flex items-center gap-1">
-                                <Calendar className="h-3 w-3" />
-                                {slot.day_of_week.charAt(0).toUpperCase() + slot.day_of_week.slice(1)}
+                                <Clock className="h-3 w-3" />
+                                {appointment.formatted_time}
                               </p>
                               <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
-                                {slot.start_time} - {slot.end_time}
+                                <Stethoscope className="h-3 w-3" />
+                                {appointment.purpose}
+                              </p>
+                              <p className="text-xs text-primary mt-1 capitalize">
+                                {appointment.status} • {appointment.consultation_type}
                               </p>
                             </div>
                           </div>
@@ -164,7 +180,7 @@ const DoctorDashboard = () => {
                       ))
                     ) : (
                       <div className="text-center py-4 text-muted-foreground">
-                        No schedule available for today
+                        No appointments scheduled for today
                       </div>
                     )}
                   </div>

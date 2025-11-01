@@ -8,14 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DoctorSidebar from '@/components/DoctorSidebar';
-import { Stethoscope, Plus, Edit, Trash2, X } from 'lucide-react';
+import { Stethoscope, Plus, Trash2, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 
 const DoctorConsultations = () => {
   const [consultations, setConsultations] = useState([]);
   const [patients, setPatients] = useState([]);
   const [showForm, setShowForm] = useState(false);
-  const [editingConsultation, setEditingConsultation] = useState(null);
+
   const [formData, setFormData] = useState({
     patient_id: '',
     consultation_date: '',
@@ -39,15 +39,21 @@ const DoctorConsultations = () => {
   const fetchConsultations = async () => {
     try {
       const token = localStorage.getItem('token');
+      console.log('Fetching consultations with token:', token ? 'Present' : 'Missing');
       const response = await fetch('/api/consultations', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
+      console.log('Consultations response status:', response.status);
       if (response.ok) {
         const data = await response.json();
+        console.log('Consultations data:', data);
         setConsultations(data);
+      } else {
+        const errorText = await response.text();
+        console.error('Consultations error:', response.status, errorText);
       }
     } catch (error) {
       console.error('Error fetching consultations:', error);
@@ -85,19 +91,15 @@ const DoctorConsultations = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const url = editingConsultation ? `/api/consultations/${editingConsultation.id}` : '/api/consultations';
-      const method = editingConsultation ? 'PUT' : 'POST';
-      
-      // Ensure doctor_id is included
       const submitData = {
         ...formData,
         doctor_id: formData.doctor_id || localStorage.getItem('doctor_id') || '1'
       };
       
-      console.log('Submitting consultation:', { url, method, submitData });
+      console.log('Submitting consultation:', { submitData });
       
-      const response = await fetch(url, {
-        method,
+      const response = await fetch('/api/consultations', {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -110,7 +112,7 @@ const DoctorConsultations = () => {
         await fetchConsultations();
         resetForm();
         setError('');
-        alert(editingConsultation ? 'Consultation updated successfully!' : 'Consultation added successfully!');
+        alert('Consultation added successfully!');
       } else {
         const errorData = await response.json().catch(() => ({ message: 'Unknown error occurred' }));
         console.error('Error response:', errorData);
@@ -124,25 +126,19 @@ const DoctorConsultations = () => {
     }
   };
 
-  const handleEdit = (consultation) => {
-    setEditingConsultation(consultation);
-    setFormData({
-      patient_id: consultation.patient_id?.toString() || '',
-      consultation_date: consultation.consultation_date || '',
-      diagnosis: consultation.diagnosis || '',
-      treatment: consultation.treatment || '',
-      notes: consultation.notes || '',
-      follow_up_date: consultation.follow_up_date || '',
-      doctor_id: consultation.doctor_id?.toString() || localStorage.getItem('doctor_id') || '1'
-    });
-    setShowForm(true);
-    setError('');
-  };
+
 
   const handleDelete = async (id) => {
+    console.log('Delete consultation ID:', id);
+    if (!id) {
+      alert('Invalid consultation ID');
+      return;
+    }
+    
     if (confirm('Are you sure you want to delete this consultation?')) {
       try {
         const token = localStorage.getItem('token');
+        console.log('Deleting consultation with URL:', `/api/consultations/${id}`);
         const response = await fetch(`/api/consultations/${id}`, {
           method: 'DELETE',
           headers: {
@@ -153,9 +149,13 @@ const DoctorConsultations = () => {
         if (response.ok) {
           fetchConsultations();
           alert('Consultation deleted successfully!');
+        } else {
+          console.error('Delete failed with status:', response.status);
+          alert('Failed to delete consultation');
         }
       } catch (error) {
         console.error('Error deleting consultation:', error);
+        alert('Error deleting consultation');
       }
     }
   };
@@ -171,7 +171,6 @@ const DoctorConsultations = () => {
       follow_up_date: '',
       doctor_id: doctorId
     });
-    setEditingConsultation(null);
     setShowForm(false);
     setError('');
   };
@@ -210,7 +209,7 @@ const DoctorConsultations = () => {
                   {showForm && (
                     <form onSubmit={handleSubmit} className="mb-6 p-4 border border-border rounded-lg bg-muted/30">
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold">{editingConsultation ? 'Edit Consultation' : 'New Consultation'}</h3>
+                        <h3 className="text-lg font-semibold">New Consultation</h3>
                         <Button type="button" onClick={resetForm} variant="ghost" size="sm">
                           <X className="h-4 w-4" />
                         </Button>
@@ -256,7 +255,7 @@ const DoctorConsultations = () => {
                         </div>
                         <div className="col-span-2">
                           <Button type="submit" className="w-full" disabled={loading}>
-                            {loading ? 'Saving...' : (editingConsultation ? 'Update Consultation' : 'Add Consultation')}
+                            {loading ? 'Saving...' : 'Add Consultation'}
                           </Button>
                         </div>
                       </div>
@@ -269,32 +268,29 @@ const DoctorConsultations = () => {
                       const followUpDate = consultation.follow_up_date ? new Date(consultation.follow_up_date).toLocaleDateString() : null;
                       
                       return (
-                      <div key={consultation.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-foreground">
-                            {patient ? patient.name : `Patient ID: ${consultation.patient_id}`}
-                          </h3>
-                          <p className="text-sm text-muted-foreground">Date: {consultationDate}</p>
-                          <p className="text-sm text-primary font-medium">Diagnosis: {consultation.diagnosis}</p>
-                          {consultation.treatment && (
-                            <p className="text-sm text-muted-foreground">Treatment: {consultation.treatment}</p>
-                          )}
-                          {followUpDate && (
-                            <p className="text-sm text-blue-600">Follow-up: {followUpDate}</p>
-                          )}
-                          {consultation.notes && (
-                            <p className="text-sm text-muted-foreground mt-1 italic">{consultation.notes}</p>
-                          )}
+                        <div key={consultation.id} className="flex justify-between items-start p-4 border border-border rounded-lg bg-muted/50 hover:bg-muted transition-smooth">
+                          <div className="flex-1">
+                            <h3 className="font-semibold text-foreground">
+                              {patient ? patient.name : `Patient ID: ${consultation.patient_id}`}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">Date: {consultationDate}</p>
+                            <p className="text-sm text-primary font-medium">Diagnosis: {consultation.diagnosis}</p>
+                            {consultation.treatment && (
+                              <p className="text-sm text-muted-foreground">Treatment: {consultation.treatment}</p>
+                            )}
+                            {followUpDate && (
+                              <p className="text-sm text-blue-600">Follow-up: {followUpDate}</p>
+                            )}
+                            {consultation.notes && (
+                              <p className="text-sm text-muted-foreground mt-1 italic">{consultation.notes}</p>
+                            )}
+                          </div>
+                          <div className="flex gap-2">
+                            <Button onClick={() => handleDelete(consultation.id)} size="sm" variant="outline" className="text-red-600 hover:text-red-700">
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Button onClick={() => handleEdit(consultation)} size="sm" variant="outline">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button onClick={() => handleDelete(consultation.id)} size="sm" variant="outline" className="text-red-600 hover:text-red-700">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
                       );
                     })}
                     {consultations.length === 0 && (
