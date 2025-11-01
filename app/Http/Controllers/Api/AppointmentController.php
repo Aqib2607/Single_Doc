@@ -87,6 +87,7 @@ class AppointmentController extends Controller
                 'appointment_date' => $validated['date'],
                 'appointment_time' => $validated['time'],
                 'doctor' => $doctor->name,
+                'doctor_id' => $doctor->doctor_id,
                 'consultation_type' => $validated['consultationType'] ?? null,
                 'reason' => $validated['reason'],
                 'terms_accepted' => $validated['termsAccepted'],
@@ -274,7 +275,10 @@ class AppointmentController extends Controller
             }
 
             $appointments = Appointment::with(['patient', 'guest'])
-                ->where('doctor', $doctor->name)
+                ->where(function($query) use ($doctor) {
+                    $query->where('doctor_id', $doctor->doctor_id)
+                          ->orWhere('doctor', $doctor->name);
+                })
                 ->orderBy('appointment_date', 'desc')
                 ->orderBy('appointment_time', 'desc')
                 ->get()
@@ -351,7 +355,10 @@ class AppointmentController extends Controller
 
             $today = now()->format('Y-m-d');
             $appointments = Appointment::with(['patient', 'guest'])
-                ->where('doctor', $doctor->name)
+                ->where(function($query) use ($doctor) {
+                    $query->where('doctor_id', $doctor->doctor_id)
+                          ->orWhere('doctor', $doctor->name);
+                })
                 ->whereDate('appointment_date', $today)
                 ->orderBy('appointment_time', 'asc')
                 ->get()
@@ -408,7 +415,10 @@ class AppointmentController extends Controller
             }
 
             $appointment = Appointment::where('id', $id)
-                ->where('doctor', $doctor->name)
+                ->where(function($query) use ($doctor) {
+                    $query->where('doctor_id', $doctor->doctor_id)
+                          ->orWhere('doctor', $doctor->name);
+                })
                 ->first();
 
             if (!$appointment) {
@@ -464,7 +474,10 @@ class AppointmentController extends Controller
             }
 
             $appointment = Appointment::where('id', $id)
-                ->where('doctor', $doctor->name)
+                ->where(function($query) use ($doctor) {
+                    $query->where('doctor_id', $doctor->doctor_id)
+                          ->orWhere('doctor', $doctor->name);
+                })
                 ->first();
 
             if (!$appointment) {

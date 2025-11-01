@@ -20,61 +20,74 @@ const DoctorDashboard = () => {
   });
   const [todaySchedule, setTodaySchedule] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/doctor-dashboard', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
+  const fetchDashboardData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/doctor-dashboard', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDashboardData(data);
+      } else {
+        console.error('Dashboard API error:', response.status, response.statusText);
+        setDashboardData({
+          satisfaction_rate: 0,
+          average_rating: 0,
+          total_reviews: 0,
+          today_appointments: 0,
+          total_patients: 0,
         });
-        if (response.ok) {
-          const data = await response.json();
-          setDashboardData(data);
-        } else {
-          setDashboardData({
-            satisfaction_rate: 0,
-            average_rating: 0,
-            total_reviews: 0,
-            today_appointments: 0,
-            total_patients: 0,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch dashboard data:', error);
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch dashboard data:', error);
+      setDashboardData({
+        satisfaction_rate: 0,
+        average_rating: 0,
+        total_reviews: 0,
+        today_appointments: 0,
+        total_patients: 0,
+      });
+    }
+  };
 
-    const fetchTodaySchedule = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('/api/doctor/today-appointments', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-        if (response.ok) {
-          const result = await response.json();
-          if (result.success) {
-            setTodaySchedule(result.data);
-          } else {
-            setTodaySchedule([]);
-          }
+  const fetchTodaySchedule = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/doctor/today-appointments', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache',
+        },
+      });
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          setTodaySchedule(result.data);
         } else {
+          console.error('Today appointments API error:', result.message);
           setTodaySchedule([]);
         }
-      } catch (error) {
-        console.error('Failed to fetch today\'s appointments:', error);
+      } else {
+        console.error('Today appointments fetch error:', response.status, response.statusText);
         setTodaySchedule([]);
-      } finally {
-        setLoading(false);
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch today\'s appointments:', error);
+      setTodaySchedule([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (user?.role === 'doctor') {
       fetchDashboardData();
       fetchTodaySchedule();
@@ -82,6 +95,20 @@ const DoctorDashboard = () => {
       setLoading(false);
     }
   }, [user]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      if (user?.role === 'doctor') {
+        await Promise.all([
+          fetchDashboardData(),
+          fetchTodaySchedule()
+        ]);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const stats = [
     { icon: Users, label: 'Total Patients', value: dashboardData.total_patients.toString(), color: 'text-primary' },
@@ -103,8 +130,21 @@ const DoctorDashboard = () => {
           <main className="flex-1 px-6 py-8">
           <div className="container mx-auto max-w-6xl">
             <div className="mb-12 animate-fade-in-up">
-              <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient mb-4">Welcome, Dr. {user?.name}!</h1>
-              <p className="text-xl text-muted-foreground">Your practice dashboard overview</p>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h1 className="text-4xl md:text-5xl font-display font-bold text-gradient mb-2">Welcome, Dr. {user?.name}!</h1>
+                  <p className="text-xl text-muted-foreground">Your practice dashboard overview</p>
+                </div>
+                <Button 
+                  onClick={handleRefresh} 
+                  disabled={refreshing}
+                  variant="outline" 
+                  className="border-border"
+                >
+                  <Activity className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
+                  {refreshing ? 'Refreshing...' : 'Refresh Data'}
+                </Button>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
