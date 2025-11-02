@@ -45,6 +45,10 @@ Route::post('/cart', [CartController::class, 'store']);
 Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
+Route::get('/medicines', [MedicineController::class, 'index']);
+Route::get('/medicines/categories', [MedicineController::class, 'categories']);
+Route::get('/tests', [TestController::class, 'index']);
+Route::get('/tests/categories', [TestController::class, 'categories']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {

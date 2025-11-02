@@ -24,4 +24,11 @@ class Test extends Model
         'price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+
+    protected $appends = ['inStock'];
+
+    public function getInStockAttribute()
+    {
+        return $this->is_active;
+    }
 }

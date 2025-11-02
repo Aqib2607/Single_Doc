@@ -12,6 +12,7 @@ class Medicine extends Model
     protected $fillable = [
         'name',
         'description',
+        'category',
         'manufacturer',
         'price',
         'stock_quantity',
@@ -24,4 +25,11 @@ class Medicine extends Model
         'price' => 'decimal:2',
         'is_active' => 'boolean',
     ];
+
+    protected $appends = ['inStock'];
+
+    public function getInStockAttribute()
+    {
+        return $this->is_active && $this->stock_quantity > 0;
+    }
 }
