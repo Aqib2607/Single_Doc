@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Helmet } from "react-helmet";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -11,135 +11,111 @@ import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 import { Pill, TestTube, Search } from "lucide-react";
 
-const medicines = [
-  {
-    id: "med-1",
-    name: "Aspirin 100mg",
-    price: 5.99,
-    description: "Pain relief and anti-inflammatory medication",
-    category: "Pain Relief",
-    inStock: true,
-  },
-  {
-    id: "med-2",
-    name: "Vitamin D3",
-    price: 12.99,
-    description: "Essential vitamin supplement for bone health",
-    category: "Vitamins",
-    inStock: true,
-  },
-  {
-    id: "med-3",
-    name: "Amoxicillin 500mg",
-    price: 15.99,
-    description: "Antibiotic for bacterial infections",
-    category: "Antibiotics",
-    inStock: true,
-  },
-  {
-    id: "med-4",
-    name: "Ibuprofen 400mg",
-    price: 7.99,
-    description: "Pain and fever reducer",
-    category: "Pain Relief",
-    inStock: true,
-  },
-  {
-    id: "med-5",
-    name: "Omeprazole 20mg",
-    price: 18.99,
-    description: "Reduces stomach acid production",
-    category: "Digestive",
-    inStock: false,
-  },
-  {
-    id: "med-6",
-    name: "Metformin 850mg",
-    price: 22.99,
-    description: "Diabetes management medication",
-    category: "Diabetes",
-    inStock: true,
-  },
-];
+interface Medicine {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+}
 
-const tests = [
-  {
-    id: "test-1",
-    name: "Complete Blood Count",
-    price: 35.00,
-    description: "Comprehensive blood analysis including RBC, WBC, platelets",
-    category: "Blood Tests",
-    inStock: true,
-  },
-  {
-    id: "test-2",
-    name: "Lipid Profile",
-    price: 45.00,
-    description: "Cholesterol and triglycerides screening",
-    category: "Heart Health",
-    inStock: true,
-  },
-  {
-    id: "test-3",
-    name: "Thyroid Function Test",
-    price: 55.00,
-    description: "TSH, T3, T4 hormone levels",
-    category: "Hormone Tests",
-    inStock: true,
-  },
-  {
-    id: "test-4",
-    name: "Liver Function Test",
-    price: 42.00,
-    description: "Assess liver health and enzyme levels",
-    category: "Organ Function",
-    inStock: true,
-  },
-  {
-    id: "test-5",
-    name: "Vitamin D Test",
-    price: 38.00,
-    description: "Measure vitamin D levels in blood",
-    category: "Vitamin Tests",
-    inStock: true,
-  },
-  {
-    id: "test-6",
-    name: "HbA1c Test",
-    price: 32.00,
-    description: "Blood sugar control over past 3 months",
-    category: "Diabetes Tests",
-    inStock: false,
-  },
-];
+interface Test {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  inStock: boolean;
+}
 
 const MedicineTestsPage = () => {
   const { addToCart } = useCart();
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [tests, setTests] = useState<Test[]>([]);
+  const [medicineCategories, setMedicineCategories] = useState<string[]>([]);
+  const [testCategories, setTestCategories] = useState<string[]>([]);
   const [medicineSearch, setMedicineSearch] = useState("");
   const [testSearch, setTestSearch] = useState("");
   const [medicineCategory, setMedicineCategory] = useState("all");
   const [testCategory, setTestCategory] = useState("all");
+  const [loading, setLoading] = useState(true);
 
-  const medicineCategories = [...new Set(medicines.map(m => m.category))];
-  const testCategories = [...new Set(tests.map(t => t.category))];
+  useEffect(() => {
+    fetchMedicines();
+    fetchTests();
+    fetchCategories();
+  }, []);
+
+  const fetchMedicines = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/medicines');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setMedicines(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching medicines:', error);
+      toast.error('Failed to load medicines');
+      setMedicines([]);
+    }
+  };
+
+  const fetchTests = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/tests');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      setTests(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Error fetching tests:', error);
+      toast.error('Failed to load tests');
+      setTests([]);
+    }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const [medicineRes, testRes] = await Promise.all([
+        fetch('http://127.0.0.1:8000/api/medicines/categories'),
+        fetch('http://127.0.0.1:8000/api/tests/categories')
+      ]);
+      
+      const medicineData = medicineRes.ok ? await medicineRes.json() : [];
+      const testData = testRes.ok ? await testRes.json() : [];
+      
+      setMedicineCategories(Array.isArray(medicineData) ? medicineData : []);
+      setTestCategories(Array.isArray(testData) ? testData : []);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      toast.error('Failed to load categories');
+      setMedicineCategories([]);
+      setTestCategories([]);
+      setLoading(false);
+    }
+  };
 
   const filteredMedicines = medicines.filter(medicine => {
-    const matchesSearch = medicine.name.toLowerCase().includes(medicineSearch.toLowerCase()) ||
-                         medicine.description.toLowerCase().includes(medicineSearch.toLowerCase());
+    const matchesSearch = medicine.name?.toLowerCase().includes(medicineSearch.toLowerCase()) ||
+                         medicine.description?.toLowerCase().includes(medicineSearch.toLowerCase());
     const matchesCategory = medicineCategory === "all" || medicine.category === medicineCategory;
     return matchesSearch && matchesCategory;
   });
 
   const filteredTests = tests.filter(test => {
-    const matchesSearch = test.name.toLowerCase().includes(testSearch.toLowerCase()) ||
-                         test.description.toLowerCase().includes(testSearch.toLowerCase());
+    const matchesSearch = test.name?.toLowerCase().includes(testSearch.toLowerCase()) ||
+                         test.description?.toLowerCase().includes(testSearch.toLowerCase());
     const matchesCategory = testCategory === "all" || test.category === testCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const handleAddToCart = (item: any, type: "medicine" | "test") => {
+  const handleAddToCart = (item: Medicine | Test, type: "medicine" | "test") => {
     addToCart({
-      id: item.id,
+      id: item.id.toString(),
       name: item.name,
       type,
       price: item.price,
@@ -167,6 +143,11 @@ const MedicineTestsPage = () => {
               </p>
             </div>
 
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-lg text-muted-foreground">Loading...</p>
+              </div>
+            ) : (
             <Tabs defaultValue="medicine" className="max-w-6xl mx-auto">
               <TabsList className="grid w-full max-w-md mx-auto grid-cols-2 mb-8">
                 <TabsTrigger value="medicine" className="flex items-center gap-2">
@@ -211,7 +192,7 @@ const MedicineTestsPage = () => {
                       </CardHeader>
                       <CardContent>
                         <p className="text-2xl font-bold text-primary">
-                          ${medicine.price.toFixed(2)}
+                          ${typeof medicine.price === 'number' ? medicine.price.toFixed(2) : parseFloat(medicine.price || '0').toFixed(2)}
                         </p>
                         {!medicine.inStock && (
                           <p className="text-sm text-destructive mt-2">Out of stock</p>
@@ -263,7 +244,7 @@ const MedicineTestsPage = () => {
                       </CardHeader>
                       <CardContent>
                         <p className="text-2xl font-bold text-primary">
-                          ${test.price.toFixed(2)}
+                          ${typeof test.price === 'number' ? test.price.toFixed(2) : parseFloat(test.price || '0').toFixed(2)}
                         </p>
                         {!test.inStock && (
                           <p className="text-sm text-destructive mt-2">Currently unavailable</p>
@@ -283,6 +264,7 @@ const MedicineTestsPage = () => {
                 </div>
               </TabsContent>
             </Tabs>
+            )}
           </div>
         </main>
         <Footer />

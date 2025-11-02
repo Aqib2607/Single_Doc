@@ -7,6 +7,10 @@ use Illuminate\Http\Request;
 
 class MedicineController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'categories']);
+    }
     public function index(Request $request)
     {
         $query = Medicine::query();

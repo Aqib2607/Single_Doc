@@ -29,6 +29,8 @@ use App\Http\Controllers\Api\BookingController;
 
 Route::get('/test', [ApiTestController::class, 'test']);
 
+
+
 // Unified booking route (handles both guest and patient)
 Route::post('/book-appointment', [BookingController::class, 'book']);
 
@@ -45,10 +47,13 @@ Route::post('/cart', [CartController::class, 'store']);
 Route::delete('/cart/{id}', [CartController::class, 'destroy']);
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
-Route::get('/medicines', [MedicineController::class, 'index']);
-Route::get('/medicines/categories', [MedicineController::class, 'categories']);
-Route::get('/tests', [TestController::class, 'index']);
-Route::get('/tests/categories', [TestController::class, 'categories']);
+// Public routes without authentication
+Route::group(['middleware' => ['throttle:api']], function () {
+    Route::get('/medicines', [MedicineController::class, 'index']);
+    Route::get('/medicines/categories', [MedicineController::class, 'categories']);
+    Route::get('/tests', [TestController::class, 'index']);
+    Route::get('/tests/categories', [TestController::class, 'categories']);
+});
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
@@ -87,8 +92,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('prescriptions', PrescriptionController::class);
     Route::post('/prescriptions/bulk-update', [PrescriptionController::class, 'bulkUpdate']);
     Route::resource('messages', MessageController::class);
-    Route::resource('medicines', MedicineController::class);
-    Route::resource('tests', TestController::class);
+    // Medicine and Test CRUD operations (admin only)
+    Route::post('/medicines', [MedicineController::class, 'store']);
+    Route::get('/medicines/{medicine}', [MedicineController::class, 'show']);
+    Route::put('/medicines/{medicine}', [MedicineController::class, 'update']);
+    Route::delete('/medicines/{medicine}', [MedicineController::class, 'destroy']);
+    
+    Route::post('/tests', [TestController::class, 'store']);
+    Route::get('/tests/{test}', [TestController::class, 'show']);
+    Route::put('/tests/{test}', [TestController::class, 'update']);
+    Route::delete('/tests/{test}', [TestController::class, 'destroy']);
     Route::resource('doctor-reviews', DoctorReviewController::class);
     Route::apiResource('blogs', BlogController::class);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);
