@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Menu, X, Phone, Mail, ShoppingCart, User, Settings, LogOut, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useCart } from "@/contexts/CartContext";
+import { useCart } from "@/hooks/useCart";
 import { useAuth } from "@/contexts/AuthContext";
 import { Badge } from "@/components/ui/badge";
 import {

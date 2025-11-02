@@ -42,9 +42,7 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
-Route::get('/cart', [CartController::class, 'index']);
-Route::post('/cart', [CartController::class, 'store']);
-Route::delete('/cart/{id}', [CartController::class, 'destroy']);
+
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/blogs', [BlogController::class, 'index']);
 // Public routes without authentication
@@ -53,6 +51,7 @@ Route::group(['middleware' => ['throttle:api']], function () {
     Route::get('/medicines/categories', [MedicineController::class, 'categories']);
     Route::get('/tests', [TestController::class, 'index']);
     Route::get('/tests/categories', [TestController::class, 'categories']);
+
 });
 
 Route::middleware('auth:sanctum')->group(function () {
