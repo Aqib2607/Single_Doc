@@ -42,5 +42,42 @@ class TestController extends Controller
         return response()->json($categories);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'sample_type' => 'nullable|string|max:255',
+            'duration_hours' => 'nullable|integer|min:0',
+        ]);
 
+        $test = Test::create($request->all());
+        return response()->json($test, 201);
+    }
+
+    public function show(Test $test)
+    {
+        return response()->json($test);
+    }
+
+    public function update(Request $request, Test $test)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'category' => 'nullable|string|max:255',
+            'sample_type' => 'nullable|string|max:255',
+            'duration_hours' => 'nullable|integer|min:0',
+        ]);
+
+        $test->update($request->all());
+        return response()->json($test);
+    }
+
+    public function destroy(Test $test)
+    {
+        $test->delete();
+        return response()->json(['message' => 'Test deleted successfully']);
+    }
 }

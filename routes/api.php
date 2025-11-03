@@ -64,6 +64,18 @@ Route::middleware('auth:sanctum')->group(function () {
         }
         return $user;
     });
+    
+    // Medicine CRUD routes
+    Route::post('/medicines', [MedicineController::class, 'store']);
+    Route::get('/medicines/{medicine}', [MedicineController::class, 'show']);
+    Route::put('/medicines/{medicine}', [MedicineController::class, 'update']);
+    Route::delete('/medicines/{medicine}', [MedicineController::class, 'destroy']);
+    
+    // Test CRUD routes
+    Route::post('/tests', [TestController::class, 'store']);
+    Route::get('/tests/{test}', [TestController::class, 'show']);
+    Route::put('/tests/{test}', [TestController::class, 'update']);
+    Route::delete('/tests/{test}', [TestController::class, 'destroy']);
     Route::get('/patient/profile', [PatientController::class, 'profile']);
     Route::get('/patient/prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']);
     Route::get('/patient-prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']); // Backward compatibility

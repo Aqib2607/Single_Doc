@@ -42,5 +42,44 @@ class MedicineController extends Controller
         return response()->json($categories);
     }
 
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'manufacturer' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'strength' => 'nullable|string|max:255',
+        ]);
 
+        $medicine = Medicine::create($request->all());
+        return response()->json($medicine, 201);
+    }
+
+    public function show(Medicine $medicine)
+    {
+        return response()->json($medicine);
+    }
+
+    public function update(Request $request, Medicine $medicine)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'stock_quantity' => 'required|integer|min:0',
+            'manufacturer' => 'nullable|string|max:255',
+            'category' => 'nullable|string|max:255',
+            'strength' => 'nullable|string|max:255',
+        ]);
+
+        $medicine->update($request->all());
+        return response()->json($medicine);
+    }
+
+    public function destroy(Medicine $medicine)
+    {
+        $medicine->delete();
+        return response()->json(['message' => 'Medicine deleted successfully']);
+    }
 }
