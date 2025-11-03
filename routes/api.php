@@ -47,6 +47,7 @@ Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{doctor}', [DoctorController::class, 'show']);
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{blog}', [BlogController::class, 'show']);
+Route::get('/galleries', [GalleryController::class, 'index']);
 // Public routes without authentication
 Route::group(['middleware' => ['throttle:api']], function () {
     Route::get('/medicines', [MedicineController::class, 'index']);
@@ -111,7 +112,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/blogs/{blog}', [BlogController::class, 'update']);
     Route::delete('/blogs/{blog}', [BlogController::class, 'destroy']);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);
-    Route::apiResource('galleries', GalleryController::class);
+    Route::get('/doctor-galleries', [GalleryController::class, 'doctorGalleries']);
+    Route::post('/galleries', [GalleryController::class, 'store']);
+    Route::get('/galleries/{gallery}', [GalleryController::class, 'show']);
+    Route::put('/galleries/{gallery}', [GalleryController::class, 'update']);
+    Route::delete('/galleries/{gallery}', [GalleryController::class, 'destroy']);
 
     Route::delete('/medical-records/{recordId}', [MedicalRecordActionsController::class, 'delete']);
     

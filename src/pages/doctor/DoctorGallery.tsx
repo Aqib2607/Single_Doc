@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Helmet } from 'react-helmet';
 import DoctorSidebar from '@/components/DoctorSidebar';
 import Navbar from '@/components/Navbar';
@@ -11,38 +11,25 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Plus, Edit, Trash2, Image, Video } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
 interface GalleryItem {
   id: number;
+  doctor_id: number;
   title: string;
   description: string;
   url: string;
   type: 'image' | 'video';
   category: string;
-  date: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const DoctorGallery = () => {
-  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([
-    {
-      id: 1,
-      title: "Modern Consultation Room",
-      description: "State-of-the-art consultation room with latest medical equipment",
-      url: "/src/assets/consultation-room.jpg",
-      type: 'image',
-      category: "Facilities",
-      date: "2024-03-15"
-    },
-    {
-      id: 2,
-      title: "Medical Equipment Demo",
-      description: "Advanced diagnostic equipment in action",
-      url: "/src/assets/medical-equipment.jpg",
-      type: 'image',
-      category: "Equipment",
-      date: "2024-03-10"
-    }
-  ]);
+  const { user } = useAuth();
+  const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<GalleryItem | null>(null);
@@ -56,23 +43,77 @@ const DoctorGallery = () => {
 
   const categories = ['Facilities', 'Equipment', 'Staff', 'Procedures', 'Patient Care'];
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editingItem) {
-      setGalleryItems(galleryItems.map(item => 
-        item.id === editingItem.id 
-          ? { ...item, ...formData, date: new Date().toISOString().split('T')[0] }
-          : item
-      ));
-    } else {
-      const newItem: GalleryItem = {
-        id: Date.now(),
-        ...formData,
-        date: new Date().toISOString().split('T')[0]
-      };
-      setGalleryItems([...galleryItems, newItem]);
+  const fetchGalleries = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('/api/doctor-galleries', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setGalleryItems(data);
+      } else {
+        toast({ title: 'Error', description: 'Failed to fetch galleries', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to fetch galleries', variant: 'destructive' });
+    } finally {
+      setLoading(false);
     }
-    resetForm();
+  };
+
+  useEffect(() => {
+    if (user?.role === 'doctor') {
+      fetchGalleries();
+    }
+  }, [user]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    
+    try {
+      if (editingItem) {
+        const response = await fetch(`/api/galleries/${editingItem.id}`, {
+          method: 'PUT',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(formData)
+        });
+        
+        if (response.ok) {
+          toast({ title: 'Success', description: 'Gallery item updated successfully' });
+          fetchGalleries();
+        } else {
+          toast({ title: 'Error', description: 'Failed to update gallery item', variant: 'destructive' });
+        }
+      } else {
+        const response = await fetch('/api/galleries', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ ...formData, doctor_id: user?.id })
+        });
+        
+        if (response.ok) {
+          toast({ title: 'Success', description: 'Gallery item added successfully' });
+          fetchGalleries();
+        } else {
+          toast({ title: 'Error', description: 'Failed to add gallery item', variant: 'destructive' });
+        }
+      }
+      resetForm();
+    } catch (error) {
+      toast({ title: 'Error', description: 'An error occurred', variant: 'destructive' });
+    }
   };
 
   const resetForm = () => {
@@ -93,8 +134,27 @@ const DoctorGallery = () => {
     setIsDialogOpen(true);
   };
 
-  const handleDelete = (id: number) => {
-    setGalleryItems(galleryItems.filter(item => item.id !== id));
+  const handleDelete = async (id: number) => {
+    const token = localStorage.getItem('token');
+    
+    try {
+      const response = await fetch(`/api/galleries/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        toast({ title: 'Success', description: 'Gallery item deleted successfully' });
+        fetchGalleries();
+      } else {
+        toast({ title: 'Error', description: 'Failed to delete gallery item', variant: 'destructive' });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'An error occurred', variant: 'destructive' });
+    }
   };
 
   return (
@@ -193,8 +253,18 @@ const DoctorGallery = () => {
             </Dialog>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {galleryItems.map((item) => (
+          {loading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {galleryItems.length === 0 ? (
+                <div className="col-span-full text-center py-12">
+                  <p className="text-muted-foreground text-lg">No gallery items found. Add your first media item!</p>
+                </div>
+              ) : (
+                galleryItems.map((item) => (
               <Card key={item.id} className="border-2 border-border overflow-hidden">
                 <div className="relative aspect-video bg-muted">
                   {item.type === 'image' ? (
@@ -212,7 +282,7 @@ const DoctorGallery = () => {
                       <Video size={48} className="text-muted-foreground" />
                     </div>
                   )}
-                  <div className="hidden w-full h-full flex items-center justify-center">
+                  <div className="hidden w-full h-full items-center justify-center">
                     <Image size={48} className="text-muted-foreground" />
                   </div>
                   <div className="absolute top-2 left-2">
@@ -233,7 +303,9 @@ const DoctorGallery = () => {
                   <CardTitle className="text-lg font-display">{item.title}</CardTitle>
                   <CardDescription>{item.description}</CardDescription>
                   <div className="flex justify-between items-center pt-2">
-                    <span className="text-sm text-muted-foreground">{item.date}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </span>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => handleEdit(item)}>
                         <Edit size={16} />
@@ -245,8 +317,10 @@ const DoctorGallery = () => {
                   </div>
                 </CardHeader>
               </Card>
-            ))}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
       </main>
       </div>

@@ -17,7 +17,7 @@ const GalleryPage = () => {
             <h1 className="text-4xl md:text-5xl font-display font-bold text-center mb-6 text-gradient">
               Our Facility
             </h1>
-            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
+            <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-4">
               Take a virtual tour of our modern medical facility designed for your comfort and care.
             </p>
           </div>

@@ -36,6 +36,11 @@ class GalleryController extends Controller
 
     public function update(Request $request, Gallery $gallery): JsonResponse
     {
+        $user = $request->user();
+        if (!$user instanceof \App\Models\Doctor || $gallery->doctor_id !== $user->doctor_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
@@ -50,7 +55,26 @@ class GalleryController extends Controller
 
     public function destroy(Gallery $gallery): JsonResponse
     {
+        $user = request()->user();
+        if (!$user instanceof \App\Models\Doctor || $gallery->doctor_id !== $user->doctor_id) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
         $gallery->delete();
         return response()->json(['message' => 'Gallery item deleted successfully']);
+    }
+
+    public function doctorGalleries(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        if (!$user instanceof \App\Models\Doctor) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $galleries = Gallery::where('doctor_id', $user->doctor_id)
+            ->latest()
+            ->get();
+        
+        return response()->json($galleries);
     }
 }
