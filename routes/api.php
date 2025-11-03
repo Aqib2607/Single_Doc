@@ -44,7 +44,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 
 Route::get('/doctors', [DoctorController::class, 'index']);
+Route::get('/doctors/{doctor}', [DoctorController::class, 'show']);
 Route::get('/blogs', [BlogController::class, 'index']);
+Route::get('/blogs/{blog}', [BlogController::class, 'show']);
 // Public routes without authentication
 Route::group(['middleware' => ['throttle:api']], function () {
     Route::get('/medicines', [MedicineController::class, 'index']);
@@ -105,7 +107,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('messages', MessageController::class);
 
     Route::resource('doctor-reviews', DoctorReviewController::class);
-    Route::apiResource('blogs', BlogController::class);
+    Route::post('/blogs', [BlogController::class, 'store']);
+    Route::put('/blogs/{blog}', [BlogController::class, 'update']);
+    Route::delete('/blogs/{blog}', [BlogController::class, 'destroy']);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);
     Route::apiResource('galleries', GalleryController::class);
 

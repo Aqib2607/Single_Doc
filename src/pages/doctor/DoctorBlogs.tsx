@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import DoctorSidebar from '@/components/DoctorSidebar';
 import Navbar from '@/components/Navbar';
@@ -24,6 +25,7 @@ interface BlogPost {
 }
 
 const DoctorBlogs = () => {
+  const navigate = useNavigate();
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -69,7 +71,6 @@ const DoctorBlogs = () => {
     
     try {
       const token = localStorage.getItem('token');
-      const doctorId = localStorage.getItem('doctor_id') || '1';
       const url = editingBlog ? `/api/blogs/${editingBlog.id}` : '/api/blogs';
       const method = editingBlog ? 'PUT' : 'POST';
       
@@ -79,7 +80,7 @@ const DoctorBlogs = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...formData, doctor_id: doctorId })
+        body: JSON.stringify(formData)
       });
       
       if (response.ok) {
@@ -260,7 +261,7 @@ const DoctorBlogs = () => {
                       </div>
                     </div>
                     <div className="flex gap-2">
-                      <Button variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={() => navigate(`/blog/${blog.id}`)}>
                         <Eye size={16} />
                       </Button>
                       <Button variant="outline" size="sm" onClick={() => handleEdit(blog)}>

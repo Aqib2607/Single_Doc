@@ -26,4 +26,9 @@ class DoctorController extends Controller
         
         return response()->json($doctors);
     }
+
+    public function show(Doctor $doctor)
+    {
+        return response()->json($doctor->only(['doctor_id', 'name', 'specialization', 'consultation_fee']));
+    }
 }

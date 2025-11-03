@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from "react-helmet";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -14,9 +15,16 @@ interface BlogPost {
   read_time: string;
   created_at: string;
   status: 'published' | 'draft';
+  doctor_id: number;
+  doctor?: {
+    doctor_id: number;
+    name: string;
+    specialization: string;
+  };
 }
 
 const BlogPage = () => {
+  const navigate = useNavigate();
   const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +39,8 @@ const BlogPage = () => {
       image: '/src/assets/blog-wellness.jpg',
       read_time: '5 min read',
       created_at: new Date().toISOString(),
-      status: 'published'
+      status: 'published',
+      doctor_id: 1
     },
     {
       id: 2,
@@ -41,7 +50,8 @@ const BlogPage = () => {
       image: '/src/assets/blog-mental-health.jpg',
       read_time: '7 min read',
       created_at: new Date().toISOString(),
-      status: 'published'
+      status: 'published',
+      doctor_id: 2
     },
     {
       id: 3,
@@ -51,18 +61,15 @@ const BlogPage = () => {
       image: '/src/assets/blog-nutrition.jpg',
       read_time: '6 min read',
       created_at: new Date().toISOString(),
-      status: 'published'
+      status: 'published',
+      doctor_id: 3
     }
   ];
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
-
-  const fetchBlogs = async () => {
+  const fetchBlogs = useCallback(async () => {
     try {
       setError(null);
-      const response = await fetch('http://127.0.0.1:8000/api/blogs');
+      const response = await fetch('/api/blogs');
       console.log('Response status:', response.status);
       console.log('Response headers:', response.headers);
       
@@ -87,7 +94,11 @@ const BlogPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchBlogs();
+  }, [fetchBlogs]);
 
   if (loading) {
     return (
@@ -158,7 +169,11 @@ const BlogPage = () => {
                             <span>{post.read_time || '5 min read'}</span>
                           </div>
                         </div>
-                        <Button variant="ghost" className="w-full group-hover:gradient-primary group-hover:text-white transition-smooth">
+                        <Button 
+                          variant="ghost" 
+                          className="w-full group-hover:gradient-primary group-hover:text-white transition-smooth"
+                          onClick={() => navigate(`/blog/${post.id}`)}
+                        >
                           Read More <ArrowRight size={16} className="ml-2" />
                         </Button>
                       </CardContent>
