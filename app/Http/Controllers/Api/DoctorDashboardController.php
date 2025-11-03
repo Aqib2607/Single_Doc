@@ -50,7 +50,7 @@ class DoctorDashboardController extends Controller
             ->whereDate('appointment_date', $today)
             ->count();
         
-        // Get total unique patients count (both registered patients and guests)
+        // Get total unique patients count (fallback to doctor name if doctor_id is null)
         $registeredPatients = Appointment::where(function($query) use ($doctor) {
                 $query->where('doctor_id', $doctor->doctor_id)
                       ->orWhere('doctor', $doctor->name);

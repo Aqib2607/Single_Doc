@@ -236,10 +236,12 @@ const DoctorDashboard = () => {
                     </CardTitle>
                     <CardDescription className="text-muted-foreground">Recently seen patients</CardDescription>
                   </div>
-                  <Button size="sm" variant="outline" className="border-border">
-                    <Eye className="h-4 w-4 mr-2" />
-                    View All
-                  </Button>
+                  <Link to="/doctor/patients">
+                    <Button size="sm" variant="outline" className="border-border">
+                      <Eye className="h-4 w-4 mr-2" />
+                      View All
+                    </Button>
+                  </Link>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
