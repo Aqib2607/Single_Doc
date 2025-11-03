@@ -91,16 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('prescriptions', PrescriptionController::class);
     Route::post('/prescriptions/bulk-update', [PrescriptionController::class, 'bulkUpdate']);
     Route::resource('messages', MessageController::class);
-    // Medicine and Test CRUD operations (admin only)
-    Route::post('/medicines', [MedicineController::class, 'store']);
-    Route::get('/medicines/{medicine}', [MedicineController::class, 'show']);
-    Route::put('/medicines/{medicine}', [MedicineController::class, 'update']);
-    Route::delete('/medicines/{medicine}', [MedicineController::class, 'destroy']);
-    
-    Route::post('/tests', [TestController::class, 'store']);
-    Route::get('/tests/{test}', [TestController::class, 'show']);
-    Route::put('/tests/{test}', [TestController::class, 'update']);
-    Route::delete('/tests/{test}', [TestController::class, 'destroy']);
+
     Route::resource('doctor-reviews', DoctorReviewController::class);
     Route::apiResource('blogs', BlogController::class);
     Route::get('/doctor-blogs', [BlogController::class, 'doctorBlogs']);

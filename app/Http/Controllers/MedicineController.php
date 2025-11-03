@@ -41,4 +41,6 @@ class MedicineController extends Controller
 
         return response()->json($categories);
     }
+
+
 }
