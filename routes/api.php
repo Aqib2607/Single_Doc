@@ -37,9 +37,20 @@ Route::get('/debug-user', function(\Illuminate\Http\Request $request) {
         'user_type' => $user ? get_class($user) : null,
         'user_data' => $user ? $user->toArray() : null,
         'has_patient_id' => $user && isset($user->patient_id) ? true : false,
-        'patient_id_value' => $user->patient_id ?? null
+        'patient_id_value' => $user->patient_id ?? null,
+        'gender_value' => $user->gender ?? 'NULL',
+        'gender_type' => $user ? gettype($user->gender) : 'N/A'
     ]);
 })->middleware('auth:sanctum');
+
+Route::post('/debug-register', function(\Illuminate\Http\Request $request) {
+    return response()->json([
+        'received_data' => $request->all(),
+        'role' => $request->input('role'),
+        'gender' => $request->input('gender'),
+        'password_confirmation' => $request->input('password_confirmation')
+    ]);
+});
 
 
 

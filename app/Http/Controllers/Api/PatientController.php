@@ -23,12 +23,23 @@ class PatientController extends Controller
             'primary_key' => $user->getKey()
         ]);
         
-        return response()->json([
-            'patient_id' => $user->patient_id ?? $user->getKey(),
-            'name' => $user->name ?? '',
-            'email' => $user->email ?? '',
-            'phone' => $user->phone ?? '',
-            'gender' => $user->gender ?? ''
-        ]);
+        // Check if user is a doctor or patient
+        if ($user instanceof \App\Models\Doctor) {
+            return response()->json([
+                'doctor_id' => $user->doctor_id,
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'phone' => $user->phone ?? '',
+                'gender' => $user->gender ?? 'prefer-not-to-say'
+            ]);
+        } else {
+            return response()->json([
+                'patient_id' => $user->patient_id ?? $user->getKey(),
+                'name' => $user->name ?? '',
+                'email' => $user->email ?? '',
+                'phone' => $user->phone ?? '',
+                'gender' => $user->gender ?? 'prefer-not-to-say'
+            ]);
+        }
     }
 }

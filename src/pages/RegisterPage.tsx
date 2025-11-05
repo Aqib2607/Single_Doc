@@ -61,17 +61,30 @@ const RegisterPage = () => {
           title: "Registration successful",
           description: "Your account has been created!",
         });
-        // Get the actual user role from localStorage after successful registration
-        const storedUser = localStorage.getItem('user');
-        if (storedUser) {
-          const userData = JSON.parse(storedUser);
-          navigate(userData.role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
-        } else {
-          // Fallback to form role if user data is not available
-          navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
-        }
+        // Small delay to ensure AuthContext state is updated
+        setTimeout(() => {
+          const storedUser = localStorage.getItem('user');
+          if (storedUser) {
+            const userData = JSON.parse(storedUser);
+            navigate(userData.role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+          } else {
+            navigate(role === 'patient' ? '/patient-dashboard' : '/doctor-dashboard');
+          }
+        }, 100);
       } else {
-        const errorMessage = result.errors?.email?.[0] || result.errors || "Registration failed. Please try again.";
+        let errorMessage = "Registration failed. Please try again.";
+        if (result.errors) {
+          if (typeof result.errors === 'string') {
+            errorMessage = result.errors;
+          } else if (result.errors.email) {
+            errorMessage = result.errors.email[0];
+          } else if (result.errors.password) {
+            errorMessage = result.errors.password[0];
+          } else {
+            const firstError = Object.values(result.errors)[0];
+            errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+          }
+        }
         toast({
           title: "Registration failed",
           description: errorMessage,
@@ -241,6 +254,7 @@ const RegisterPage = () => {
                             <SelectItem value="male">Male</SelectItem>
                             <SelectItem value="female">Female</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
+                            <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

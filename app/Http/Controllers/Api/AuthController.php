@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\Doctor;
 use App\Models\Patient;
@@ -46,13 +47,19 @@ class AuthController extends Controller
     {
         $role = $request->input('role');
         
-        if ($role === 'patient') {
-            $validated = $request->validate([
+        Log::info('Registration attempt', [
+            'role' => $role,
+            'data' => $request->except(['password', 'password_confirmation'])
+        ]);
+        
+        try {
+            if ($role === 'patient') {
+                $validated = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:patients',
                 'password' => 'required|string|min:8|confirmed',
                 'date_of_birth' => 'required|date',
-                'gender' => 'required|in:male,female,other',
+                'gender' => 'nullable|in:male,female,other,prefer-not-to-say',
                 'phone' => 'required|string|max:20',
                 'address' => 'required|string',
                 'emergency_contact_name' => 'required|string|max:255',
@@ -66,7 +73,7 @@ class AuthController extends Controller
                 'email' => $validated['email'],
                 'password' => Hash::make($validated['password']),
                 'date_of_birth' => $validated['date_of_birth'],
-                'gender' => $validated['gender'],
+                'gender' => $validated['gender'] ?? 'prefer-not-to-say',
                 'phone' => $validated['phone'],
                 'address' => $validated['address'],
                 'emergency_contact_name' => $validated['emergency_contact_name'],
@@ -90,6 +97,7 @@ class AuthController extends Controller
                 'license_number' => 'required|string|max:255',
                 'bio' => 'nullable|string',
                 'phone' => 'required|string|max:20',
+                'gender' => 'nullable|in:male,female,other,prefer-not-to-say',
                 'consultation_fee' => 'nullable|numeric|min:0',
             ]);
 
@@ -101,6 +109,7 @@ class AuthController extends Controller
                 'license_number' => $validated['license_number'],
                 'bio' => $validated['bio'] ?? null,
                 'phone' => $validated['phone'],
+                'gender' => $validated['gender'] ?? 'prefer-not-to-say',
                 'consultation_fee' => $validated['consultation_fee'] ?? null,
             ]);
 
@@ -110,6 +119,25 @@ class AuthController extends Controller
                 'user' => array_merge($doctor->toArray(), ['role' => 'doctor', 'id' => $doctor->doctor_id]),
                 'token' => $token
             ]);
+            }
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Registration validation failed', [
+                'role' => $role,
+                'errors' => $e->errors()
+            ]);
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            Log::error('Registration failed', [
+                'role' => $role,
+                'error' => $e->getMessage()
+            ]);
+            return response()->json([
+                'message' => 'Registration failed',
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 

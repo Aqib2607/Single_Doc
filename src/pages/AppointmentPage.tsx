@@ -130,6 +130,8 @@ const AppointmentPage = () => {
       success: (profile) => {
         setPatientProfile(profile);
         console.log('Patient profile loaded:', profile);
+        console.log('Gender value:', profile.gender);
+        console.log('Gender type:', typeof profile.gender);
       },
       error: (xhr) => {
         console.error('Failed to fetch profile:', xhr.status, xhr.statusText);
@@ -303,7 +305,7 @@ const AppointmentPage = () => {
                             <Input
                               value={patientProfile.gender ? 
                                 patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1).replace('-', ' ') : 
-                                'Not specified'
+                                'Prefer not to say'
                               }
                               readOnly
                               className="bg-blue-100 cursor-not-allowed border-blue-200"

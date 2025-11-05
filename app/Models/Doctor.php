@@ -21,6 +21,7 @@ class Doctor extends Authenticatable
         'license_number',
         'bio',
         'phone',
+        'gender',
         'availability',
         'consultation_fee'
     ];
