@@ -478,7 +478,7 @@ const AppointmentPage = () => {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="consultationType">Consultation Type</Label>
-                      <Select onValueChange={(value) => handleChange('consultationType', value)}>
+                      <Select onValueChange={(value) => handleChange('consultationType', value)} value={formData.consultationType}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select consultation type" />
                         </SelectTrigger>

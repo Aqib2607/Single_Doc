@@ -95,6 +95,7 @@ class BookingController extends Controller
             'date' => 'required|date_format:Y-m-d|after_or_equal:' . now()->format('Y-m-d'),
             'time' => 'required|string',
             'doctor_id' => 'required|exists:doctors,doctor_id',
+            'consultationType' => 'nullable|in:in-person,telemedicine,follow-up,consultation',
             'reason' => 'nullable|string|max:1000'
         ]);
 
@@ -132,6 +133,7 @@ class BookingController extends Controller
                 'appointment_time' => $request->time,
                 'doctor' => $doctor->name,
                 'doctor_id' => $doctor->doctor_id,
+                'consultation_type' => $request->consultationType,
                 'reason' => $request->reason,
                 'status' => 'pending'
             ]);
