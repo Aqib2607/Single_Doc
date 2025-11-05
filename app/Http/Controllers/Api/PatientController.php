@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PatientController extends Controller
 {
@@ -15,12 +16,19 @@ class PatientController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         
+        Log::info('Patient profile request', [
+            'user_type' => get_class($user),
+            'user_data' => $user->toArray(),
+            'patient_id' => $user->patient_id ?? 'NULL',
+            'primary_key' => $user->getKey()
+        ]);
+        
         return response()->json([
-            'patient_id' => $user->patient_id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'phone' => $user->phone,
-            'gender' => $user->gender
+            'patient_id' => $user->patient_id ?? $user->getKey(),
+            'name' => $user->name ?? '',
+            'email' => $user->email ?? '',
+            'phone' => $user->phone ?? '',
+            'gender' => $user->gender ?? ''
         ]);
     }
 }

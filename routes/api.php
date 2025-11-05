@@ -28,6 +28,18 @@ use App\Http\Controllers\Api\GuestController;
 use App\Http\Controllers\Api\BookingController;
 
 Route::get('/test', [ApiTestController::class, 'test']);
+Route::get('/debug-appointment', [\App\Http\Controllers\Api\DebugController::class, 'testAppointmentBooking'])->middleware('auth:sanctum');
+Route::get('/debug-appointment-public', [\App\Http\Controllers\Api\DebugController::class, 'testAppointmentBooking']);
+Route::get('/debug-user', function(\Illuminate\Http\Request $request) {
+    $user = $request->user();
+    return response()->json([
+        'authenticated' => $user ? true : false,
+        'user_type' => $user ? get_class($user) : null,
+        'user_data' => $user ? $user->toArray() : null,
+        'has_patient_id' => $user && isset($user->patient_id) ? true : false,
+        'patient_id_value' => $user->patient_id ?? null
+    ]);
+})->middleware('auth:sanctum');
 
 
 

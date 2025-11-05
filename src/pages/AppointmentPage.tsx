@@ -11,6 +11,8 @@ import { Checkbox } from '../components/ui/checkbox';
 import DoctorSelect from '../components/ui/DoctorSelect';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import $ from 'jquery';
+
 
 const AppointmentPage = () => {
   const navigate = useNavigate();
@@ -56,49 +58,51 @@ const AppointmentPage = () => {
     setErrors({});
     setSuccessMessage('');
     
-    try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('/api/book-appointment', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : ''
-        },
-        body: JSON.stringify(formData)
-      });
-      
-      const data = await response.json();
-      
-      if (response.ok && data.success) {
-        setSuccessMessage(data.message);
-        setFormData({
-          name: '',
-          email: '',
-          phone: '',
-          gender: '',
-          date: '',
-          time: '',
-          doctor_id: undefined,
-          consultationType: '',
-          reason: '',
-          termsAccepted: false
-        });
-        
-        // Only redirect authenticated patients to dashboard
-        if (patientProfile.name) {
-          setTimeout(() => {
-            navigate('/patient-dashboard');
-          }, 2000);
+    const token = localStorage.getItem('token');
+    const endpoint = patientProfile.name ? '/api/appointments' : '/api/book-appointment';
+    
+    $.ajax({
+      url: endpoint,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      data: JSON.stringify(formData),
+      success: (data) => {
+        if (data.success) {
+          setSuccessMessage(data.message);
+          setFormData({
+            name: '',
+            email: '',
+            phone: '',
+            gender: '',
+            date: '',
+            time: '',
+            doctor_id: undefined,
+            consultationType: '',
+            reason: '',
+            termsAccepted: false
+          });
+          
+          if (patientProfile.name) {
+            setTimeout(() => {
+              navigate('/patient-dashboard');
+            }, 2000);
+          }
+        } else {
+          setErrors(data.errors || { general: [data.message] });
         }
-      } else {
-        setErrors(data.errors || { general: [data.message] });
+      },
+      error: (xhr) => {
+        const data = xhr.responseJSON;
+        setErrors(data?.errors || { general: [data?.message || 'Network error. Please try again.'] });
+      },
+      complete: () => {
+        setIsSubmitting(false);
       }
-    } catch (error) {
-      setErrors({ general: ['Network error. Please try again.'] });
-    } finally {
-      setIsSubmitting(false);
-    }
+    });
   };
 
   const handleChange = (field: string, value: string | number | boolean) => {
@@ -110,33 +114,30 @@ const AppointmentPage = () => {
   };
 
   useEffect(() => {
-    const fetchPatientProfile = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          setProfileLoading(false);
-          return;
-        }
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setProfileLoading(false);
+      return;
+    }
 
-        const response = await fetch('/api/patient/profile', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json'
-          }
-        });
-
-        if (response.ok) {
-          const profile = await response.json();
-          setPatientProfile(profile);
-        }
-      } catch (error) {
-        console.error('Failed to load patient profile:', error);
-      } finally {
+    $.ajax({
+      url: '/api/patient/profile',
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      },
+      success: (profile) => {
+        setPatientProfile(profile);
+        console.log('Patient profile loaded:', profile);
+      },
+      error: (xhr) => {
+        console.error('Failed to fetch profile:', xhr.status, xhr.statusText);
+      },
+      complete: () => {
         setProfileLoading(false);
       }
-    };
-
-    fetchPatientProfile();
+    });
   }, []);
 
   return (
@@ -261,10 +262,10 @@ const AppointmentPage = () => {
 
                   {/* Patient Information (Read-only) */}
                   {patientProfile.name && (
-                    <div className="bg-gray-50 rounded-lg p-4 border">
-                      <h3 className="text-sm font-medium text-gray-700 mb-3 flex items-center gap-2">
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <h3 className="text-sm font-medium text-blue-800 mb-3 flex items-center gap-2">
                         <User className="h-4 w-4" />
-                        Patient Information
+                        Patient Information (Auto-filled for verification)
                       </h3>
                       {profileLoading ? (
                         <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -274,59 +275,69 @@ const AppointmentPage = () => {
                       ) : (
                         <div className="grid md:grid-cols-2 gap-4">
                           <div className="space-y-2">
-                            <Label className="text-sm text-gray-600">Full Name</Label>
+                            <Label className="text-sm text-blue-700">Full Name</Label>
                             <Input
                               value={patientProfile.name}
                               readOnly
-                              className="bg-gray-100 cursor-not-allowed"
+                              className="bg-blue-100 cursor-not-allowed border-blue-200"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-sm text-gray-600">Email</Label>
+                            <Label className="text-sm text-blue-700">Email</Label>
                             <Input
                               value={patientProfile.email}
                               readOnly
-                              className="bg-gray-100 cursor-not-allowed"
+                              className="bg-blue-100 cursor-not-allowed border-blue-200"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-sm text-gray-600">Phone</Label>
+                            <Label className="text-sm text-blue-700">Phone</Label>
                             <Input
                               value={patientProfile.phone}
                               readOnly
-                              className="bg-gray-100 cursor-not-allowed"
+                              className="bg-blue-100 cursor-not-allowed border-blue-200"
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label className="text-sm text-gray-600">Gender</Label>
+                            <Label className="text-sm text-blue-700">Gender</Label>
                             <Input
-                              value={patientProfile.gender ? patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1) : ''}
+                              value={patientProfile.gender ? 
+                                patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1).replace('-', ' ') : 
+                                'Not specified'
+                              }
                               readOnly
-                              className="bg-gray-100 cursor-not-allowed"
+                              className="bg-blue-100 cursor-not-allowed border-blue-200"
                             />
                           </div>
                         </div>
                       )}
+                      <p className="text-xs text-blue-600 mt-2">
+                        ✓ This information is automatically populated from your patient profile and cannot be edited during booking.
+                      </p>
                     </div>
                   )}
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="date">Preferred Date</Label>
+                      <Label htmlFor="date">Preferred Date *</Label>
                       <Input
                         id="date"
                         type="date"
                         value={formData.date}
                         onChange={(e) => handleChange('date', e.target.value)}
+                        min={new Date().toISOString().split('T')[0]}
                         required
                       />
+                      {errors.date && (
+                        <p className="text-sm text-red-600">{errors.date[0]}</p>
+                      )}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="time" className="flex items-center gap-2">
                         <Clock className="h-4 w-4" />
-                        Preferred Time
+                        Preferred Time *
                       </Label>
-                      <Select onValueChange={(value) => handleChange('time', value)}>
+                      <Select onValueChange={(value) => handleChange('time', value)} value={formData.time}>
                         <SelectTrigger>
                           <SelectValue placeholder="Select time" />
                         </SelectTrigger>
@@ -339,12 +350,15 @@ const AppointmentPage = () => {
                           <SelectItem value="16:00">4:00 PM</SelectItem>
                         </SelectContent>
                       </Select>
+                      {errors.time && (
+                        <p className="text-sm text-red-600">{errors.time[0]}</p>
+                      )}
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="doctor">Select Doctor</Label>
+                      <Label htmlFor="doctor">Select Doctor *</Label>
                       <DoctorSelect
                         value={formData.doctor_id}
                         onValueChange={handleDoctorChange}

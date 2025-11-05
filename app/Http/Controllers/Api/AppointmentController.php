@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Appointment;
 use App\Models\Doctor;
+use App\Http\Requests\StoreAppointmentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
@@ -12,34 +13,45 @@ use Exception;
 
 class AppointmentController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreAppointmentRequest $request)
     {
         try {
-            Log::info('Appointment booking attempt', ['request_data' => $request->all()]);
-            
             // Get authenticated patient
             $user = $request->user();
-            if (!$user || !isset($user->patient_id)) {
+            
+            Log::info('Appointment booking attempt', [
+                'user_exists' => $user ? true : false,
+                'user_type' => $user ? get_class($user) : null,
+                'patient_id' => $user->patient_id ?? null,
+                'user_data' => $user ? $user->toArray() : null,
+                'request_data' => $request->except(['password'])
+            ]);
+            
+            if (!$user) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Authentication required. Please log in to book an appointment.'
                 ], 401);
             }
             
-            // Validate input data (only appointment-specific fields)
-            $validated = $request->validate([
-                'date' => 'required|date_format:Y-m-d|after_or_equal:' . now()->format('Y-m-d'),
-                'time' => 'required|string',
-                'doctor_id' => 'required|integer|exists:doctors,doctor_id',
-                'consultationType' => 'nullable|in:in-person,telemedicine,follow-up,consultation',
-                'reason' => 'nullable|string|max:1000',
-                'termsAccepted' => 'required|accepted'
+            $patientId = $user->patient_id ?? $user->getKey();
+            if (!$patientId) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Patient authentication required. Only patients can book appointments through this endpoint.'
+                ], 401);
+            }
+            
+            // Get validated data from form request
+            $validated = $request->validated();
+
+            Log::info('Validation passed', [
+                'patient_id' => $user->patient_id,
+                'validated_data' => $validated
             ]);
 
-            Log::info('Validation passed', ['validated_data' => $validated]);
-
             // Find doctor
-            $doctor = Doctor::find($validated['doctor_id']);
+            $doctor = Doctor::where('doctor_id', $validated['doctor_id'])->first();
             if (!$doctor) {
                 Log::error('Doctor not found', ['doctor_id' => $validated['doctor_id']]);
                 return response()->json([
@@ -49,13 +61,18 @@ class AppointmentController extends Controller
                 ], 422);
             }
 
-            Log::info('Doctor found', ['doctor' => $doctor->name]);
+            Log::info('Doctor found', [
+                'doctor_id' => $doctor->doctor_id,
+                'doctor_name' => $doctor->name,
+                'doctor_email' => $doctor->email
+            ]);
 
             // Check for duplicate appointments
-            $existingAppointment = Appointment::where('patient_id', $user->patient_id)
+            $existingAppointment = Appointment::where('patient_id', $patientId)
                 ->where('appointment_date', $validated['date'])
                 ->where('appointment_time', $validated['time'])
-                ->where('doctor', $doctor->name)
+                ->where('doctor_id', $doctor->doctor_id)
+                ->whereIn('status', ['pending', 'confirmed'])
                 ->first();
 
             if ($existingAppointment) {
@@ -63,49 +80,64 @@ class AppointmentController extends Controller
                     'patient_id' => $user->patient_id,
                     'date' => $validated['date'],
                     'time' => $validated['time'],
-                    'doctor' => $doctor->name
+                    'doctor' => $doctor->name,
+                    'existing_appointment_id' => $existingAppointment->id
                 ]);
                 return response()->json([
                     'success' => false,
                     'message' => 'You already have an appointment scheduled with this doctor at the same time.',
-                    'errors' => ['appointment' => ['Duplicate appointment detected.']]
+                    'errors' => ['general' => ['Duplicate appointment detected. Please choose a different time or date.']]
                 ], 422);
             }
 
             Log::info('Patient authentication check', [
-                'patient_id' => $user->patient_id,
+                'patient_id' => $patientId,
                 'patient_name' => $user->name
             ]);
 
             // Create appointment with patient data
             $appointment = Appointment::create([
-                'patient_id' => $user->patient_id,
+                'patient_id' => $patientId,
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone,
-                'gender' => $user->gender,
+                'phone' => $user->phone ?? '',
+                'gender' => $user->gender ?? 'prefer-not-to-say',
                 'appointment_date' => $validated['date'],
                 'appointment_time' => $validated['time'],
                 'doctor' => $doctor->name,
                 'doctor_id' => $doctor->doctor_id,
                 'consultation_type' => $validated['consultationType'] ?? null,
-                'reason' => $validated['reason'],
-                'terms_accepted' => $validated['termsAccepted'],
+                'reason' => $validated['reason'] ?? '',
+                'terms_accepted' => true,
                 'status' => 'pending'
             ]);
 
-            Log::info('Appointment created successfully', ['appointment_id' => $appointment->id]);
+            Log::info('Appointment created successfully', [
+                'appointment_id' => $appointment->id,
+                'patient_id' => $patientId,
+                'doctor_name' => $doctor->name,
+                'appointment_date' => $validated['date'],
+                'appointment_time' => $validated['time']
+            ]);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Appointment booked successfully! You will receive a confirmation email shortly.',
-                'appointment' => $appointment
+                'appointment' => [
+                    'id' => $appointment->id,
+                    'patient_name' => $appointment->name,
+                    'doctor_name' => $appointment->doctor,
+                    'appointment_date' => $appointment->appointment_date,
+                    'appointment_time' => $appointment->appointment_time,
+                    'status' => $appointment->status
+                ]
             ], 201);
 
         } catch (ValidationException $e) {
             Log::error('Validation failed', [
                 'errors' => $e->errors(),
-                'request_data' => $request->all()
+                'patient_id' => $user->patient_id ?? null,
+                'request_data' => $request->except(['password'])
             ]);
             
             return response()->json([
@@ -117,8 +149,10 @@ class AppointmentController extends Controller
         } catch (Exception $e) {
             Log::error('Appointment booking failed', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'patient_id' => $user->patient_id ?? null,
+                'request_data' => $request->except(['password'])
             ]);
             
             return response()->json([
