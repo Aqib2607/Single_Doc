@@ -68,6 +68,7 @@ Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 
 Route::get('/doctors', [DoctorController::class, 'index']);
 Route::get('/doctors/{doctor}', [DoctorController::class, 'show']);
+Route::get('/doctors/{doctor}/schedules', [DoctorController::class, 'getSchedules']);
 Route::get('/blogs', [BlogController::class, 'index']);
 Route::get('/blogs/{blog}', [BlogController::class, 'show']);
 Route::get('/galleries', [GalleryController::class, 'index']);

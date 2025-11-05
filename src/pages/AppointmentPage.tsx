@@ -13,6 +13,18 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import $ from 'jquery';
 
+interface TimeSlot {
+  value: string;
+  label: string;
+}
+
+interface DoctorSchedule {
+  day_of_week: string;
+  start_time: string;
+  end_time: string;
+  time_slots: TimeSlot[];
+}
+
 
 const AppointmentPage = () => {
   const navigate = useNavigate();
@@ -54,6 +66,10 @@ const AppointmentPage = () => {
   const [profileLoading, setProfileLoading] = useState(true);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
   const [successMessage, setSuccessMessage] = useState('');
+  const [doctorSchedules, setDoctorSchedules] = useState<DoctorSchedule[]>([]);
+  const [loadingSchedules, setLoadingSchedules] = useState(false);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<TimeSlot[]>([]);
+  const [selectedDate, setSelectedDate] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +130,50 @@ const AppointmentPage = () => {
   };
 
   const handleDoctorChange = (doctorId: number) => {
-    setFormData(prev => ({ ...prev, doctor_id: doctorId }));
+    setFormData(prev => ({ ...prev, doctor_id: doctorId, time: '' }));
+    fetchDoctorSchedules(doctorId);
+  };
+
+  const fetchDoctorSchedules = async (doctorId: number) => {
+    setLoadingSchedules(true);
+    setDoctorSchedules([]);
+    setAvailableTimeSlots([]);
+    
+    try {
+      const response = await fetch(`/api/doctors/${doctorId}/schedules`);
+      if (response.ok) {
+        const schedules = await response.json();
+        setDoctorSchedules(schedules);
+        if (selectedDate) {
+          updateAvailableTimeSlots(schedules, selectedDate);
+        }
+      } else {
+        console.error('Failed to fetch doctor schedules');
+      }
+    } catch (error) {
+      console.error('Error fetching doctor schedules:', error);
+    } finally {
+      setLoadingSchedules(false);
+    }
+  };
+
+  const updateAvailableTimeSlots = (schedules: DoctorSchedule[], date: string) => {
+    const selectedDay = new Date(date).toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+    const daySchedule = schedules.find(schedule => schedule.day_of_week === selectedDay);
+    
+    if (daySchedule) {
+      setAvailableTimeSlots(daySchedule.time_slots || []);
+    } else {
+      setAvailableTimeSlots([]);
+    }
+  };
+
+  const handleDateChange = (date: string) => {
+    setFormData(prev => ({ ...prev, date, time: '' }));
+    setSelectedDate(date);
+    if (doctorSchedules.length > 0) {
+      updateAvailableTimeSlots(doctorSchedules, date);
+    }
   };
 
   useEffect(() => {
@@ -355,7 +414,7 @@ const AppointmentPage = () => {
                         id="date"
                         type="date"
                         value={formData.date}
-                        onChange={(e) => handleChange('date', e.target.value)}
+                        onChange={(e) => handleDateChange(e.target.value)}
                         min={new Date().toISOString().split('T')[0]}
                         required
                       />
@@ -368,19 +427,37 @@ const AppointmentPage = () => {
                         <Clock className="h-4 w-4" />
                         Preferred Time *
                       </Label>
-                      <Select onValueChange={(value) => handleChange('time', value)} value={formData.time}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select time" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="09:00">9:00 AM</SelectItem>
-                          <SelectItem value="10:00">10:00 AM</SelectItem>
-                          <SelectItem value="11:00">11:00 AM</SelectItem>
-                          <SelectItem value="14:00">2:00 PM</SelectItem>
-                          <SelectItem value="15:00">3:00 PM</SelectItem>
-                          <SelectItem value="16:00">4:00 PM</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {!formData.doctor_id ? (
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-500">
+                          Please select a doctor first to view available time slots
+                        </div>
+                      ) : loadingSchedules ? (
+                        <div className="flex items-center gap-2 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span className="text-sm text-blue-600">Loading available time slots...</span>
+                        </div>
+                      ) : !formData.date ? (
+                        <div className="p-3 bg-gray-50 border border-gray-200 rounded-md text-sm text-gray-500">
+                          Please select a date to view available time slots
+                        </div>
+                      ) : availableTimeSlots.length === 0 ? (
+                        <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-yellow-700">
+                          No available time slots for the selected date. Please choose a different date.
+                        </div>
+                      ) : (
+                        <Select onValueChange={(value) => handleChange('time', value)} value={formData.time}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select available time" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {availableTimeSlots.map((slot) => (
+                              <SelectItem key={slot.value} value={slot.value}>
+                                {slot.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
                       {errors.time && (
                         <p className="text-sm text-red-600">{errors.time[0]}</p>
                       )}

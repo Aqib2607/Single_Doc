@@ -50,22 +50,3 @@ class Appointment extends Model
         return $this->belongsTo(Guest::class, 'guest_id', 'id');
     }
 }
-
-class Schedule extends Model
-{
-    use HasFactory;
-
-    protected $fillable = [
-        'doctor_email',
-        'day_of_week',
-        'start_time',
-        'end_time',
-        'is_available',
-    ];
-
-    protected $casts = [
-        'start_time' => 'datetime:H:i',
-        'end_time' => 'datetime:H:i',
-        'is_available' => 'boolean',
-    ];
-}

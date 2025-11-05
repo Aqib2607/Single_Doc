@@ -1027,55 +1027,34 @@ class ComprehensiveSeeder extends Seeder
     private function seedSchedules(): void
     {
         $schedules = [
-            [
-                'doctor_id' => 1,
-                'day_of_week' => 'monday',
-                'start_time' => '09:00:00',
-                'end_time' => '17:00:00',
-                'is_available' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'doctor_id' => 1,
-                'day_of_week' => 'wednesday',
-                'start_time' => '09:00:00',
-                'end_time' => '17:00:00',
-                'is_available' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'doctor_id' => 2,
-                'day_of_week' => 'tuesday',
-                'start_time' => '08:00:00',
-                'end_time' => '16:00:00',
-                'is_available' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'doctor_id' => 3,
-                'day_of_week' => 'friday',
-                'start_time' => '10:00:00',
-                'end_time' => '18:00:00',
-                'is_available' => false,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'doctor_id' => 4,
-                'day_of_week' => 'thursday',
-                'start_time' => '07:00:00',
-                'end_time' => '15:00:00',
-                'is_available' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
+            // Dr. Sarah Johnson (doctor_id: 1) - Cardiology
+            ['doctor_id' => 1, 'day_of_week' => 'monday', 'start_time' => '09:00:00', 'end_time' => '17:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 1, 'day_of_week' => 'tuesday', 'start_time' => '09:00:00', 'end_time' => '17:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 1, 'day_of_week' => 'wednesday', 'start_time' => '09:00:00', 'end_time' => '17:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            
+            // Dr. Michael Chen (doctor_id: 2) - Pediatrics
+            ['doctor_id' => 2, 'day_of_week' => 'monday', 'start_time' => '08:00:00', 'end_time' => '16:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 2, 'day_of_week' => 'thursday', 'start_time' => '08:00:00', 'end_time' => '16:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 2, 'day_of_week' => 'friday', 'start_time' => '08:00:00', 'end_time' => '16:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            
+            // Dr. Emily Rodriguez (doctor_id: 3) - Dermatology
+            ['doctor_id' => 3, 'day_of_week' => 'tuesday', 'start_time' => '10:00:00', 'end_time' => '18:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 3, 'day_of_week' => 'wednesday', 'start_time' => '10:00:00', 'end_time' => '18:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 3, 'day_of_week' => 'saturday', 'start_time' => '09:00:00', 'end_time' => '13:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            
+            // Dr. James Wilson (doctor_id: 4) - Orthopedics
+            ['doctor_id' => 4, 'day_of_week' => 'monday', 'start_time' => '07:00:00', 'end_time' => '15:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 4, 'day_of_week' => 'wednesday', 'start_time' => '07:00:00', 'end_time' => '15:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 4, 'day_of_week' => 'friday', 'start_time' => '07:00:00', 'end_time' => '15:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            
+            // Dr. Lisa Thompson (doctor_id: 5) - Neurology
+            ['doctor_id' => 5, 'day_of_week' => 'tuesday', 'start_time' => '09:00:00', 'end_time' => '17:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 5, 'day_of_week' => 'thursday', 'start_time' => '09:00:00', 'end_time' => '17:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['doctor_id' => 5, 'day_of_week' => 'saturday', 'start_time' => '08:00:00', 'end_time' => '12:00:00', 'is_available' => true, 'created_at' => now(), 'updated_at' => now()],
         ];
 
         DB::table('schedules')->insert($schedules);
-        echo "✓ Seeded 5 schedules\n";
+        echo "✓ Seeded 15 schedules\n";
     }
 
     private function outputSummaryReport(): void
