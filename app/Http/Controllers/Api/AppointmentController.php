@@ -102,6 +102,7 @@ class AppointmentController extends Controller
                 'email' => $user->email,
                 'phone' => $user->phone ?? '',
                 'gender' => $user->gender ?? 'prefer-not-to-say',
+                'date_of_birth' => $user->date_of_birth ?? null,
                 'appointment_date' => $validated['date'],
                 'appointment_time' => $validated['time'],
                 'doctor' => $doctor->name,

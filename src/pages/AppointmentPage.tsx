@@ -20,7 +20,8 @@ const AppointmentPage = () => {
     name: '',
     email: '',
     phone: '',
-    gender: ''
+    gender: '',
+    date_of_birth: ''
   });
   
   const [formData, setFormData] = useState<{
@@ -28,6 +29,7 @@ const AppointmentPage = () => {
     email?: string;
     phone?: string;
     gender?: string;
+    date_of_birth?: string;
     date: string;
     time: string;
     doctor_id: number | undefined;
@@ -39,6 +41,7 @@ const AppointmentPage = () => {
     email: '',
     phone: '',
     gender: '',
+    date_of_birth: '',
     date: '',
     time: '',
     doctor_id: undefined,
@@ -78,6 +81,7 @@ const AppointmentPage = () => {
             email: '',
             phone: '',
             gender: '',
+            date_of_birth: '',
             date: '',
             time: '',
             doctor_id: undefined,
@@ -259,6 +263,20 @@ const AppointmentPage = () => {
                           )}
                         </div>
                       </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="date_of_birth">Date of Birth *</Label>
+                        <Input
+                          id="date_of_birth"
+                          type="date"
+                          value={formData.date_of_birth || ''}
+                          onChange={(e) => handleChange('date_of_birth', e.target.value)}
+                          required
+                        />
+                        {errors.date_of_birth && (
+                          <p className="text-sm text-red-600">{errors.date_of_birth[0]}</p>
+                        )}
+                      </div>
                     </div>
                   )}
 
@@ -306,6 +324,17 @@ const AppointmentPage = () => {
                               value={patientProfile.gender ? 
                                 patientProfile.gender.charAt(0).toUpperCase() + patientProfile.gender.slice(1).replace('-', ' ') : 
                                 'Prefer not to say'
+                              }
+                              readOnly
+                              className="bg-blue-100 cursor-not-allowed border-blue-200"
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-sm text-blue-700">Date of Birth</Label>
+                            <Input
+                              value={patientProfile.date_of_birth ? 
+                                new Date(patientProfile.date_of_birth).toLocaleDateString() : 
+                                'Not specified'
                               }
                               readOnly
                               className="bg-blue-100 cursor-not-allowed border-blue-200"

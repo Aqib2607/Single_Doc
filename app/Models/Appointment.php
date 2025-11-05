@@ -16,6 +16,7 @@ class Appointment extends Model
         'email',
         'phone',
         'gender',
+        'date_of_birth',
         'appointment_date',
         'appointment_time',
         'doctor',
@@ -30,6 +31,7 @@ class Appointment extends Model
     protected $casts = [
         'appointment_date' => 'date',
         'appointment_time' => 'datetime:H:i',
+        'date_of_birth' => 'date',
         'terms_accepted' => 'boolean',
     ];
 

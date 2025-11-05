@@ -30,7 +30,8 @@ class PatientController extends Controller
                 'name' => $user->name ?? '',
                 'email' => $user->email ?? '',
                 'phone' => $user->phone ?? '',
-                'gender' => $user->gender ?? 'prefer-not-to-say'
+                'gender' => $user->gender ?? 'prefer-not-to-say',
+                'date_of_birth' => null // Doctors don't have date_of_birth
             ]);
         } else {
             return response()->json([
@@ -38,7 +39,8 @@ class PatientController extends Controller
                 'name' => $user->name ?? '',
                 'email' => $user->email ?? '',
                 'phone' => $user->phone ?? '',
-                'gender' => $user->gender ?? 'prefer-not-to-say'
+                'gender' => $user->gender ?? 'prefer-not-to-say',
+                'date_of_birth' => $user->date_of_birth ?? null
             ]);
         }
     }
