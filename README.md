@@ -31,57 +31,137 @@ A comprehensive medical management system built with Laravel (backend) and React
 
 ## Prerequisites
 
-- PHP 8.1+
-- Composer
-- Node.js 16+
-- npm or bun
-- MySQL
+- **PHP 8.1+** - Server-side scripting language
+- **Composer** - PHP dependency manager
+- **Node.js 16+** - JavaScript runtime
+- **npm or bun** - Node.js package managers
+- **MySQL 8.0+** - Database server
+- **Git** - Version control (for cloning repository)
 
 ## Installation
 
-### 1. Install Dependencies
-
-**IMPORTANT: Install dependencies first to avoid TypeScript module resolution errors.**
+### 1. Clone Repository
 
 ```bash
-# Install PHP dependencies
-composer install
-
-# Install Node.js dependencies
-npm install
-# or
-bun install
+git clone https://github.com/your-username/Single_Doc.git
+cd Single_Doc
 ```
 
-### 2. Environment Setup
+### 2. Install All Dependencies
+
+**CRITICAL: Install ALL dependencies before proceeding to avoid errors.**
+
+#### Backend Dependencies (PHP/Laravel)
+
+```bash
+# Install PHP packages via Composer
+composer install
+
+# Key Laravel packages installed:
+# - laravel/framework (^10.0)
+# - laravel/sanctum (API authentication)
+# - laravel/tinker (REPL)
+```
+
+#### Frontend Dependencies (Node.js/React)
+
+```bash
+# Install Node.js packages via npm
+npm install
+
+# OR using bun (faster alternative)
+bun install
+
+# Key packages installed:
+# - react (^18.0) & react-dom
+# - typescript (^5.0)
+# - vite (^4.0) - Build tool
+# - tailwindcss (^3.0) - CSS framework
+# - @radix-ui/* - UI component primitives
+# - lucide-react - Icon library
+# - react-router-dom - Client-side routing
+# - jquery - AJAX requests
+```
+
+#### Development Dependencies
+
+```bash
+# These are automatically installed with the above commands:
+# - @types/react, @types/react-dom (TypeScript definitions)
+# - @vitejs/plugin-react (Vite React plugin)
+# - autoprefixer & postcss (CSS processing)
+# - eslint & @typescript-eslint/* (Code linting)
+```
+
+### 3. Environment Setup
 
 ```bash
 # Copy environment file
 cp .env.example .env
 
-# Generate application key
+# Generate Laravel application key
 php artisan key:generate
+
+# Set application URL (if different from default)
+# Edit .env file and update:
+# APP_URL=http://localhost:8000
 ```
 
-### 3. Database Setup
+### 4. Database Setup
 
-1. Create a MySQL database
-2. Update `.env` file with your database credentials:
+#### Step 1: Create MySQL Database
+
+```sql
+# Connect to MySQL as root
+mysql -u root -p
+
+# Create database
+CREATE DATABASE single_doc;
+
+# Create user (optional, for security)
+CREATE USER 'single_doc_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON single_doc.* TO 'single_doc_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+#### Step 2: Configure Database Connection
+
+Update `.env` file with your database credentials:
 
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=single_doc
-DB_USERNAME=
-DB_PASSWORD=
+DB_USERNAME=single_doc_user
+DB_PASSWORD=your_password
 ```
 
-3. Run migrations and seeders:
+#### Step 3: Run Database Migrations & Seeders
 
 ```bash
+# Run all migrations to create tables
+php artisan migrate
+
+# Seed database with sample data
+php artisan db:seed
+
+# OR run both in one command
 php artisan migrate --seed
 ```
+
+#### Database Tables Created
+
+- `users` - System users authentication
+- `doctors` - Doctor profiles and specializations  
+- `patients` - Patient profiles and medical info
+- `appointments` - Appointment bookings (patient & guest)
+- `prescriptions` - Medical prescriptions
+- `medicines` - Available medicines catalog
+- `tests` - Diagnostic tests catalog
+- `schedules` - Doctor availability schedules
+- `guests` - Guest appointment bookings
 
 ### 4. Start Development Servers
 
