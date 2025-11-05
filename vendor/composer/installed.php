@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'single-vendor/doc-app',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'reference' => 'ec37fdd5aa71956b01b25103211731d706cbe5ef',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -945,9 +945,9 @@
             'dev_requirement' => true,
         ),
         'single-vendor/doc-app' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'reference' => 'ec37fdd5aa71956b01b25103211731d706cbe5ef',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
