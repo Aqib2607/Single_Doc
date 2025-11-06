@@ -25,7 +25,7 @@ class PrescriptionController extends Controller
             $search = $request->get('search');
             $status = $request->get('status');
             
-            $query = Prescription::with(['patient', 'doctor', 'medicines', 'tests']);
+            $query = Prescription::with(['patient', 'guest', 'doctor', 'medicines', 'tests']);
             
             if ($user && $user instanceof \App\Models\Doctor) {
                 $query->where('doctor_id', $user->doctor_id);
@@ -66,7 +66,7 @@ class PrescriptionController extends Controller
 
         try {
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,patient_id',
+                'patient_id' => 'required|string',
                 'instructions' => 'nullable|string',
                 'is_active' => 'boolean',
                 'medicines' => 'nullable|array',
@@ -84,14 +84,27 @@ class PrescriptionController extends Controller
             ]);
 
             $prescription = DB::transaction(function () use ($validated, $user) {
-                // Get patient email
-                $patient = \App\Models\Patient::where('patient_id', $validated['patient_id'])->first();
+                // Handle patient or guest
+                $patientEmail = null;
+                $actualPatientId = null;
+                $guestId = null;
+                
+                if (str_starts_with($validated['patient_id'], 'guest_')) {
+                    $guestId = str_replace('guest_', '', $validated['patient_id']);
+                    $guest = \App\Models\Guest::find($guestId);
+                    $patientEmail = $guest->email ?? null;
+                } else {
+                    $actualPatientId = $validated['patient_id'];
+                    $patient = \App\Models\Patient::where('patient_id', $validated['patient_id'])->first();
+                    $patientEmail = $patient->email ?? null;
+                }
                 
                 // Create prescription with basic info
                 $prescriptionData = [
-                    'patient_id' => $validated['patient_id'],
+                    'patient_id' => $actualPatientId,
+                    'guest_id' => $guestId,
                     'doctor_id' => $user->doctor_id,
-                    'patient_email' => $patient->email ?? null,
+                    'patient_email' => $patientEmail,
                     'is_active' => $validated['is_active'] ?? true,
                     'instructions' => $validated['instructions'] ?? null,
                 ];
@@ -125,7 +138,7 @@ class PrescriptionController extends Controller
                     }
                 }
                 
-                return $prescription->load(['patient', 'doctor', 'medicines', 'tests']);
+                return $prescription->load(['patient', 'guest', 'doctor', 'medicines', 'tests']);
             });
 
             Log::info('Prescription created successfully', [
@@ -152,7 +165,7 @@ class PrescriptionController extends Controller
                 return response()->json(['message' => 'Unauthorized access'], 403);
             }
             
-            return response()->json($prescription->load(['patient', 'doctor', 'medicines', 'tests']));
+            return response()->json($prescription->load(['patient', 'guest', 'doctor', 'medicines', 'tests']));
         } catch (\Exception $e) {
             Log::error('Failed to fetch prescription: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to fetch prescription'], 500);
@@ -169,7 +182,7 @@ class PrescriptionController extends Controller
             }
             
             $validated = $request->validate([
-                'patient_id' => 'required|exists:patients,patient_id',
+                'patient_id' => 'required|string',
                 'instructions' => 'nullable|string',
                 'is_active' => 'boolean',
                 'medicines' => 'nullable|array',
@@ -225,7 +238,7 @@ class PrescriptionController extends Controller
                     }
                 }
                 
-                return $prescription->load(['patient', 'doctor', 'medicines', 'tests']);
+                return $prescription->load(['patient', 'guest', 'doctor', 'medicines', 'tests']);
             });
             
             Log::info('Prescription updated successfully', [

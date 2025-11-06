@@ -89,7 +89,7 @@ const DoctorPrescriptions = () => {
   const fetchPatients = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('/api/patients', {
+      const response = await fetch('/api/patients-and-guests', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -97,10 +97,13 @@ const DoctorPrescriptions = () => {
       });
       if (response.ok) {
         const data = await response.json();
+        console.log('Fetched patients and guests:', data);
         setPatients(data);
+      } else {
+        console.error('Failed to fetch patients and guests:', response.status, response.statusText);
       }
     } catch (error) {
-      console.error('Error fetching patients:', error);
+      console.error('Error fetching patients and guests:', error);
     }
   };
 
@@ -217,8 +220,9 @@ const DoctorPrescriptions = () => {
   };
   
   const handleEdit = (prescription) => {
+    const patientId = prescription.patient_id ? prescription.patient_id.toString() : `guest_${prescription.guest_id}`;
     setFormData({
-      patient_id: prescription.patient_id.toString(),
+      patient_id: patientId,
       instructions: prescription.instructions || '',
       is_active: prescription.is_active,
       medicines: prescription.medicines?.length > 0 ? prescription.medicines : [{ medicine_name: '', dosage: '', frequency: '', start_date: '', end_date: '', refills_remaining: '', instructions: '' }],
@@ -397,7 +401,7 @@ const DoctorPrescriptions = () => {
                             </SelectTrigger>
                             <SelectContent>
                               {patients.map((patient) => (
-                                <SelectItem key={patient.patient_id} value={patient.patient_id.toString()}>{patient.name}</SelectItem>
+                                <SelectItem key={patient.id} value={patient.id.toString()}>{patient.display_name}</SelectItem>
                               ))}
                             </SelectContent>
                           </Select>
@@ -578,8 +582,11 @@ const DoctorPrescriptions = () => {
                         Loading prescriptions...
                       </div>
                     ) : prescriptions.map((prescription) => {
-                      const patient = patients.find(p => p.patient_id === prescription.patient_id);
-                      const startDate = new Date(prescription.start_date).toLocaleDateString();
+                      const patient = patients.find(p => 
+                        (prescription.patient_id && p.id === prescription.patient_id) ||
+                        (prescription.guest_id && p.id === `guest_${prescription.guest_id}`)
+                      );
+                      const startDate = prescription.start_date ? new Date(prescription.start_date).toLocaleDateString() : null;
                       const endDate = prescription.end_date ? new Date(prescription.end_date).toLocaleDateString() : null;
                       
                       return (
@@ -596,12 +603,12 @@ const DoctorPrescriptions = () => {
                               }
                             }}
                             className="mr-2"
-                            aria-label={`Select prescription for ${patient ? patient.name : `Patient ID: ${prescription.patient_id}`}`}
+                            aria-label={`Select prescription for ${patient ? patient.display_name : (prescription.patient_id ? `Patient ID: ${prescription.patient_id}` : `Guest ID: ${prescription.guest_id}`)}`}
                           />
                           <Pill className="h-5 w-5 text-primary" />
                           <div className="flex-1">
                             <h3 className="font-semibold text-foreground">
-                              {patient ? patient.name : `Patient ID: ${prescription.patient_id}`}
+                              {patient ? patient.display_name : (prescription.patient_id ? `Patient ID: ${prescription.patient_id}` : `Guest ID: ${prescription.guest_id}`)}
                             </h3>
                             {prescription.medication_name && (
                               <>

@@ -123,6 +123,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/doctor-schedules/{id}', [MedicalRecordController::class, 'updateSchedule']);
     Route::delete('/doctor-schedules/{id}', [MedicalRecordController::class, 'deleteSchedule']);
     Route::apiResource('patients', \App\Http\Controllers\PatientController::class);
+    Route::get('/patients-and-guests', [\App\Http\Controllers\PatientController::class, 'getPatientsAndGuests']);
     Route::apiResource('consultations', \App\Http\Controllers\ConsultationController::class);
     Route::resource('consultations', ConsultationController::class);
     Route::resource('medical-records', MedicalRecordController::class);
