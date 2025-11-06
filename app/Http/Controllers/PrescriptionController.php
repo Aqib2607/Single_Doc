@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Prescription;
+use App\Models\PrescriptionMedicine;
+use App\Models\PrescriptionTest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class PrescriptionController extends Controller
 {
@@ -22,7 +25,7 @@ class PrescriptionController extends Controller
             $search = $request->get('search');
             $status = $request->get('status');
             
-            $query = Prescription::with(['patient', 'doctor']);
+            $query = Prescription::with(['patient', 'doctor', 'medicines', 'tests']);
             
             if ($user && $user instanceof \App\Models\Doctor) {
                 $query->where('doctor_id', $user->doctor_id);
@@ -64,23 +67,66 @@ class PrescriptionController extends Controller
         try {
             $validated = $request->validate([
                 'patient_id' => 'required|exists:patients,patient_id',
-                'medication_name' => 'required|string|max:255',
-                'dosage' => 'required|string|max:255',
-                'frequency' => 'required|string|max:255',
                 'instructions' => 'nullable|string',
-                'start_date' => 'required|date',
-                'end_date' => 'nullable|date|after:start_date',
                 'is_active' => 'boolean',
+                'medicines' => 'nullable|array',
+                'medicines.*.medicine_name' => 'required|string|max:255',
+                'medicines.*.dosage' => 'required|string|max:255',
+                'medicines.*.frequency' => 'required|string|max:255',
+                'medicines.*.start_date' => 'required|date',
+                'medicines.*.end_date' => 'nullable|date|after:medicines.*.start_date',
+                'medicines.*.refills_remaining' => 'nullable|integer|min:0',
+                'medicines.*.instructions' => 'nullable|string',
+                'tests' => 'nullable|array',
+                'tests.*.test_name' => 'required|string|max:255',
+                'tests.*.description' => 'nullable|string',
+                'tests.*.instructions' => 'nullable|string',
             ]);
 
-            // Get patient email
-            $patient = \App\Models\Patient::where('patient_id', $validated['patient_id'])->first();
-            
-            $prescription = Prescription::create([
-                ...$validated,
-                'doctor_id' => $user->doctor_id,
-                'patient_email' => $patient->email ?? null,
-            ]);
+            $prescription = DB::transaction(function () use ($validated, $user) {
+                // Get patient email
+                $patient = \App\Models\Patient::where('patient_id', $validated['patient_id'])->first();
+                
+                // Create prescription with basic info
+                $prescriptionData = [
+                    'patient_id' => $validated['patient_id'],
+                    'doctor_id' => $user->doctor_id,
+                    'patient_email' => $patient->email ?? null,
+                    'is_active' => $validated['is_active'] ?? true,
+                    'instructions' => $validated['instructions'] ?? null,
+                ];
+                
+                // Add legacy fields if provided (backward compatibility)
+                if (!empty($validated['medication_name'])) {
+                    $prescriptionData['medication_name'] = $validated['medication_name'];
+                    $prescriptionData['dosage'] = $validated['dosage'];
+                    $prescriptionData['frequency'] = $validated['frequency'];
+                }
+                
+                $prescription = Prescription::create($prescriptionData);
+                
+                // Create medicines
+                if (!empty($validated['medicines'])) {
+                    foreach ($validated['medicines'] as $medicine) {
+                        PrescriptionMedicine::create([
+                            'prescription_id' => $prescription->id,
+                            ...$medicine
+                        ]);
+                    }
+                }
+                
+                // Create tests
+                if (!empty($validated['tests'])) {
+                    foreach ($validated['tests'] as $test) {
+                        PrescriptionTest::create([
+                            'prescription_id' => $prescription->id,
+                            ...$test
+                        ]);
+                    }
+                }
+                
+                return $prescription->load(['patient', 'doctor', 'medicines', 'tests']);
+            });
 
             Log::info('Prescription created successfully', [
                 'prescription_id' => $prescription->id,
@@ -88,7 +134,7 @@ class PrescriptionController extends Controller
                 'patient_id' => $validated['patient_id']
             ]);
 
-            return response()->json($prescription->load(['patient', 'doctor']), 201);
+            return response()->json($prescription, 201);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {
@@ -106,7 +152,7 @@ class PrescriptionController extends Controller
                 return response()->json(['message' => 'Unauthorized access'], 403);
             }
             
-            return response()->json($prescription->load(['patient', 'doctor']));
+            return response()->json($prescription->load(['patient', 'doctor', 'medicines', 'tests']));
         } catch (\Exception $e) {
             Log::error('Failed to fetch prescription: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to fetch prescription'], 500);
@@ -124,24 +170,70 @@ class PrescriptionController extends Controller
             
             $validated = $request->validate([
                 'patient_id' => 'required|exists:patients,patient_id',
-                'medication_name' => 'required|string|max:255',
-                'dosage' => 'required|string|max:255',
-                'frequency' => 'required|string|max:255',
                 'instructions' => 'nullable|string',
-                'start_date' => 'required|date',
-                'end_date' => 'nullable|date|after:start_date',
                 'is_active' => 'boolean',
-                'refills_remaining' => 'nullable|integer|min:0',
+                'medicines' => 'nullable|array',
+                'medicines.*.medicine_name' => 'required|string|max:255',
+                'medicines.*.dosage' => 'required|string|max:255',
+                'medicines.*.frequency' => 'required|string|max:255',
+                'medicines.*.start_date' => 'required|date',
+                'medicines.*.end_date' => 'nullable|date|after:medicines.*.start_date',
+                'medicines.*.refills_remaining' => 'nullable|integer|min:0',
+                'medicines.*.instructions' => 'nullable|string',
+                'tests' => 'nullable|array',
+                'tests.*.test_name' => 'required|string|max:255',
+                'tests.*.description' => 'nullable|string',
+                'tests.*.instructions' => 'nullable|string',
             ]);
 
-            $prescription->update($validated);
+            $prescription = DB::transaction(function () use ($validated, $prescription) {
+                // Update prescription basic info
+                $prescriptionData = [
+                    'patient_id' => $validated['patient_id'],
+                    'is_active' => $validated['is_active'] ?? true,
+                    'instructions' => $validated['instructions'] ?? null,
+                ];
+                
+                // Add legacy fields if provided
+                if (!empty($validated['medication_name'])) {
+                    $prescriptionData['medication_name'] = $validated['medication_name'];
+                    $prescriptionData['dosage'] = $validated['dosage'];
+                    $prescriptionData['frequency'] = $validated['frequency'];
+                }
+                
+                $prescription->update($prescriptionData);
+                
+                // Update medicines
+                if (isset($validated['medicines'])) {
+                    $prescription->medicines()->delete();
+                    foreach ($validated['medicines'] as $medicine) {
+                        PrescriptionMedicine::create([
+                            'prescription_id' => $prescription->id,
+                            ...$medicine
+                        ]);
+                    }
+                }
+                
+                // Update tests
+                if (isset($validated['tests'])) {
+                    $prescription->tests()->delete();
+                    foreach ($validated['tests'] as $test) {
+                        PrescriptionTest::create([
+                            'prescription_id' => $prescription->id,
+                            ...$test
+                        ]);
+                    }
+                }
+                
+                return $prescription->load(['patient', 'doctor', 'medicines', 'tests']);
+            });
             
             Log::info('Prescription updated successfully', [
                 'prescription_id' => $prescription->id,
                 'doctor_id' => $user->doctor_id
             ]);
 
-            return response()->json($prescription->load(['patient', 'doctor']));
+            return response()->json($prescription);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return response()->json(['message' => 'Validation failed', 'errors' => $e->errors()], 422);
         } catch (\Exception $e) {

@@ -9,7 +9,7 @@ import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
 import DoctorSidebar from '@/components/DoctorSidebar';
 import { ClipboardList, Pill, Plus, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Edit, Trash2, Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const DoctorPrescriptions = () => {
@@ -27,33 +27,14 @@ const DoctorPrescriptions = () => {
   const [selectedPrescriptions, setSelectedPrescriptions] = useState([]);
   const [formData, setFormData] = useState({
     patient_id: '',
-    medication_name: '',
-    dosage: '',
-    frequency: '',
     instructions: '',
-    start_date: '',
-    end_date: '',
     is_active: true,
-    refills_remaining: ''
+    medicines: [{ medicine_name: '', dosage: '', frequency: '', start_date: '', end_date: '', refills_remaining: '', instructions: '' }],
+    tests: [{ test_name: '', description: '', instructions: '' }]
   });
 
 
-  useEffect(() => {
-    fetchPrescriptions();
-    fetchPatients();
-  }, []);
-  
-  useEffect(() => {
-    const debounceTimer = setTimeout(() => {
-      if (searchTerm !== undefined) {
-        handleSearch();
-      }
-    }, 500);
-    
-    return () => clearTimeout(debounceTimer);
-  }, [searchTerm, statusFilter]);
-
-  const fetchPrescriptions = async (page = 1) => {
+  const fetchPrescriptions = useCallback(async (page = 1) => {
     try {
       setLoading(true);
       const token = localStorage.getItem('token');
@@ -83,7 +64,27 @@ const DoctorPrescriptions = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchTerm, statusFilter]);
+
+  const handleSearch = useCallback(() => {
+    setCurrentPage(1);
+    fetchPrescriptions(1);
+  }, [fetchPrescriptions]);
+
+  useEffect(() => {
+    fetchPrescriptions();
+    fetchPatients();
+  }, [fetchPrescriptions]);
+  
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        handleSearch();
+      }
+    }, 500);
+    
+    return () => clearTimeout(debounceTimer);
+  }, [searchTerm, statusFilter, handleSearch]);
 
   const fetchPatients = async () => {
     try {
@@ -103,12 +104,65 @@ const DoctorPrescriptions = () => {
     }
   };
 
+  const addMedicine = () => {
+    setFormData({
+      ...formData,
+      medicines: [...formData.medicines, { medicine_name: '', dosage: '', frequency: '', start_date: '', end_date: '', refills_remaining: '', instructions: '' }]
+    });
+  };
+
+  const removeMedicine = (index) => {
+    if (formData.medicines.length > 1) {
+      setFormData({
+        ...formData,
+        medicines: formData.medicines.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  const updateMedicine = (index, field, value) => {
+    const updatedMedicines = [...formData.medicines];
+    updatedMedicines[index][field] = value;
+    setFormData({ ...formData, medicines: updatedMedicines });
+  };
+
+  const addTest = () => {
+    setFormData({
+      ...formData,
+      tests: [...formData.tests, { test_name: '', description: '', instructions: '' }]
+    });
+  };
+
+  const removeTest = (index) => {
+    if (formData.tests.length > 1) {
+      setFormData({
+        ...formData,
+        tests: formData.tests.filter((_, i) => i !== index)
+      });
+    }
+  };
+
+  const updateTest = (index, field, value) => {
+    const updatedTests = [...formData.tests];
+    updatedTests[index][field] = value;
+    setFormData({ ...formData, tests: updatedTests });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     
-    if (!formData.patient_id || !formData.medication_name || !formData.dosage || !formData.frequency || !formData.start_date) {
-      setError('Please fill in all required fields');
+    if (!formData.patient_id) {
+      setError('Please select a patient');
+      return;
+    }
+    
+    // Validate medicines
+    const validMedicines = formData.medicines.filter(m => m.medicine_name && m.dosage && m.frequency && m.start_date);
+    const validTests = formData.tests.filter(t => t.test_name);
+    
+    if (validMedicines.length === 0 && validTests.length === 0) {
+      setError('Please add at least one medicine or test');
       return;
     }
     
@@ -125,7 +179,11 @@ const DoctorPrescriptions = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          medicines: validMedicines.length > 0 ? validMedicines : undefined,
+          tests: validTests.length > 0 ? validTests : undefined
+        })
       });
       
       if (response.ok) {
@@ -147,14 +205,10 @@ const DoctorPrescriptions = () => {
   const resetForm = () => {
     setFormData({ 
       patient_id: '', 
-      medication_name: '', 
-      dosage: '', 
-      frequency: '', 
       instructions: '', 
-      start_date: '', 
-      end_date: '', 
       is_active: true,
-      refills_remaining: ''
+      medicines: [{ medicine_name: '', dosage: '', frequency: '', start_date: '', end_date: '', refills_remaining: '', instructions: '' }],
+      tests: [{ test_name: '', description: '', instructions: '' }]
     });
     setShowForm(false);
     setEditingId(null);
@@ -165,14 +219,10 @@ const DoctorPrescriptions = () => {
   const handleEdit = (prescription) => {
     setFormData({
       patient_id: prescription.patient_id.toString(),
-      medication_name: prescription.medication_name,
-      dosage: prescription.dosage,
-      frequency: prescription.frequency,
       instructions: prescription.instructions || '',
-      start_date: prescription.start_date,
-      end_date: prescription.end_date || '',
       is_active: prescription.is_active,
-      refills_remaining: prescription.refills_remaining || ''
+      medicines: prescription.medicines?.length > 0 ? prescription.medicines : [{ medicine_name: '', dosage: '', frequency: '', start_date: '', end_date: '', refills_remaining: '', instructions: '' }],
+      tests: prescription.tests?.length > 0 ? prescription.tests : [{ test_name: '', description: '', instructions: '' }]
     });
     setEditingId(prescription.id);
     setShowForm(true);
@@ -237,10 +287,7 @@ const DoctorPrescriptions = () => {
     }
   };
   
-  const handleSearch = () => {
-    setCurrentPage(1);
-    fetchPrescriptions(1);
-  };
+
   
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -355,42 +402,7 @@ const DoctorPrescriptions = () => {
                             </SelectContent>
                           </Select>
                         </div>
-                        <div>
-                          <Label>Medication Name *</Label>
-                          <Input value={formData.medication_name} onChange={(e) => setFormData({...formData, medication_name: e.target.value})} required />
-                        </div>
-                        <div>
-                          <Label>Dosage *</Label>
-                          <Input value={formData.dosage} onChange={(e) => setFormData({...formData, dosage: e.target.value})} placeholder="e.g., 100mg" required />
-                        </div>
-                        <div>
-                          <Label>Frequency *</Label>
-                          <Select value={formData.frequency} onValueChange={(value) => setFormData({...formData, frequency: value})}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select frequency" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Once daily">Once daily</SelectItem>
-                              <SelectItem value="Twice daily">Twice daily</SelectItem>
-                              <SelectItem value="Three times daily">Three times daily</SelectItem>
-                              <SelectItem value="Four times daily">Four times daily</SelectItem>
-                              <SelectItem value="As needed">As needed</SelectItem>
-                              <SelectItem value="Weekly">Weekly</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div>
-                          <Label>Start Date *</Label>
-                          <Input type="date" value={formData.start_date} onChange={(e) => setFormData({...formData, start_date: e.target.value})} required />
-                        </div>
-                        <div>
-                          <Label>End Date</Label>
-                          <Input type="date" value={formData.end_date} onChange={(e) => setFormData({...formData, end_date: e.target.value})} min={formData.start_date} />
-                        </div>
-                        <div>
-                          <Label>Refills Remaining</Label>
-                          <Input type="number" min="0" value={formData.refills_remaining} onChange={(e) => setFormData({...formData, refills_remaining: e.target.value})} placeholder="0" />
-                        </div>
+
                         <div>
                           <Label>Status</Label>
                           <Select value={formData.is_active.toString()} onValueChange={(value) => setFormData({...formData, is_active: value === 'true'})}>
@@ -404,9 +416,154 @@ const DoctorPrescriptions = () => {
                           </Select>
                         </div>
                         <div className="col-span-2">
-                          <Label>Instructions</Label>
-                          <Textarea value={formData.instructions} onChange={(e) => setFormData({...formData, instructions: e.target.value})} placeholder="Special instructions for the patient" />
+                          <Label>General Instructions</Label>
+                          <Textarea value={formData.instructions} onChange={(e) => setFormData({...formData, instructions: e.target.value})} placeholder="General instructions for the patient" />
                         </div>
+                        
+                        {/* Medicines Section */}
+                        <div className="col-span-2">
+                          <div className="flex items-center justify-between mb-3">
+                            <Label className="text-lg font-semibold">Medicines</Label>
+                            <Button type="button" onClick={addMedicine} variant="outline" size="sm">
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add Medicine
+                            </Button>
+                          </div>
+                          {formData.medicines.map((medicine, index) => (
+                            <div key={index} className="border border-border rounded-lg p-4 mb-3 bg-muted/30">
+                              <div className="flex justify-between items-center mb-3">
+                                <h4 className="font-medium">Medicine {index + 1}</h4>
+                                {formData.medicines.length > 1 && (
+                                  <Button type="button" onClick={() => removeMedicine(index)} variant="destructive" size="sm">
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-3 gap-3">
+                                <div>
+                                  <Label>Medicine Name *</Label>
+                                  <Input 
+                                    value={medicine.medicine_name} 
+                                    onChange={(e) => updateMedicine(index, 'medicine_name', e.target.value)} 
+                                    placeholder="Medicine name" 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Dosage *</Label>
+                                  <Input 
+                                    value={medicine.dosage} 
+                                    onChange={(e) => updateMedicine(index, 'dosage', e.target.value)} 
+                                    placeholder="e.g., 100mg" 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Frequency *</Label>
+                                  <Select value={medicine.frequency} onValueChange={(value) => updateMedicine(index, 'frequency', value)}>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select frequency" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Once daily">Once daily</SelectItem>
+                                      <SelectItem value="Twice daily">Twice daily</SelectItem>
+                                      <SelectItem value="Three times daily">Three times daily</SelectItem>
+                                      <SelectItem value="Four times daily">Four times daily</SelectItem>
+                                      <SelectItem value="As needed">As needed</SelectItem>
+                                      <SelectItem value="Weekly">Weekly</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </div>
+                                <div>
+                                  <Label>Start Date *</Label>
+                                  <Input 
+                                    type="date"
+                                    value={medicine.start_date} 
+                                    onChange={(e) => updateMedicine(index, 'start_date', e.target.value)} 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>End Date</Label>
+                                  <Input 
+                                    type="date"
+                                    value={medicine.end_date} 
+                                    onChange={(e) => updateMedicine(index, 'end_date', e.target.value)} 
+                                    min={medicine.start_date}
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Refills Remaining</Label>
+                                  <Input 
+                                    type="number"
+                                    min="0"
+                                    value={medicine.refills_remaining} 
+                                    onChange={(e) => updateMedicine(index, 'refills_remaining', e.target.value)} 
+                                    placeholder="0"
+                                  />
+                                </div>
+                                <div className="col-span-3">
+                                  <Label>Instructions</Label>
+                                  <Textarea 
+                                    value={medicine.instructions} 
+                                    onChange={(e) => updateMedicine(index, 'instructions', e.target.value)} 
+                                    placeholder="Specific instructions for this medicine" 
+                                    rows={2}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
+                        {/* Tests Section */}
+                        <div className="col-span-2">
+                          <div className="flex items-center justify-between mb-3">
+                            <Label className="text-lg font-semibold">Tests</Label>
+                            <Button type="button" onClick={addTest} variant="outline" size="sm">
+                              <Plus className="h-4 w-4 mr-1" />
+                              Add Test
+                            </Button>
+                          </div>
+                          {formData.tests.map((test, index) => (
+                            <div key={index} className="border border-border rounded-lg p-4 mb-3 bg-muted/30">
+                              <div className="flex justify-between items-center mb-3">
+                                <h4 className="font-medium">Test {index + 1}</h4>
+                                {formData.tests.length > 1 && (
+                                  <Button type="button" onClick={() => removeTest(index)} variant="destructive" size="sm">
+                                    <X className="h-4 w-4" />
+                                  </Button>
+                                )}
+                              </div>
+                              <div className="grid grid-cols-1 gap-3">
+                                <div>
+                                  <Label>Test Name *</Label>
+                                  <Input 
+                                    value={test.test_name} 
+                                    onChange={(e) => updateTest(index, 'test_name', e.target.value)} 
+                                    placeholder="Test name" 
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Description</Label>
+                                  <Textarea 
+                                    value={test.description} 
+                                    onChange={(e) => updateTest(index, 'description', e.target.value)} 
+                                    placeholder="Test description" 
+                                    rows={2}
+                                  />
+                                </div>
+                                <div>
+                                  <Label>Instructions</Label>
+                                  <Textarea 
+                                    value={test.instructions} 
+                                    onChange={(e) => updateTest(index, 'instructions', e.target.value)} 
+                                    placeholder="Specific instructions for this test" 
+                                    rows={2}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        
                         <div className="col-span-2">
                           <Button type="submit" className="w-full" disabled={loading}>
                             {loading ? 'Saving...' : (editingId ? 'Update Prescription' : 'Add Prescription')}
@@ -439,14 +596,54 @@ const DoctorPrescriptions = () => {
                               }
                             }}
                             className="mr-2"
+                            aria-label={`Select prescription for ${patient ? patient.name : `Patient ID: ${prescription.patient_id}`}`}
                           />
                           <Pill className="h-5 w-5 text-primary" />
                           <div className="flex-1">
                             <h3 className="font-semibold text-foreground">
                               {patient ? patient.name : `Patient ID: ${prescription.patient_id}`}
                             </h3>
-                            <p className="text-sm text-primary font-medium">{prescription.medication_name}</p>
-                            <p className="text-sm text-muted-foreground">Dosage: {prescription.dosage} | Frequency: {prescription.frequency}</p>
+                            {prescription.medication_name && (
+                              <>
+                                <p className="text-sm text-primary font-medium">{prescription.medication_name}</p>
+                                <p className="text-sm text-muted-foreground">Dosage: {prescription.dosage} | Frequency: {prescription.frequency}</p>
+                              </>
+                            )}
+                            {prescription.medicines && prescription.medicines.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-sm font-medium text-primary">Medicines:</p>
+                                {prescription.medicines.map((medicine, idx) => (
+                                  <div key={idx} className="ml-2 mt-1">
+                                    <p className="text-sm font-medium">{medicine.medicine_name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {medicine.dosage} | {medicine.frequency}
+                                      {medicine.start_date && ` | Start: ${new Date(medicine.start_date).toLocaleDateString()}`}
+                                      {medicine.end_date && ` | End: ${new Date(medicine.end_date).toLocaleDateString()}`}
+                                      {medicine.refills_remaining && ` | Refills: ${medicine.refills_remaining}`}
+                                    </p>
+                                    {medicine.instructions && (
+                                      <p className="text-xs text-muted-foreground italic">{medicine.instructions}</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            {prescription.tests && prescription.tests.length > 0 && (
+                              <div className="mt-2">
+                                <p className="text-sm font-medium text-primary">Tests:</p>
+                                {prescription.tests.map((test, idx) => (
+                                  <div key={idx} className="ml-2 mt-1">
+                                    <p className="text-sm font-medium">{test.test_name}</p>
+                                    {test.description && (
+                                      <p className="text-xs text-muted-foreground">{test.description}</p>
+                                    )}
+                                    {test.instructions && (
+                                      <p className="text-xs text-muted-foreground italic">{test.instructions}</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
                             <p className="text-sm text-muted-foreground">Start: {startDate}{endDate ? ` | End: ${endDate}` : ''}</p>
                             {prescription.refills_remaining && (
                               <p className="text-sm text-muted-foreground">Refills: {prescription.refills_remaining}</p>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Prescription extends Model
 {
@@ -38,5 +39,15 @@ class Prescription extends Model
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class, 'patient_id', 'patient_id');
+    }
+
+    public function medicines(): HasMany
+    {
+        return $this->hasMany(PrescriptionMedicine::class);
+    }
+
+    public function tests(): HasMany
+    {
+        return $this->hasMany(PrescriptionTest::class);
     }
 }

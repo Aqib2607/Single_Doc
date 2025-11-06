@@ -1,0 +1,1 @@
+{"version":2,"defects":{"Tests\\Feature\\MultiplePrescriptionEntriesTest::test_can_create_prescription_with_multiple_medicines_and_tests":8,"Tests\\Feature\\MultiplePrescriptionEntriesTest::test_can_update_prescription_with_multiple_entries":8},"times":[]}
