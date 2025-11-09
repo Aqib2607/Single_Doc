@@ -3,7 +3,7 @@
         'name' => 'single-vendor/doc-app',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'ec37fdd5aa71956b01b25103211731d706cbe5ef',
+        'reference' => 'd5dff197011c86220cd152812f8fb9ab0498ed29',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -947,7 +947,7 @@
         'single-vendor/doc-app' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'ec37fdd5aa71956b01b25103211731d706cbe5ef',
+            'reference' => 'd5dff197011c86220cd152812f8fb9ab0498ed29',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { getYouTubeEmbedUrl } from "@/lib/mediaUtils";
+import YouTubeVideo from "@/components/YouTubeVideo";
 
 interface GalleryItem {
   id: number;
@@ -23,16 +25,18 @@ const Gallery = () => {
       const response = await fetch('/api/galleries');
       if (response.ok) {
         const data = await response.json();
+        console.log('Gallery API data received:', data);
         if (data.length > 0) {
           setGalleryItems(data);
         } else {
+          console.log('No gallery data from API, using fallback');
           // Fallback data when no gallery items exist
           setGalleryItems([
             {
               id: 1,
               title: 'Modern Reception Area',
               description: 'Our welcoming reception area with comfortable seating',
-              url: '/src/assets/gallery-1.jpg',
+              url: '/images/gallery/clinic-interior.jpg',
               type: 'image',
               category: 'facility'
             },
@@ -40,7 +44,7 @@ const Gallery = () => {
               id: 2,
               title: 'Advanced Medical Equipment',
               description: 'State-of-the-art diagnostic equipment',
-              url: '/src/assets/gallery-2.jpg',
+              url: '/images/gallery/medical-equipment.jpg',
               type: 'image',
               category: 'equipment'
             },
@@ -48,7 +52,7 @@ const Gallery = () => {
               id: 3,
               title: 'Consultation Room',
               description: 'Private and comfortable consultation spaces',
-              url: '/src/assets/gallery-3.jpg',
+              url: '/images/gallery/consultation-room.jpg',
               type: 'image',
               category: 'facility'
             },
@@ -56,7 +60,7 @@ const Gallery = () => {
               id: 4,
               title: 'Waiting Area',
               description: 'Spacious and comfortable waiting area for patients',
-              url: '/src/assets/gallery-4.jpg',
+              url: '/images/gallery/clinic-modern.jpg',
               type: 'image',
               category: 'facility'
             }
@@ -65,13 +69,14 @@ const Gallery = () => {
       }
     } catch (error) {
       console.error('Error fetching gallery items:', error);
+      console.log('Using fallback data due to API error');
       // Use fallback data on error
       setGalleryItems([
         {
           id: 1,
           title: 'Modern Reception Area',
           description: 'Our welcoming reception area with comfortable seating',
-          url: '/src/assets/gallery-1.jpg',
+          url: '/images/gallery/clinic-interior.jpg',
           type: 'image',
           category: 'facility'
         },
@@ -79,7 +84,7 @@ const Gallery = () => {
           id: 2,
           title: 'Advanced Medical Equipment',
           description: 'State-of-the-art diagnostic equipment',
-          url: '/src/assets/gallery-2.jpg',
+          url: '/images/gallery/medical-equipment.jpg',
           type: 'image',
           category: 'equipment'
         }
@@ -158,12 +163,10 @@ const Gallery = () => {
                       className="relative aspect-video rounded-3xl overflow-hidden shadow-elegant bg-gradient-to-br from-muted to-muted/50 animate-fade-in-up"
                       style={{ animationDelay: `${0.7 + index * 0.1}s` }}
                     >
-                      <iframe
-                        src={video.url}
-                        className="w-full h-full"
-                        frameBorder="0"
-                        allowFullScreen
+                      <YouTubeVideo 
+                        url={getYouTubeEmbedUrl(video.url)}
                         title={video.title}
+                        className="w-full h-full"
                       />
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
                         <h4 className="text-white font-display font-bold text-xl">
@@ -194,12 +197,10 @@ const Gallery = () => {
                   className="w-full h-auto rounded-lg"
                 />
               ) : (
-                <iframe
-                  src={galleryItems[selectedImage].url}
-                  className="w-full h-96 rounded-lg"
-                  frameBorder="0"
-                  allowFullScreen
+                <YouTubeVideo 
+                  url={getYouTubeEmbedUrl(galleryItems[selectedImage].url)}
                   title={galleryItems[selectedImage].title}
+                  className="w-full h-96 rounded-lg"
                 />
               )}
               <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">

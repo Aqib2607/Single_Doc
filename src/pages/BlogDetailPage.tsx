@@ -122,7 +122,7 @@ const BlogDetailPage = () => {
               <Card className="overflow-hidden">
                 <div className="relative aspect-video overflow-hidden">
                   <img 
-                    src={blog.image || '/src/assets/blog-wellness.jpg'} 
+                    src={blog.image || '/images/blog/blog-wellness.jpg'} 
                     alt={blog.title}
                     className="w-full h-full object-cover"
                   />

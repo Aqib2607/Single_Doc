@@ -6,6 +6,28 @@ import Footer from "@/components/Footer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+// Import blog images
+import blogWellness from "@/assets/blog-wellness.jpg";
+import blogMental from "@/assets/blog-mental.jpg";
+import blogNutrition from "@/assets/blog-nutrition.jpg";
+import blogAllergies from "@/assets/blog-allergies.jpg";
+import blogChronic from "@/assets/blog-chronic.jpg";
+import blogPreventive from "@/assets/blog-preventive.jpg";
+
+// Helper function to map image paths to imported images
+const getImagePath = (imagePath: string): string => {
+  const imageMap: { [key: string]: string } = {
+    '/images/blog/blog-wellness.jpg': blogWellness,
+    '/images/blog/blog-mental.jpg': blogMental,
+    '/images/blog/blog-nutrition.jpg': blogNutrition,
+    '/images/blog/blog-allergies.jpg': blogAllergies,
+    '/images/blog/blog-chronic.jpg': blogChronic,
+    '/images/blog/blog-preventive.jpg': blogPreventive,
+  };
+  
+  return imageMap[imagePath] || imagePath;
+};
 interface BlogPost {
   id: number;
   title: string;
@@ -29,44 +51,44 @@ const BlogPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fallback blog data for when API is unavailable
-  const fallbackBlogs: BlogPost[] = [
-    {
-      id: 1,
-      title: '10 Essential Health Tips for a Better Life',
-      excerpt: 'Discover simple yet effective ways to improve your overall health and wellbeing.',
-      category: 'Wellness',
-      image: '/src/assets/blog-wellness.jpg',
-      read_time: '5 min read',
-      created_at: new Date().toISOString(),
-      status: 'published',
-      doctor_id: 1
-    },
-    {
-      id: 2,
-      title: 'Understanding Mental Health in Modern Times',
-      excerpt: 'Mental health awareness and practical strategies for maintaining psychological wellbeing.',
-      category: 'Mental Health',
-      image: '/src/assets/blog-mental-health.jpg',
-      read_time: '7 min read',
-      created_at: new Date().toISOString(),
-      status: 'published',
-      doctor_id: 2
-    },
-    {
-      id: 3,
-      title: 'Nutrition Guidelines for Optimal Health',
-      excerpt: 'Evidence-based nutrition advice to help you make informed dietary choices.',
-      category: 'Nutrition',
-      image: '/src/assets/blog-nutrition.jpg',
-      read_time: '6 min read',
-      created_at: new Date().toISOString(),
-      status: 'published',
-      doctor_id: 3
-    }
-  ];
-
   const fetchBlogs = useCallback(async () => {
+    // Fallback blog data for when API is unavailable
+    const fallbackBlogs: BlogPost[] = [
+      {
+        id: 1,
+        title: '10 Essential Health Tips for a Better Life',
+        excerpt: 'Discover simple yet effective ways to improve your overall health and wellbeing.',
+        category: 'Wellness',
+        image: blogWellness,
+        read_time: '5 min read',
+        created_at: new Date().toISOString(),
+        status: 'published',
+        doctor_id: 1
+      },
+      {
+        id: 2,
+        title: 'Understanding Mental Health in Modern Times',
+        excerpt: 'Mental health awareness and practical strategies for maintaining psychological wellbeing.',
+        category: 'Mental Health',
+        image: blogMental,
+        read_time: '7 min read',
+        created_at: new Date().toISOString(),
+        status: 'published',
+        doctor_id: 2
+      },
+      {
+        id: 3,
+        title: 'Nutrition Guidelines for Optimal Health',
+        excerpt: 'Evidence-based nutrition advice to help you make informed dietary choices.',
+        category: 'Nutrition',
+        image: blogNutrition,
+        read_time: '6 min read',
+        created_at: new Date().toISOString(),
+        status: 'published',
+        doctor_id: 3
+      }
+    ];
+
     try {
       setError(null);
       const response = await fetch('/api/blogs');
@@ -140,7 +162,7 @@ const BlogPage = () => {
                     <Card key={post.id} className="group hover-lift border-2 border-border overflow-hidden animate-fade-in-up" style={{ animationDelay: `${index * 0.1}s` }}>
                       <div className="relative overflow-hidden aspect-video">
                         <img 
-                          src={post.image || '/src/assets/blog-wellness.jpg'} 
+                          src={getImagePath(post.image || '/images/blog/blog-wellness.jpg')} 
                           alt={post.title}
                           className="w-full h-full object-cover transition-smooth group-hover:scale-110"
                         />
