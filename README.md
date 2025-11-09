@@ -1,8 +1,37 @@
 # Single Doc - Comprehensive Health & Wellness Platform
 
+<div align="center">
+
+![GitHub repo size](https://img.shields.io/github/repo-size/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+![GitHub stars](https://img.shields.io/github/stars/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+![GitHub forks](https://img.shields.io/github/forks/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+![GitHub issues](https://img.shields.io/github/issues/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+![GitHub license](https://img.shields.io/github/license/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+
+![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+
+</div>
+
+## 📊 Repository Stats
+
+<div align="center">
+
+![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Aqib2607&repo=Single_Doc&show_icons=true&theme=radical)
+
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Aqib2607&layout=compact&theme=radical)
+
+</div>
+
+## 🚀 Overview
+
 A complete health and wellness management system built with Laravel (backend) and React + Vite (frontend) that connects patients with healthcare professionals, nutritionists, life coaches, and wellness experts.
 
-## Features
+## ✨ Features
 
 ### Core Medical Services
 
@@ -26,7 +55,7 @@ A complete health and wellness management system built with Laravel (backend) an
 - **Multi-Professional Platform**: Support for various healthcare and wellness professionals
 - **Authentication**: Secure login system for all user types
 
-## Tech Stack
+## 🛠️ Tech Stack
 
 ### Backend
 
@@ -51,7 +80,7 @@ A complete health and wellness management system built with Laravel (backend) an
 - **YouTube/Vimeo** - Course video hosting
 - **Real-time notifications** - Appointment and task updates
 
-## Prerequisites
+## 📋 Prerequisites
 
 - **PHP 8.1+** - Server-side scripting language
 - **Composer** - PHP dependency manager
@@ -60,7 +89,7 @@ A complete health and wellness management system built with Laravel (backend) an
 - **MySQL 8.0+** - Database server
 - **Git** - Version control (for cloning repository)
 
-## Installation
+## 🚀 Installation
 
 ### 1. Clone Repository
 
@@ -214,7 +243,7 @@ npm run dev
 bun run dev
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 Single_Doc/
@@ -233,7 +262,7 @@ Single_Doc/
 └── public/              # Public assets
 ```
 
-## API Endpoints
+## 🔌 API Endpoints
 
 ### Public Routes
 
@@ -267,7 +296,7 @@ Single_Doc/
 - `POST /api/video-sessions` - Generate Google Meet link
 - `PUT /api/todo-lists/{id}` - Update todo status
 
-## User Types
+## 👥 User Types
 
 ### Healthcare Professionals
 
@@ -287,7 +316,7 @@ Single_Doc/
 - **Patients** - Access to all medical and wellness services
 - **Guests** - Limited booking capabilities
 
-## Development Notes
+## 📝 Development Notes
 
 - Medicine and test management is **read-only** for professionals
 - Google Meet integration requires API credentials in `.env`
@@ -297,7 +326,7 @@ Single_Doc/
 - Backend runs on `http://localhost:8000`
 - Frontend runs on `http://localhost:5173`
 
-## Environment Variables
+## 🔐 Environment Variables
 
 Add to your `.env` file:
 
@@ -307,7 +336,7 @@ GOOGLE_MEET_CLIENT_SECRET=your_google_client_secret
 VIDEO_STORAGE_PATH=storage/courses/videos
 ```
 
-## Contributing
+## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -315,6 +344,18 @@ VIDEO_STORAGE_PATH=storage/courses/videos
 4. Run tests
 5. Submit a pull request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License.
+
+---
+
+<div align="center">
+
+**⭐ Star this repository if you find it helpful!**
+
+![Profile Views](https://komarev.com/ghpvc/?username=Aqib2607&color=brightgreen&style=for-the-badge)
+
+**Made with ❤️ by [Aqib2607](https://github.com/Aqib2607)**
+
+</div>
