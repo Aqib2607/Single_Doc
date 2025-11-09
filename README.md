@@ -100,7 +100,7 @@ A complete health and wellness management system built with Laravel (backend) an
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/your-username/Single_Doc.git
+git clone https://github.com/Aqib2607/Single_Doc.git
 cd Single_Doc
 ```
 
