@@ -358,7 +358,7 @@ VIDEO_STORAGE_PATH=storage/courses/videos
 This software is available for commercial licensing. For business inquiries, custom development, or licensing discussions:
 
 **📧 Contact:** aqibjawwad2607@gmail.com  
-**👨‍💻 Developer:** Aqib Jawwad Nahin - Full Stack Web Developer  
+**👨‍💻 Developer:** [Aqib Jawwad Nahin](aqibjawwad.me) - Full Stack Web Developer  
 **🔗 GitHub:** [Aqib2607](https://github.com/Aqib2607)
 
 ### 🎯 Available Services
