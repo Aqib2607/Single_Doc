@@ -6,7 +6,7 @@
 ![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=for-the-badge)
 ![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
 ![Build](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
+![License](https://img.shields.io/badge/License-Proprietary-red?style=for-the-badge)
 
 <!-- Technology Stack Badges -->
 ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
@@ -342,26 +342,53 @@ GOOGLE_MEET_CLIENT_SECRET=your_google_client_secret
 VIDEO_STORAGE_PATH=storage/courses/videos
 ```
 
-## 🤝 Contributing
+## 🚫 Commercial Use & Licensing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests
-5. Submit a pull request
+**⚠️ IMPORTANT NOTICE: This is proprietary commercial software developed for sale purposes.**
+
+### 🔒 License Restrictions
+
+- **No copying, modification, or redistribution** without explicit written permission
+- **Commercial use requires** a separate licensing agreement
+- **Source code is confidential** and protected by copyright law
+- **Reverse engineering is strictly prohibited**
+
+### 💼 Licensing Inquiries
+
+This software is available for commercial licensing. For business inquiries, custom development, or licensing discussions:
+
+**📧 Contact:** aqibjawwad2607@gmail.com  
+**👨‍💻 Developer:** Aqib Jawwad Nahin - Full Stack Web Developer  
+**🔗 GitHub:** [Aqib2607](https://github.com/Aqib2607)
+
+### 🎯 Available Services
+
+- **✅ Custom Development** - Tailored healthcare platforms
+- **✅ Commercial Licensing** - Full platform licensing
+- **✅ White-label Solutions** - Branded versions for your business
+- **✅ Technical Support** - Implementation and maintenance
+- **✅ Feature Customization** - Additional features and integrations
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+```
+PROPRIETARY SOFTWARE LICENSE
+Copyright (c) 2025 Aqib Jawwad Nahin. All Rights Reserved.
+
+This software is protected by copyright and other intellectual property laws.
+Unauthorized use, copying, distribution, or modification is strictly prohibited.
+See LICENSE file for complete terms and conditions.
+```
 
 ---
 
 <div align="center">
 
-**⭐ Star this repository if you find it helpful!**
+**🏥 Professional Healthcare Platform for Commercial Use**
 
-![Profile Views](https://komarev.com/ghpvc/?username=Aqib2607&color=brightgreen&style=for-the-badge)
+![Status](https://img.shields.io/badge/Status-Commercial%20Product-success?style=for-the-badge)
+![Developer](https://img.shields.io/badge/Developer-Aqib%20Jawwad%20Nahin-blue?style=for-the-badge)
 
-**Made with ❤️ by [Aqib2607](https://github.com/Aqib2607)**
+**Built with expertise by a Full Stack Web Developer**
 
 </div>
