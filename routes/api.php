@@ -106,6 +106,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/patient/profile', [PatientController::class, 'profile']);
     Route::get('/patient/prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']);
     Route::get('/patient-prescriptions', [ApiPrescriptionController::class, 'getPatientPrescriptions']); // Backward compatibility
+    
+    // Doctor profile routes
+    Route::get('/doctor/profile', [\App\Http\Controllers\Api\DoctorProfileController::class, 'show']);
+    Route::put('/doctor/profile', [\App\Http\Controllers\Api\DoctorProfileController::class, 'update']);
+    Route::delete('/doctor/profile', [\App\Http\Controllers\Api\DoctorProfileController::class, 'destroy']);
+    
+    // Patient profile routes
+    Route::get('/patient/profile', [\App\Http\Controllers\Api\PatientProfileController::class, 'show']);
+    Route::put('/patient/profile', [\App\Http\Controllers\Api\PatientProfileController::class, 'update']);
+    Route::delete('/patient/profile', [\App\Http\Controllers\Api\PatientProfileController::class, 'destroy']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::get('/doctor-dashboard', [DoctorDashboardController::class, 'index']);
     Route::post('/appointments', [AppointmentController::class, 'store']);
