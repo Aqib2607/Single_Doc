@@ -1,16 +1,30 @@
-# Single Doc - Medical Management System
+# Single Doc - Comprehensive Health & Wellness Platform
 
-A comprehensive medical management system built with Laravel (backend) and React + Vite (frontend) that provides functionality for doctors, patients, and medical administration.
+A complete health and wellness management system built with Laravel (backend) and React + Vite (frontend) that connects patients with healthcare professionals, nutritionists, life coaches, and wellness experts.
 
 ## Features
 
+### Core Medical Services
+
 - **Doctor Dashboard**: Manage appointments, prescriptions, medical records, and view medicines/tests
 - **Patient Portal**: Book appointments, view prescriptions, access medical records
-- **Medicine & Test Management**: View available medicines and diagnostic tests (read-only for doctors)
-- **Appointment System**: Schedule and manage medical appointments
+- **Medicine & Test Management**: View available medicines and diagnostic tests
 - **Prescription Management**: Create and manage patient prescriptions
 - **Medical Records**: Store and access patient medical history
-- **Authentication**: Secure login system for doctors and patients
+
+### Wellness & Coaching Services
+
+- **Nutritionist Services**: Personalized nutrition plans and dietary consultations
+- **Life Coaching**: Personal development and goal-setting sessions
+- **Specialized Coaching**: Fitness, career, relationship, and wellness coaching
+
+### Advanced Features
+
+- **Video Consultations**: Integrated Google Meet links for remote sessions
+- **Course Management**: Educational content and video courses
+- **Todo Lists**: Collaborative task management between clients and professionals
+- **Multi-Professional Platform**: Support for various healthcare and wellness professionals
+- **Authentication**: Secure login system for all user types
 
 ## Tech Stack
 
@@ -19,6 +33,7 @@ A comprehensive medical management system built with Laravel (backend) and React
 - **Laravel 10+** - PHP framework
 - **MySQL** - Database
 - **Laravel Sanctum** - API authentication
+- **Google Meet API** - Video consultation integration
 
 ### Frontend
 
@@ -28,6 +43,13 @@ A comprehensive medical management system built with Laravel (backend) and React
 - **Tailwind CSS** - Styling
 - **Shadcn/ui** - UI components
 - **Lucide React** - Icons
+- **Video.js** - Video course player
+
+### Integrations
+
+- **Google Meet** - Video consultations
+- **YouTube/Vimeo** - Course video hosting
+- **Real-time notifications** - Appointment and task updates
 
 ## Prerequisites
 
@@ -153,15 +175,32 @@ php artisan migrate --seed
 
 #### Database Tables Created
 
+**Core Tables**
+
 - `users` - System users authentication
-- `doctors` - Doctor profiles and specializations  
 - `patients` - Patient profiles and medical info
-- `appointments` - Appointment bookings (patient & guest)
+- `appointments` - Appointment bookings with video links
 - `prescriptions` - Medical prescriptions
 - `medicines` - Available medicines catalog
 - `tests` - Diagnostic tests catalog
-- `schedules` - Doctor availability schedules
+- `schedules` - Professional availability schedules
 - `guests` - Guest appointment bookings
+
+**Professional Tables**
+
+- `doctors` - Doctor profiles and specializations
+- `nutritionists` - Nutritionist profiles and expertise
+- `life_coaches` - Life coach profiles and specialties
+- `coaches` - General coaches (fitness, career, etc.)
+
+**Enhanced Features**
+
+- `courses` - Educational courses and content
+- `course_videos` - Video content for courses
+- `todo_lists` - Client-professional task management
+- `video_sessions` - Google Meet integration records
+- `nutrition_plans` - Personalized nutrition recommendations
+- `coaching_sessions` - Coaching session records
 
 ### 4. Start Development Servers
 
@@ -200,24 +239,73 @@ Single_Doc/
 
 - `GET /api/medicines` - List medicines
 - `GET /api/tests` - List diagnostic tests
+- `GET /api/courses` - List available courses
 - `POST /api/login` - User authentication
 - `POST /api/register` - User registration
 
-### Protected Routes (require authentication)
+### Medical Services
 
-- `GET /api/user` - Get current user
+- `GET /api/doctors` - List doctors
 - `GET /api/appointments` - List appointments
-- `POST /api/appointments` - Create appointment
+- `POST /api/appointments` - Create appointment with video link
 - `GET /api/prescriptions` - List prescriptions
 - `POST /api/prescriptions` - Create prescription
 
+### Wellness Services
+
+- `GET /api/nutritionists` - List nutritionists
+- `GET /api/life-coaches` - List life coaches
+- `GET /api/coaches` - List specialized coaches
+- `POST /api/nutrition-plans` - Create nutrition plan
+- `POST /api/coaching-sessions` - Schedule coaching session
+
+### Enhanced Features
+
+- `GET /api/courses/{id}/videos` - Get course videos
+- `GET /api/todo-lists` - Get client todo lists
+- `POST /api/todo-lists` - Create todo item
+- `POST /api/video-sessions` - Generate Google Meet link
+- `PUT /api/todo-lists/{id}` - Update todo status
+
+## User Types
+
+### Healthcare Professionals
+
+- **Doctors** - Medical consultations, prescriptions, medical records
+- **Nutritionists** - Dietary plans, nutrition consultations, meal planning
+
+### Wellness Professionals
+
+- **Life Coaches** - Personal development, goal setting, life planning
+- **Fitness Coaches** - Exercise programs, fitness consultations
+- **Career Coaches** - Professional development, career guidance
+- **Relationship Coaches** - Relationship counseling and advice
+- **Wellness Coaches** - Holistic health and lifestyle coaching
+
+### Clients
+
+- **Patients** - Access to all medical and wellness services
+- **Guests** - Limited booking capabilities
+
 ## Development Notes
 
-- The medicine and test management for doctors is **read-only** - CRUD operations have been removed
-- TypeScript errors may occur if dependencies are not installed
-- Run `npm install` or `bun install` before development
+- Medicine and test management is **read-only** for professionals
+- Google Meet integration requires API credentials in `.env`
+- Video courses support YouTube and Vimeo embedding
+- Todo lists are collaborative between clients and professionals
+- Real-time notifications for appointments and tasks
 - Backend runs on `http://localhost:8000`
 - Frontend runs on `http://localhost:5173`
+
+## Environment Variables
+
+Add to your `.env` file:
+
+```env
+GOOGLE_MEET_CLIENT_ID=your_google_client_id
+GOOGLE_MEET_CLIENT_SECRET=your_google_client_secret
+VIDEO_STORAGE_PATH=storage/courses/videos
+```
 
 ## Contributing
 
