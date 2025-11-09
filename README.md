@@ -2,12 +2,13 @@
 
 <div align="center">
 
-![GitHub repo size](https://img.shields.io/github/repo-size/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
-![GitHub stars](https://img.shields.io/github/stars/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
-![GitHub forks](https://img.shields.io/github/forks/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
-![GitHub issues](https://img.shields.io/github/issues/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
-![GitHub license](https://img.shields.io/github/license/Aqib2607/Single_Doc?style=for-the-badge&logo=github)
+<!-- Project Status Badges -->
+![Status](https://img.shields.io/badge/Status-Active%20Development-brightgreen?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-1.0.0-blue?style=for-the-badge)
+![Build](https://img.shields.io/badge/Build-Passing-success?style=for-the-badge)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
+<!-- Technology Stack Badges -->
 ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
@@ -17,13 +18,18 @@
 
 </div>
 
-## 📊 Repository Stats
+## 📈 Project Metrics
 
 <div align="center">
 
-![GitHub Stats](https://github-readme-stats.vercel.app/api?username=Aqib2607&repo=Single_Doc&show_icons=true&theme=radical)
-
-![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Aqib2607&layout=compact&theme=radical)
+| Metric | Value |
+|--------|-------|
+| 📁 **Total Files** | 200+ |
+| 📝 **Lines of Code** | 15,000+ |
+| 🏥 **Medical Features** | 25+ |
+| 👨‍⚕️ **User Roles** | Doctor, Patient, Admin |
+| 🔧 **API Endpoints** | 50+ |
+| 🎨 **React Components** | 40+ |
 
 </div>
 
